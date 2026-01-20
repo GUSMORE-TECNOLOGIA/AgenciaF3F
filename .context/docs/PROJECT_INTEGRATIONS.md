@@ -65,9 +65,21 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 
 | Campo | Valor |
 |-------|-------|
-| **Projeto** | (a definir) |
-| **URL de Produção** | (a definir) |
+| **Team** | GUSMORE TECNOLOGIA |
+| **Projeto** | agenciaf3f (a criar) |
+| **Domínio** | agenciaf3f.app |
+| **URL de Produção** | https://agenciaf3f.app (após configurar) |
 | **Framework** | Vite (React + TypeScript) |
+| **Status** | ⏳ Configuração pronta, aguardando deploy |
+| **Configuração** | `vercel.json` criado |
+| **Guia de Deploy** | Ver `VERCEL_DEPLOY.md` |
+
+### Variáveis de Ambiente Necessárias
+
+Configure estas variáveis no painel da Vercel:
+
+- `VITE_SUPABASE_URL`: `https://rhnkffeyspymjpellmnd.supabase.co`
+- `VITE_SUPABASE_ANON_KEY`: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJobmtmZmV5c3B5bWpwZWxsbW5kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY5NjA0MDAsImV4cCI6MjA1MjUzNjQwMH0.5OiPMqz8dPoC9O-qJMx_DkSxS21bZJZI9mEINJlgYFQ`
 
 ---
 
@@ -166,4 +178,4 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 
 ---
 
-*Última atualização: 20/01/2026 10:24:14*
+*Última atualização: 20/01/2026 10:27:05*
