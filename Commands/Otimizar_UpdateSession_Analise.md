@@ -2,132 +2,85 @@
 
 ## Resumo Executivo
 
-**Total de arquivos com chamadas**: ~98 ocorrências de `auth.getUser()`
-**Arquivos de API**: 62 arquivos
-**Hooks e componentes**: ~4 arquivos
-**Utilitários**: ~3 arquivos
+**Total de arquivos com chamadas**: 1 ocorrência de `auth.getUser()`
+**Arquivos de API**: 0
+**Hooks e componentes**: 1 arquivo
+**Utilitários**: 0
 
 ## Categorização por Tipo
 
-### 1. Rotas de API (62 arquivos)
-**Status**: ✅ **NECESSÁRIAS** - Mas podem ser otimizadas
+### 1. Rotas de API (0 arquivos)
+**Status**: ✅ **N/A**
 
-Todas as rotas de API fazem `auth.getUser()` para autenticação, o que é correto. No entanto, podemos:
-- Criar um helper reutilizável para evitar código duplicado
-- Implementar cache de sessão quando apropriado
-- Verificar se há múltiplas chamadas na mesma rota
+Não há rotas de API no projeto. Nenhuma chamada `auth.getUser()` em API server-side.
 
-**Arquivos principais**:
-- `/app/api/pessoas/**` - 15+ arquivos
-- `/app/api/aluno/**` - 5 arquivos
-- `/app/api/formularios/**` - 6 arquivos
-- `/app/api/integrations/**` - 5 arquivos
-- `/app/api/linha-editorial/**` - 5 arquivos
-- Outros - 26 arquivos
+**Arquivos principais**: N/A
 
-### 2. Hooks (4 arquivos)
-**Status**: ⚠️ **REVISAR** - Podem estar criando clientes repetidamente
+### 2. Hooks (0 arquivos)
+**Status**: ✅ **N/A**
 
-- `web/lib/hooks/use-mentoria.ts` - 4 chamadas
-- `web/lib/hooks/use-campanha.ts` - 1 chamada
+N/A
 
-**Ação**: Verificar se estão criando novos clientes a cada chamada ou reutilizando.
+**Ação**: N/A
 
-### 3. Componentes/Páginas (2 arquivos)
-**Status**: ⚠️ **REVISAR** - Verificar necessidade
+### 3. Componentes/Páginas (1 arquivo)
+**Status**: ✅ **OK**
 
-- `web/app/(auth)/role-select/page.tsx` - 2 chamadas
-- Outros componentes podem ter chamadas indiretas
+- `src/contexts/AuthContext.tsx` - 1 chamada para fallback de perfil
 
-### 4. Utilitários (2 arquivos)
-**Status**: ⚠️ **REVISAR** - Podem ser otimizados
+### 4. Utilitários (0 arquivos)
+**Status**: ✅ **N/A**
 
-- `web/lib/utils/get-aluno-pessoa-id.ts` - 2 chamadas
-- `web/lib/utils/storage.ts` - 2 chamadas
+N/A
 
-### 5. Middleware (1 arquivo)
-**Status**: ✅ **OTIMIZADO** - Já corrigido
+### 5. Middleware (0 arquivos)
+**Status**: ✅ **N/A**
 
-- `web/middleware.ts` - Não chama mais `updateSession()` em rotas `/api/*`
+N/A
 
 ## Padrões Identificados
 
-### Padrão 1: Autenticação em Rotas de API (Muito Comum)
+### Padrão 1: Autenticação em Rotas de API
 ```typescript
-// Padrão encontrado em ~60 arquivos
-const supabase = await createClient()
-const { data: { user }, error: authError } = await supabase.auth.getUser()
-if (authError || !user) {
-  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-}
+// N/A no projeto atual
 ```
 
-**Oportunidade**: Criar helper `requireAuth()` para reduzir código duplicado.
+**Oportunidade**: N/A
 
 ### Padrão 2: Múltiplas Chamadas na Mesma Rota
-Alguns arquivos fazem `auth.getUser()` múltiplas vezes:
-- `web/app/api/pessoas/[id]/route.ts` - 3 vezes
-- `web/app/api/pessoas/[id]/educacional/route.ts` - 3 vezes
-- `web/app/api/pessoas/[id]/financeiro/route.ts` - 3 vezes
-- `web/lib/hooks/use-mentoria.ts` - 4 vezes
+N/A
 
-**Oportunidade**: Cachear resultado da primeira chamada.
+**Oportunidade**: N/A
 
 ### Padrão 3: Hooks que Criam Clientes
-```typescript
-// Padrão em hooks
-const supabase = createClient() // Novo cliente a cada render?
-const { data: { user } } = await supabase.auth.getUser()
-```
+N/A
 
-**Oportunidade**: Verificar se hooks estão criando clientes desnecessariamente.
+**Oportunidade**: N/A
 
 ## Plano de Ação Detalhado
 
 ### Fase 1: Criar Helper de Autenticação (Prioridade ALTA)
-**Objetivo**: Reduzir código duplicado e padronizar autenticação
+**Objetivo**: N/A para este projeto (sem rotas de API)
 
-**Arquivo**: `web/lib/auth/require-auth.ts`
-```typescript
-// Helper para autenticação em rotas de API
-export async function requireAuth() {
-  const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  
-  if (authError || !user) {
-    throw new Error('Unauthorized')
-  }
-  
-  return { user, supabase }
-}
-```
+**Arquivo**: N/A
+N/A
 
-**Benefícios**:
-- Reduz código duplicado
-- Facilita manutenção
-- Permite adicionar cache futuramente
+**Benefícios**: N/A
 
 ### Fase 2: Otimizar Rotas com Múltiplas Chamadas (Prioridade MÉDIA)
-**Arquivos prioritários**:
-1. `web/app/api/pessoas/[id]/route.ts` - 3 chamadas
-2. `web/app/api/pessoas/[id]/educacional/route.ts` - 3 chamadas
-3. `web/app/api/pessoas/[id]/financeiro/route.ts` - 3 chamadas
+N/A
 
-**Ação**: Cachear resultado da primeira chamada na mesma requisição.
+**Ação**: N/A
 
 ### Fase 3: Revisar Hooks (Prioridade MÉDIA)
-**Arquivos**:
-1. `web/lib/hooks/use-mentoria.ts` - Verificar criação de clientes
-2. `web/lib/hooks/use-campanha.ts` - Verificar criação de clientes
+N/A
 
-**Ação**: Garantir que clientes são reutilizados, não criados a cada chamada.
+**Ação**: N/A
 
 ### Fase 4: Revisar Utilitários (Prioridade BAIXA)
-**Arquivos**:
-1. `web/lib/utils/get-aluno-pessoa-id.ts`
-2. `web/lib/utils/storage.ts`
+N/A
 
-**Ação**: Verificar se podem receber cliente como parâmetro em vez de criar.
+**Ação**: N/A
 
 ## Checklist de Revisão por Arquivo
 
@@ -180,14 +133,14 @@ export async function requireAuth() {
 ## Métricas de Progresso
 
 ### Antes
-- Chamadas `auth.getUser()`: ~98
-- Código duplicado: Alto
-- Potencial de otimização: Alto
+- Chamadas `auth.getUser()`: 1
+- Código duplicado: Baixo
+- Potencial de otimização: Baixo
 
 ### Meta
-- Chamadas `auth.getUser()`: ~62 (apenas 1 por rota de API)
-- Código duplicado: Baixo (usando helper)
-- Cache implementado: Em rotas com múltiplas chamadas
+- Chamadas `auth.getUser()`: 1 (mantida em `AuthContext` para fallback de perfil)
+- Código duplicado: Baixo
+- Cache implementado: N/A
 
 ## Notas Importantes
 
