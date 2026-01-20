@@ -53,9 +53,11 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 
 | Campo | Valor |
 |-------|-------|
-| **Repositório** | (a definir) |
+| **Repositório** | https://github.com/GUSMORE-TECNOLOGIA/AgenciaF3F |
+| **Organização** | GUSMORE-TECNOLOGIA |
 | **Branch Principal** | main |
 | **Workflow** | GitHub Flow |
+| **Status** | ✅ Repositório criado e código enviado |
 
 ---
 
@@ -164,4 +166,4 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 
 ---
 
-*Última atualização: 16/01/2026 12:59:06*
+*Última atualização: 20/01/2026 10:24:14*
