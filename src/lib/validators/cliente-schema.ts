@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-// Schema para Links Úteis (10 campos - pasta_drive removido, usando drive_url separado)
+// Schema para Links Úteis (legado - mantido para compatibilidade)
 export const linksUteisSchema = z.object({
   conta_anuncio_f3f: z.string().url('URL inválida').optional().or(z.literal('')),
   conta_anuncio_lt: z.string().url('URL inválida').optional().or(z.literal('')),
@@ -25,7 +25,7 @@ export const clienteCreateSchema = z.object({
   }),
   logo_url: z.string().url('URL inválida').optional().or(z.literal('')),
   links_uteis: linksUteisSchema.optional(),
-  drive_url: z.string().url('URL inválida').optional().or(z.literal('')),
+  // drive_url removido - usar cliente_links com tipo "Google Drive" ao invés
 })
 
 // Schema para atualização de cliente (todos os campos opcionais exceto id)
@@ -37,7 +37,7 @@ export const clienteUpdateSchema = z.object({
   status: z.enum(['ativo', 'inativo', 'pausado']).optional(),
   logo_url: z.string().url('URL inválida').optional().or(z.literal('')).nullable(),
   links_uteis: linksUteisSchema.optional(),
-  drive_url: z.string().url('URL inválida').optional().or(z.literal('')),
+  // drive_url removido - usar cliente_links com tipo "Google Drive" ao invés
 })
 
 // Schema para atualização apenas de links úteis

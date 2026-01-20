@@ -212,11 +212,7 @@ export async function updateAtendimento(id: string, input: AtendimentoUpdateInpu
  */
 export async function deleteAtendimento(id: string): Promise<void> {
   try {
-    const { error } = await supabase
-      .from('atendimentos')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', id)
-      .is('deleted_at', null)
+    const { error } = await supabase.rpc('soft_delete_atendimento', { atendimento_id: id })
 
     if (error) {
       console.error('Erro ao deletar atendimento:', error)

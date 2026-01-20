@@ -7,15 +7,15 @@ Padronizar o processo de aplicação de migrations no banco de dados usando o MC
 ## Quando usar
 
 **SEMPRE** que:
-- Uma nova migration SQL foi criada no diretório `web/migrations/`
+- Uma nova migration SQL foi criada no diretório `supabase/migrations/`
 - Uma migration precisa ser aplicada no banco de dados do Supabase
 - Houver alterações no schema do banco de dados que requerem migration
 
 ## Pré-requisitos
 
 1. ✅ Migration criada no formato correto: `YYYYMMDDHHMM_nome_da_migration.sql`
-2. ✅ Migration salva em `web/migrations/`
-3. ✅ Conexão MCP Supabase configurada e funcional
+2. ✅ Migration salva em `supabase/migrations/`
+3. ✅ Conexão MCP Supabase F3F configurada e funcional (`supabaseF3F`)
 4. ✅ Backup do banco de dados (recomendado para produção)
 
 ## Processo Completo
@@ -26,10 +26,10 @@ Padronizar o processo de aplicação de migrations no banco de dados usando o MC
 
 ```bash
 # Formato esperado: YYYYMMDDHHMM_nome_descritivo.sql
-# Exemplo: 202501230001_add_codigo_and_turma_structure.sql
+# Exemplo: 20260120143000_rls_clientes_reset.sql
 
 # Verificar se arquivo existe
-ls web/migrations/YYYYMMDDHHMM_*.sql
+ls supabase/migrations/YYYYMMDDHHMM_*.sql
 ```
 
 **Regras do nome**:
@@ -42,7 +42,7 @@ ls web/migrations/YYYYMMDDHHMM_*.sql
 
 ```bash
 # Ler conteúdo da migration
-cat web/migrations/YYYYMMDDHHMM_nome_da_migration.sql
+cat supabase/migrations/YYYYMMDDHHMM_nome_da_migration.sql
 ```
 
 **Checklist de revisão**:
@@ -60,24 +60,26 @@ cat web/migrations/YYYYMMDDHHMM_nome_da_migration.sql
 
 ```typescript
 // Ler o arquivo da migration
-const migrationContent = read_file('web/migrations/YYYYMMDDHHMM_nome_da_migration.sql')
+const migrationContent = read_file('supabase/migrations/YYYYMMDDHHMM_nome_da_migration.sql')
 ```
 
 #### 2.2 Extrair Nome da Migration
 
 O nome para o MCP deve ser em snake_case, extraído do nome do arquivo:
-- Arquivo: `202501230001_add_codigo_and_turma_structure.sql`
-- Nome MCP: `add_codigo_and_turma_structure`
+- Arquivo: `20260120143000_rls_clientes_reset.sql`
+- Nome MCP: `rls_clientes_reset`
 
 #### 2.3 Aplicar via MCP
 
 ```typescript
-// Usar o tool mcp_SupabaseUploaders_apply_migration
-mcp_SupabaseUploaders_apply_migration({
+// Usar o tool mcp_supabaseF3F_apply_migration (projeto F3F)
+mcp_supabaseF3F_apply_migration({
   name: "nome_da_migration_snake_case",
   query: "<conteúdo completo do arquivo SQL>"
 })
 ```
+
+**Nota**: O projeto AgenciaF3F usa o servidor MCP `supabaseF3F` (não `SupabaseUploaders`).
 
 ### 3. Verificar Resultado
 
@@ -175,10 +177,10 @@ Usar MCP para verificar se as alterações foram aplicadas:
 
 ```typescript
 // Listar tabelas
-mcp_SupabaseUploaders_list_tables({ schemas: ['public'] })
+mcp_supabaseF3F_list_tables({ schemas: ['public'] })
 
 // Verificar estrutura específica (se necessário)
-mcp_SupabaseUploaders_execute_sql({
+mcp_supabaseF3F_execute_sql({
   query: "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'nome_tabela'"
 })
 ```
@@ -187,7 +189,7 @@ mcp_SupabaseUploaders_execute_sql({
 
 ```typescript
 // Listar migrations aplicadas
-mcp_SupabaseUploaders_list_migrations()
+mcp_supabaseF3F_list_migrations()
 ```
 
 #### 4.3 Testar Funcionalidade (se aplicável)
@@ -228,7 +230,7 @@ Se houve problemas:
 │ 2. APLICAR VIA MCP                                          │
 │  - Ler arquivo da migration                                │
 │  - Extrair nome snake_case                                 │
-│  - Chamar mcp_SupabaseUploaders_apply_migration            │
+│  - Chamar mcp_supabaseF3F_apply_migration                  │
 └─────────────────────────────────────────────────────────────┘
                          │
                          ▼
@@ -323,54 +325,60 @@ Ao atualizar RLS policies:
 
 ## Exemplo Completo
 
-### Cenário: Adicionar campo código em mentoria
+### Cenário: Recriar RLS policies de clientes para soft delete
 
-**1. Migration criada**: `202501230001_add_codigo_mentoria.sql`
+**1. Migration criada**: `20260120143000_rls_clientes_reset.sql`
 
 **2. Conteúdo da migration**:
 ```sql
--- Migration: Adicionar campo codigo em mentoria
--- Data: 2025-01-23
+-- Recriar policies de clientes para garantir soft delete
 
--- Adicionar coluna codigo (nullable temporariamente)
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns 
-    WHERE table_name = 'mentoria' AND column_name = 'codigo'
-  ) THEN
-    ALTER TABLE mentoria ADD COLUMN codigo TEXT;
-  END IF;
-END $$;
+DROP POLICY IF EXISTS "clientes_select_responsavel" ON public.clientes;
+DROP POLICY IF EXISTS "clientes_insert_responsavel" ON public.clientes;
+DROP POLICY IF EXISTS "clientes_update_responsavel" ON public.clientes;
 
--- Migrar dados existentes
-UPDATE mentoria 
-SET codigo = UPPER(REGEXP_REPLACE(nome, '[^A-Z0-9]', '', 'g'))
-WHERE codigo IS NULL AND nome IS NOT NULL;
+CREATE POLICY "clientes_select_responsavel" ON public.clientes
+  FOR SELECT USING (
+    (responsavel_id = auth.uid() OR EXISTS (SELECT 1 FROM public.usuarios u WHERE u.id = auth.uid() AND u.role = 'admin'))
+    AND deleted_at IS NULL
+  );
 
--- Tornar NOT NULL após migração
-ALTER TABLE mentoria ALTER COLUMN codigo SET NOT NULL;
+CREATE POLICY "clientes_insert_responsavel" ON public.clientes
+  FOR INSERT WITH CHECK (
+    responsavel_id = auth.uid()
+    OR EXISTS (SELECT 1 FROM public.usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
+  );
 
--- Criar índice único
-CREATE UNIQUE INDEX IF NOT EXISTS idx_mentoria_codigo_unique ON mentoria(codigo);
+CREATE POLICY "clientes_update_responsavel" ON public.clientes
+  FOR UPDATE
+  USING (
+    (responsavel_id = auth.uid() OR EXISTS (SELECT 1 FROM public.usuarios u WHERE u.id = auth.uid() AND u.role = 'admin'))
+    AND deleted_at IS NULL
+  )
+  WITH CHECK (
+    responsavel_id = auth.uid()
+    OR EXISTS (SELECT 1 FROM public.usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
+  );
+
+NOTIFY pgrst, 'reload schema';
 ```
 
 **3. Aplicar via MCP**:
 ```typescript
 // Ler arquivo
-const content = read_file('web/migrations/202501230001_add_codigo_mentoria.sql')
+const content = read_file('supabase/migrations/20260120143000_rls_clientes_reset.sql')
 
 // Aplicar
-mcp_SupabaseUploaders_apply_migration({
-  name: "add_codigo_mentoria",
+mcp_supabaseF3F_apply_migration({
+  name: "rls_clientes_reset",
   query: content
 })
 ```
 
 **4. Verificar resultado**:
 - ✅ Sucesso: Migration aplicada
-- ✅ Verificar tabela: `SELECT column_name FROM information_schema.columns WHERE table_name = 'mentoria'`
-- ✅ Testar: Criar mentoria com código
+- ✅ Verificar policies: `SELECT * FROM pg_policies WHERE tablename = 'clientes'`
+- ✅ Testar: Tentar soft delete de um cliente
 
 ## Troubleshooting
 
@@ -381,10 +389,10 @@ mcp_SupabaseUploaders_apply_migration({
 **Solução**:
 ```typescript
 // Regenerar tipos TypeScript (se aplicável)
-mcp_SupabaseUploaders_generate_typescript_types()
+mcp_supabaseF3F_generate_typescript_types()
 
 // Verificar logs
-mcp_SupabaseUploaders_get_logs({ service: "postgres" })
+mcp_supabaseF3F_get_logs({ service: "postgres" })
 ```
 
 ### "Erro ao aplicar: permission denied"

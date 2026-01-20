@@ -46,7 +46,7 @@ export default function ClienteDetail() {
     if (!cliente) return
     const ok = await confirm({
       title: 'Excluir cliente',
-      message: 'Deseja realmente excluir este cliente?\\n\\nEsta ação é irreversível.',
+      message: 'Deseja realmente excluir este cliente?\n\nEsta ação é irreversível.',
       confirmLabel: 'Excluir',
       variant: 'danger',
     })

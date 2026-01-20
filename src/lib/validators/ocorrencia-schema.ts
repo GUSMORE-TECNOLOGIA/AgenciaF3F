@@ -11,6 +11,8 @@ export const ocorrenciaCreateSchema = z.object({
   prioridade: z.enum(['baixa', 'media', 'alta', 'urgente']).default('media'),
   is_sensitive: z.boolean().default(false),
   status: z.enum(['aberta', 'em_andamento', 'resolvida', 'cancelada']).default('aberta'),
+  reminder_at: z.string().optional(),
+  reminder_status: z.enum(['pendente', 'feito', 'cancelado']).optional(),
 })
 
 // Schema para atualização de ocorrência
@@ -23,6 +25,8 @@ export const ocorrenciaUpdateSchema = z.object({
   prioridade: z.enum(['baixa', 'media', 'alta', 'urgente']).optional(),
   is_sensitive: z.boolean().optional(),
   status: z.enum(['aberta', 'em_andamento', 'resolvida', 'cancelada']).optional(),
+  reminder_at: z.string().optional().nullable(),
+  reminder_status: z.enum(['pendente', 'feito', 'cancelado']).optional().nullable(),
 })
 
 // Tipos TypeScript inferidos dos schemas

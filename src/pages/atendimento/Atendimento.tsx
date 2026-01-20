@@ -229,7 +229,7 @@ export default function Atendimento() {
                     <tr key={atendimento.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <Link
-                          to={`/clientes/${atendimento.cliente_id}`}
+                          to={`/clientes/${atendimento.cliente_id}/editar`}
                           className="text-sm font-medium text-primary hover:underline"
                         >
                           {cliente?.nome || 'Cliente não encontrado'}

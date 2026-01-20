@@ -16,20 +16,10 @@ export default function Login() {
     setError('')
     setLoading(true)
 
-    // #region agent log
-    fetch('http://127.0.0.1:7246/ingest/7a35c8fc-ab06-4c43-ab6f-f3c55593c010',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Login.tsx:14',message:'Login form submitted',data:{email,passwordLength:password.length,hasEmail:!!email,hasPassword:!!password},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-    // #endregion
-
     try {
       await signIn(email, password)
-      // #region agent log
-      fetch('http://127.0.0.1:7246/ingest/7a35c8fc-ab06-4c43-ab6f-f3c55593c010',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Login.tsx:22',message:'Login successful, navigating',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
       navigate('/dashboard')
     } catch (err: any) {
-      // #region agent log
-      fetch('http://127.0.0.1:7246/ingest/7a35c8fc-ab06-4c43-ab6f-f3c55593c010',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Login.tsx:25',message:'Login error caught',data:{errorMessage:err?.message,errorCode:err?.code,errorStatus:err?.status,errorName:err?.name,fullError:JSON.stringify(err)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
-      // #endregion
       setError(err.message || 'Erro ao fazer login')
     } finally {
       setLoading(false)

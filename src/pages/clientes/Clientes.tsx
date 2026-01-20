@@ -138,21 +138,13 @@ export default function Clientes() {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <div className="flex items-center gap-3">
-                      <Link
-                        to={`/clientes/${cliente.id}`}
-                        className="text-primary hover:text-primary/80 font-medium"
-                      >
-                        Ver detalhes
-                      </Link>
-                      <Link
-                        to={`/clientes/${cliente.id}/editar`}
-                        className="text-gray-600 hover:text-gray-900"
-                        title="Editar"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Link>
-                    </div>
+                    <Link
+                      to={`/clientes/${cliente.id}/editar`}
+                      className="text-gray-600 hover:text-gray-900 inline-flex items-center"
+                      title="Editar"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Link>
                   </td>
                 </tr>
               ))

@@ -93,11 +93,7 @@ export async function updateEquipeMembro(id: string, input: EquipeMembroInput): 
 }
 
 export async function deleteEquipeMembro(id: string): Promise<void> {
-  const { error } = await supabase
-    .from('equipe_membros')
-    .update({ deleted_at: new Date().toISOString() })
-    .eq('id', id)
-    .is('deleted_at', null)
+  const { error } = await supabase.rpc('soft_delete_equipe_membro', { membro_id: id })
 
   if (error) {
     console.error('Erro ao excluir membro da equipe:', error)

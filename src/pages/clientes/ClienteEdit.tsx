@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, User, Briefcase, DollarSign, AlertCircle, MessageSquare, Link as LinkIcon } from 'lucide-react'
-import { useCliente } from '@/hooks/useCliente'
+import { useParams, Link, useNavigate } from 'react-router-dom'
+import { ArrowLeft, User, Briefcase, DollarSign, AlertCircle, MessageSquare, Link as LinkIcon, Trash2 } from 'lucide-react'
+import { useCliente, useDeleteCliente } from '@/hooks/useCliente'
+import { useModal } from '@/contexts/ModalContext'
 import IdentificacaoTab from './components/tabs/IdentificacaoTab'
 import LinksUteisTab from './components/tabs/LinksUteisTab'
 import ClienteResponsaveisTab from './ClienteResponsaveisTab'
@@ -9,7 +10,10 @@ import ServicosTab from './components/tabs/ServicosTab'
 
 export default function ClienteEdit() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const { cliente, loading: loadingCliente, refetch } = useCliente(id || null)
+  const { remove: deleteCliente, loading: deleting } = useDeleteCliente(id || '')
+  const { confirm, alert } = useModal()
 
   const [activeTab, setActiveTab] = useState<
     'identificacao' | 'links' | 'responsaveis' | 'servicos' | 'financeiro' | 'ocorrencias' | 'atendimento'
@@ -24,6 +28,29 @@ export default function ClienteEdit() {
     { id: 'ocorrencias', label: 'Ocorrências', icon: AlertCircle },
     { id: 'atendimento', label: 'Atendimento', icon: MessageSquare },
   ]
+
+  const handleDeleteCliente = async () => {
+    if (!cliente) return
+    const ok = await confirm({
+      title: 'Excluir cliente',
+      message: `Deseja realmente excluir o cliente "${cliente.nome}"?\n\nEsta ação é irreversível.`,
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
+    if (!ok) return
+
+    try {
+      await deleteCliente()
+      navigate('/clientes')
+    } catch (error) {
+      console.error('Erro ao excluir cliente:', error)
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao excluir cliente. Tente novamente.',
+        variant: 'danger',
+      })
+    }
+  }
 
   if (loadingCliente) {
     return (
@@ -49,12 +76,20 @@ export default function ClienteEdit() {
       {/* Breadcrumb e botões */}
       <div className="flex items-center justify-between mb-6">
         <Link
-          to={`/clientes/${id}`}
+          to="/clientes"
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm">Voltar para detalhes</span>
+          <span className="text-sm">Voltar para lista</span>
         </Link>
+        <button
+          onClick={handleDeleteCliente}
+          disabled={deleting}
+          className="flex items-center gap-2 px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Trash2 className="w-4 h-4" />
+          Excluir Cliente
+        </button>
       </div>
 
       {/* Tabs compactas */}

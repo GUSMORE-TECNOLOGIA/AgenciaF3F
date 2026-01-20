@@ -307,7 +307,7 @@ export default function Financeiro() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <Link
-                          to={`/clientes/${transacao.cliente_id}`}
+                          to={`/clientes/${transacao.cliente_id}/editar`}
                           className="text-sm text-primary hover:underline"
                         >
                           {clientes.find((c) => c.id === transacao.cliente_id)?.nome || 'Cliente não encontrado'}

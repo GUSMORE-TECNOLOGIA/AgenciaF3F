@@ -133,29 +133,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signIn(email: string, password: string) {
-    // #region agent log
-    fetch('http://127.0.0.1:7246/ingest/7a35c8fc-ab06-4c43-ab6f-f3c55593c010',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AuthContext.tsx:86',message:'signIn called',data:{email,passwordLength:password.length,supabaseUrl:import.meta.env.VITE_SUPABASE_URL?.substring(0,30)+'...'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
-    
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
 
-    // #region agent log
-    fetch('http://127.0.0.1:7246/ingest/7a35c8fc-ab06-4c43-ab6f-f3c55593c010',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AuthContext.tsx:92',message:'signInWithPassword response',data:{hasData:!!data,hasError:!!error,errorCode:error?.code,errorMessage:error?.message,userId:data?.user?.id,userEmail:data?.user?.email},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
-
     if (error) {
-      // #region agent log
-      fetch('http://127.0.0.1:7246/ingest/7a35c8fc-ab06-4c43-ab6f-f3c55593c010',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AuthContext.tsx:95',message:'signIn error details',data:{errorCode:error.code,errorMessage:error.message,errorStatus:error.status,fullError:JSON.stringify(error)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-      // #endregion
       throw error
     }
     if (data.user) {
-      // #region agent log
-      fetch('http://127.0.0.1:7246/ingest/7a35c8fc-ab06-4c43-ab6f-f3c55593c010',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AuthContext.tsx:100',message:'User authenticated, loading profile',data:{userId:data.user.id,userEmail:data.user.email,emailConfirmed:data.user.email_confirmed_at},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-      // #endregion
       await loadUserProfile(data.user.id)
     }
   }

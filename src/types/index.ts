@@ -22,11 +22,12 @@ export interface Cliente {
   logo_url?: string
   created_at: string
   updated_at: string
-  links_uteis?: LinksUteis
-  drive_url?: string
+  links_uteis?: LinksUteis // Legado - mantido para compatibilidade
+  drive_url?: string // DEPRECATED: Use cliente_links com tipo "Google Drive" ao invés
+  links?: ClienteLink[] // Novo campo para links dinâmicos
 }
 
-// Links úteis do cliente
+// Links úteis do cliente (legado - mantido para compatibilidade)
 export interface LinksUteis {
   conta_anuncio_f3f?: string
   conta_anuncio_lt?: string
@@ -38,6 +39,19 @@ export interface LinksUteis {
   wordpress?: string
   pagina_vendas_lt?: string
   checkout?: string
+}
+
+// Link dinâmico do cliente (nova estrutura)
+export interface ClienteLink {
+  id: string
+  cliente_id: string
+  url: string
+  tipo: string // Classificação: Instagram, Facebook, Dashboard, etc.
+  pessoa?: string // Pessoa responsável pelo link (opcional)
+  status: 'ativo' | 'inativo'
+  created_at: string
+  updated_at: string
+  deleted_at?: string
 }
 
 // ============================================================================

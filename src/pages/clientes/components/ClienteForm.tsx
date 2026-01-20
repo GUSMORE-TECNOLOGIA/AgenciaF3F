@@ -22,7 +22,6 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
   const [email, setEmail] = useState('')
   const [telefone, setTelefone] = useState('')
   const [status, setStatus] = useState<'ativo' | 'inativo' | 'pausado'>('ativo')
-  const [driveUrl, setDriveUrl] = useState('')
 
   // Inicializar com dados existentes (modo edição)
   useEffect(() => {
@@ -31,7 +30,6 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
       setEmail(initialData.email || '')
       setTelefone(initialData.telefone || '')
       setStatus(initialData.status)
-      setDriveUrl(initialData.drive_url || '')
     }
   }, [mode, initialData])
 
@@ -67,7 +65,6 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
         telefone: telefone || undefined,
         responsavel_id: user?.id || '',
         status,
-        drive_url: driveUrl || undefined,
       }
 
       // Validar
@@ -212,46 +209,6 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
           <option value="pausado">Pausado</option>
           <option value="inativo">Inativo</option>
         </select>
-      </div>
-
-      {/* Drive URL */}
-      <div>
-        <label htmlFor="drive_url" className="block text-sm font-medium text-gray-700 mb-2">
-          URL do Google Drive
-        </label>
-        <input
-          id="drive_url"
-          type="url"
-          value={driveUrl}
-          onChange={(e) => {
-            setDriveUrl(e.target.value)
-            if (errors.drive_url) {
-              const error = validateField('drive_url', e.target.value || '')
-              if (error) {
-                setErrors((prev) => ({ ...prev, drive_url: error }))
-              } else {
-                setErrors((prev) => {
-                  const newErrors = { ...prev }
-                  delete newErrors.drive_url
-                  return newErrors
-                })
-              }
-            }
-          }}
-          onBlur={() => {
-            if (driveUrl) {
-              const error = validateField('drive_url', driveUrl)
-              if (error) {
-                setErrors((prev) => ({ ...prev, drive_url: error }))
-              }
-            }
-          }}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-            errors.drive_url ? 'border-red-500' : 'border-gray-300'
-          }`}
-          placeholder="https://drive.google.com/..."
-        />
-        {errors.drive_url && <p className="mt-1 text-sm text-red-600">{errors.drive_url}</p>}
       </div>
 
       {/* Erro geral */}

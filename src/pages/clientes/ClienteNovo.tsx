@@ -1,27 +1,18 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import ClienteForm from './components/ClienteForm'
-import LinksUteisEditor from './components/LinksUteisEditor'
 import { useCreateCliente } from '@/hooks/useCliente'
 import { ClienteCreateInput, ClienteUpdateInput } from '@/lib/validators/cliente-schema'
-import { LinksUteis } from '@/types'
 
 export default function ClienteNovo() {
   const navigate = useNavigate()
   const { create, loading } = useCreateCliente()
-  const [linksUteis, setLinksUteis] = useState<LinksUteis>({})
 
   const handleSubmit = async (data: ClienteCreateInput | ClienteUpdateInput) => {
     try {
-      // No modo create, garantimos que todos os campos obrigatórios estão presentes
-      const clienteData: ClienteCreateInput = {
-        ...(data as ClienteCreateInput),
-        links_uteis: Object.keys(linksUteis).length > 0 ? linksUteis : undefined,
-      }
-      const cliente = await create(clienteData)
-      navigate(`/clientes/${cliente.id}`)
+      const cliente = await create(data as ClienteCreateInput)
+      navigate(`/clientes/${cliente.id}/editar`)
     } catch (error) {
       console.error('Erro ao criar cliente:', error)
       throw error
@@ -54,15 +45,11 @@ export default function ClienteNovo() {
           />
         </div>
 
-        {/* Editor de Links Úteis */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <LinksUteisEditor
-            links={linksUteis}
-            onSave={async (links) => {
-              setLinksUteis(links)
-            }}
-            loading={loading}
-          />
+        {/* Informação sobre Links Úteis */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm text-blue-800">
+            <strong>Dica:</strong> Após criar o cliente, você poderá adicionar links úteis (Instagram, Facebook, Dashboards, etc.) na página de edição do cliente, na aba "Links".
+          </p>
         </div>
       </div>
     </div>

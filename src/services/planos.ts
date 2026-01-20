@@ -186,11 +186,7 @@ export async function updateServico(id: string, input: ServicoUpdateInput): Prom
  */
 export async function deleteServico(id: string): Promise<void> {
   try {
-    const { error } = await supabase
-      .from('servicos')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', id)
-      .is('deleted_at', null)
+    const { error } = await supabase.rpc('soft_delete_servico', { servico_id: id })
 
     if (error) {
       console.error('Erro ao deletar serviço:', error)
@@ -391,80 +387,7 @@ export async function updatePlano(id: string, input: PlanoUpdateInput): Promise<
  */
 export async function deletePlano(id: string): Promise<void> {
   try {
-    const nowIso = new Date().toISOString()
-
-    // 1) Cancelar/excluir apenas os lançamentos em aberto vinculados a contratos desse plano
-    // (mantém lançamentos pagos para histórico)
-    const { data: contratos, error: contratosError } = await supabase
-      .from('cliente_planos')
-      .select('id')
-      .eq('plano_id', id)
-      .is('deleted_at', null)
-
-    if (contratosError) {
-      console.error('Erro ao buscar contratos vinculados ao plano antes de deletar:', contratosError)
-      throw contratosError
-    }
-
-    const contratoIds = (contratos || []).map((c: any) => c.id).filter(Boolean)
-
-    for (const contratoId of contratoIds) {
-      const { error: cancelError } = await supabase
-        .from('transacoes')
-        .update({ status: 'cancelado', deleted_at: nowIso })
-        .eq('metadata->>contrato_id', contratoId)
-        .eq('metadata->>contrato_tipo', 'plano')
-        .in('status', ['pendente', 'vencido'])
-        .is('deleted_at', null)
-
-      if (cancelError) {
-        console.error('Erro ao cancelar títulos em aberto do contrato do plano:', cancelError)
-        throw cancelError
-      }
-
-      // Também marca o contrato como cancelado e faz soft delete (evita aparecer como ativo)
-      const { error: contratoCancelError } = await supabase
-        .from('cliente_planos')
-        .update({ status: 'cancelado', deleted_at: nowIso })
-        .eq('id', contratoId)
-        .is('deleted_at', null)
-
-      if (contratoCancelError) {
-        console.error('Erro ao cancelar contrato de plano:', contratoCancelError)
-        throw contratoCancelError
-      }
-    }
-
-    // 1.1) Compatibilidade: lançamentos antigos gerados por `origem: contrato_plano` (sem contrato_id)
-    const { error: legacyCancelError } = await supabase
-      .from('transacoes')
-      .update({ status: 'cancelado', deleted_at: nowIso })
-      .eq('metadata->>plano_id', id)
-      .eq('metadata->>origem', 'contrato_plano')
-      .in('status', ['pendente', 'vencido'])
-      .is('deleted_at', null)
-
-    if (legacyCancelError) {
-      console.error('Erro ao cancelar títulos legados em aberto do plano:', legacyCancelError)
-      throw legacyCancelError
-    }
-
-    // Remove vínculos N:N para não deixar relacionamentos órfãos no detalhe do plano
-    const { error: relError } = await supabase
-      .from('plano_servicos')
-      .delete()
-      .eq('plano_id', id)
-
-    if (relError) {
-      console.error('Erro ao remover vínculos plano_servicos antes de deletar plano:', relError)
-      throw relError
-    }
-
-    const { error } = await supabase
-      .from('planos')
-      .update({ deleted_at: nowIso })
-      .eq('id', id)
-      .is('deleted_at', null)
+    const { error } = await supabase.rpc('soft_delete_plano', { plano_id: id })
 
     if (error) {
       console.error('Erro ao deletar plano:', error)
@@ -906,26 +829,7 @@ export async function updateClientePlano(
  */
 export async function deleteClientePlano(id: string): Promise<void> {
   try {
-    // Cancelar títulos em aberto desse contrato (mantém pagos para histórico)
-    const nowIso = new Date().toISOString()
-    const { error: cancelError } = await supabase
-      .from('transacoes')
-      .update({ status: 'cancelado', deleted_at: nowIso })
-      .eq('metadata->>contrato_id', id)
-      .eq('metadata->>contrato_tipo', 'plano')
-      .in('status', ['pendente', 'vencido'])
-      .is('deleted_at', null)
-
-    if (cancelError) {
-      console.error('Erro ao cancelar títulos do contrato de plano:', cancelError)
-      throw cancelError
-    }
-
-    const { error } = await supabase
-      .from('cliente_planos')
-      .update({ status: 'cancelado', deleted_at: nowIso })
-      .eq('id', id)
-      .is('deleted_at', null)
+    const { error } = await supabase.rpc('soft_delete_cliente_plano', { contrato_id: id })
 
     if (error) {
       console.error('Erro ao deletar contrato de plano:', error)
@@ -1183,26 +1087,7 @@ export async function updateClienteServico(
  */
 export async function deleteClienteServico(id: string): Promise<void> {
   try {
-    // Cancelar títulos em aberto desse contrato (mantém pagos para histórico)
-    const nowIso = new Date().toISOString()
-    const { error: cancelError } = await supabase
-      .from('transacoes')
-      .update({ status: 'cancelado', deleted_at: nowIso })
-      .eq('metadata->>contrato_id', id)
-      .eq('metadata->>contrato_tipo', 'servico')
-      .in('status', ['pendente', 'vencido'])
-      .is('deleted_at', null)
-
-    if (cancelError) {
-      console.error('Erro ao cancelar títulos do contrato de serviço:', cancelError)
-      throw cancelError
-    }
-
-    const { error } = await supabase
-      .from('cliente_servicos')
-      .update({ status: 'cancelado', deleted_at: nowIso })
-      .eq('id', id)
-      .is('deleted_at', null)
+    const { error } = await supabase.rpc('soft_delete_cliente_servico', { contrato_id: id })
 
     if (error) {
       console.error('Erro ao deletar contrato de serviço:', error)

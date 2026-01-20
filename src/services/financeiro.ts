@@ -672,11 +672,7 @@ export async function updateTransacao(
  */
 export async function deleteTransacao(id: string): Promise<void> {
   try {
-    const { error } = await supabase
-      .from('transacoes')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', id)
-      .is('deleted_at', null)
+    const { error } = await supabase.rpc('soft_delete_transacao', { transacao_id: id })
 
     if (error) {
       console.error('Erro ao deletar transação:', error)

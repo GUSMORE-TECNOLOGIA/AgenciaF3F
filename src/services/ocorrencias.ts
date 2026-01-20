@@ -328,11 +328,7 @@ export async function updateOcorrencia(id: string, input: OcorrenciaUpdateInput)
  */
 export async function deleteOcorrencia(id: string): Promise<void> {
   try {
-    const { error } = await supabase
-      .from('ocorrencias')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', id)
-      .is('deleted_at', null)
+    const { error } = await supabase.rpc('soft_delete_ocorrencia', { ocorrencia_id: id })
 
     if (error) {
       console.error('Erro ao deletar ocorrência:', error)
@@ -519,10 +515,7 @@ export async function updateOcorrenciaGrupo(
  * Inativar grupo de ocorrência
  */
 export async function deleteOcorrenciaGrupo(id: string): Promise<void> {
-  const { error } = await supabase
-    .from('ocorrencia_grupos')
-    .update({ is_active: false, updated_at: new Date().toISOString() })
-    .eq('id', id)
+  const { error } = await supabase.rpc('soft_delete_ocorrencia_grupo', { grupo_id: id })
 
   if (error) {
     console.error('Erro ao inativar grupo de ocorrência:', error)
@@ -607,10 +600,7 @@ export async function updateOcorrenciaTipo(
  * Inativar tipo de ocorrência
  */
 export async function deleteOcorrenciaTipo(id: string): Promise<void> {
-  const { error } = await supabase
-    .from('ocorrencia_tipos')
-    .update({ is_active: false, updated_at: new Date().toISOString() })
-    .eq('id', id)
+  const { error } = await supabase.rpc('soft_delete_ocorrencia_tipo', { tipo_id: id })
 
   if (error) {
     console.error('Erro ao inativar tipo de ocorrência:', error)

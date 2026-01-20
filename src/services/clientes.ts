@@ -148,7 +148,7 @@ export async function createCliente(input: ClienteCreateInput): Promise<Cliente>
         responsavel_id: input.responsavel_id,
         status: input.status,
         links_uteis: linksUteis,
-        drive_url: input.drive_url || null,
+        // drive_url removido - usar cliente_links com tipo "Google Drive" ao invés
       })
       .select()
       .single()
@@ -189,7 +189,7 @@ export async function updateCliente(id: string, input: ClienteUpdateInput): Prom
     if (input.telefone !== undefined) updateData.telefone = input.telefone || null
     if (input.responsavel_id !== undefined) updateData.responsavel_id = input.responsavel_id
     if (input.status !== undefined) updateData.status = input.status
-    if (input.drive_url !== undefined) updateData.drive_url = input.drive_url || null
+    // drive_url removido - usar cliente_links com tipo "Google Drive" ao invés
 
     // Limpar links úteis se fornecidos
     if (input.links_uteis !== undefined) {
@@ -309,11 +309,8 @@ export async function updateClienteStatus(id: string, status: 'ativo' | 'inativo
  */
 export async function deleteCliente(id: string): Promise<void> {
   try {
-    const { error } = await supabase
-      .from('clientes')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', id)
-      .is('deleted_at', null)
+    // Usar função RPC para contornar RLS policies
+    const { error } = await supabase.rpc('soft_delete_cliente', { cliente_id: id })
 
     if (error) {
       console.error('Erro ao deletar cliente:', error)
