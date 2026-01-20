@@ -120,7 +120,7 @@ export default function PlanoEdit() {
               </label>
               <textarea
                 id="descricao"
-                value={formData.descricao}
+                value={formData.descricao ?? ''}
                 onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))}
                 rows={4}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"

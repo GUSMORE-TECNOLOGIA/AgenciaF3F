@@ -55,11 +55,14 @@ export default function AtendimentoEdit() {
     setErrors({})
 
     try {
-      const validated = atendimentoUpdateSchema.parse({
-        ...formData,
+      const { duracao_minutos, ...rest } = formData
+      const duracaoFinal: number | undefined = duracao_minutos === null ? undefined : duracao_minutos
+      const dataToValidate = {
+        ...rest,
         data_atendimento: formData.data_atendimento || undefined,
-        duracao_minutos: formData.duracao_minutos || undefined,
-      })
+        duracao_minutos: duracaoFinal,
+      } as AtendimentoUpdateInput
+      const validated = atendimentoUpdateSchema.parse(dataToValidate) as AtendimentoUpdateInput
       await update(validated)
       await refetch()
       navigate('/atendimento')

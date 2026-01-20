@@ -7,9 +7,8 @@ import {
   updateLinksUteis,
   updateClienteStatus,
   deleteCliente,
-  ClienteCreateInput,
-  ClienteUpdateInput,
 } from '@/services/clientes'
+import type { ClienteCreateInput, ClienteUpdateInput } from '@/lib/validators/cliente-schema'
 
 interface UseClienteReturn {
   cliente: Cliente | null

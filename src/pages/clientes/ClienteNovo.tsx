@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import ClienteForm from './components/ClienteForm'
 import LinksUteisEditor from './components/LinksUteisEditor'
 import { useCreateCliente } from '@/hooks/useCliente'
-import { ClienteCreateInput } from '@/lib/validators/cliente-schema'
+import { ClienteCreateInput, ClienteUpdateInput } from '@/lib/validators/cliente-schema'
 import { LinksUteis } from '@/types'
 
 export default function ClienteNovo() {
@@ -13,10 +13,11 @@ export default function ClienteNovo() {
   const { create, loading } = useCreateCliente()
   const [linksUteis, setLinksUteis] = useState<LinksUteis>({})
 
-  const handleSubmit = async (data: ClienteCreateInput) => {
+  const handleSubmit = async (data: ClienteCreateInput | ClienteUpdateInput) => {
     try {
+      // No modo create, garantimos que todos os campos obrigatórios estão presentes
       const clienteData: ClienteCreateInput = {
-        ...data,
+        ...(data as ClienteCreateInput),
         links_uteis: Object.keys(linksUteis).length > 0 ? linksUteis : undefined,
       }
       const cliente = await create(clienteData)

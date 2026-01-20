@@ -31,10 +31,13 @@ export default function AtendimentoNovo() {
     setErrors({})
 
     try {
-      const validated = atendimentoCreateSchema.parse({
-        ...formData,
-        duracao_minutos: formData.duracao_minutos || undefined,
-      })
+      const { duracao_minutos, ...rest } = formData
+      const duracaoFinal: number | undefined = duracao_minutos === null ? undefined : duracao_minutos
+      const dataToValidate = {
+        ...rest,
+        duracao_minutos: duracaoFinal,
+      }
+      const validated = atendimentoCreateSchema.parse(dataToValidate)
       await create(validated)
       navigate('/atendimento')
     } catch (error: any) {

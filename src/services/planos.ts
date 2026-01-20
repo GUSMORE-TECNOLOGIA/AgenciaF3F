@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import { Servico, Plano, PlanoServico, ClientePlano, ClienteServico } from '@/types'
+import { Servico, Plano, PlanoServico, ClientePlano, ClienteServico, Cliente } from '@/types'
 import type {
   ServicoCreateInput,
   ServicoUpdateInput,
@@ -698,10 +698,10 @@ export async function fetchClientePlanos(clienteId: string): Promise<ClientePlan
       updated_at: item.updated_at,
       deleted_at: item.deleted_at || undefined,
       cliente: item.cliente
-        ? {
+        ? ({
             id: item.cliente.id,
             nome: item.cliente.nome,
-          }
+          } as Cliente)
         : undefined,
       plano: item.plano
         ? {
@@ -768,10 +768,10 @@ export async function createClientePlano(input: ClientePlanoCreateInput): Promis
       updated_at: data.updated_at,
       deleted_at: data.deleted_at || undefined,
       cliente: data.cliente
-        ? {
+        ? ({
             id: data.cliente.id,
             nome: data.cliente.nome,
-          }
+          } as Cliente)
         : undefined,
       plano: data.plano
         ? {
@@ -863,10 +863,10 @@ export async function updateClientePlano(
       updated_at: data.updated_at,
       deleted_at: data.deleted_at || undefined,
       cliente: data.cliente
-        ? {
+        ? ({
             id: data.cliente.id,
             nome: data.cliente.nome,
-          }
+          } as Cliente)
         : undefined,
       plano: data.plano
         ? {
@@ -978,10 +978,10 @@ export async function fetchClienteServicos(clienteId: string): Promise<ClienteSe
       updated_at: item.updated_at,
       deleted_at: item.deleted_at || undefined,
       cliente: item.cliente
-        ? {
+        ? ({
             id: item.cliente.id,
             nome: item.cliente.nome,
-          }
+          } as Cliente)
         : undefined,
       servico: item.servico
         ? {
@@ -1047,10 +1047,10 @@ export async function createClienteServico(input: ClienteServicoCreateInput): Pr
       updated_at: data.updated_at,
       deleted_at: data.deleted_at || undefined,
       cliente: data.cliente
-        ? {
+        ? ({
             id: data.cliente.id,
             nome: data.cliente.nome,
-          }
+          } as Cliente)
         : undefined,
       servico: data.servico
         ? {
@@ -1141,10 +1141,10 @@ export async function updateClienteServico(
       updated_at: data.updated_at,
       deleted_at: data.deleted_at || undefined,
       cliente: data.cliente
-        ? {
+        ? ({
             id: data.cliente.id,
             nome: data.cliente.nome,
-          }
+          } as Cliente)
         : undefined,
       servico: data.servico
         ? {

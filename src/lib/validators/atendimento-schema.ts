@@ -10,7 +10,7 @@ export const atendimentoCreateSchema = z.object({
   assunto: z.string().min(3, 'Assunto deve ter pelo menos 3 caracteres').max(200, 'Assunto muito longo'),
   descricao: z.string().min(3, 'Descrição deve ter pelo menos 3 caracteres').max(5000, 'Descrição muito longa'),
   data_atendimento: z.string().min(1, 'Data/hora de atendimento é obrigatória'),
-  duracao_minutos: z.number().int().min(0, 'Duração deve ser positiva').optional().nullable(),
+  duracao_minutos: z.number().int().min(0, 'Duração deve ser positiva').nullable().transform((val) => val ?? undefined),
 })
 
 // Schema para atualização de atendimento
@@ -19,7 +19,7 @@ export const atendimentoUpdateSchema = z.object({
   assunto: z.string().min(3, 'Assunto deve ter pelo menos 3 caracteres').max(200, 'Assunto muito longo').optional(),
   descricao: z.string().min(3, 'Descrição deve ter pelo menos 3 caracteres').max(5000, 'Descrição muito longa').optional(),
   data_atendimento: z.string().min(1, 'Data/hora de atendimento é obrigatória').optional(),
-  duracao_minutos: z.number().int().min(0, 'Duração deve ser positiva').optional().nullable(),
+  duracao_minutos: z.number().int().min(0, 'Duração deve ser positiva').nullable().transform((val) => val ?? undefined),
 })
 
 // Tipos TypeScript inferidos dos schemas

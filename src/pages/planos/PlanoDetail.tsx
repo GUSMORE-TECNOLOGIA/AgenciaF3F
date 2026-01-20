@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Edit, Package, Plus, Trash2, Loader2, CheckCircle2, XCircle } from 'lucide-react'
-import { usePlano, useUpdatePlano } from '@/hooks/usePlanos'
+import { usePlano } from '@/hooks/usePlanos'
 import { useServicos } from '@/hooks/usePlanos'
 import { useAddServicoToPlano, useRemoveServicoFromPlano } from '@/hooks/usePlanos'
-import { Servico } from '@/types'
 
 export default function PlanoDetail() {
   const { id } = useParams<{ id: string }>()

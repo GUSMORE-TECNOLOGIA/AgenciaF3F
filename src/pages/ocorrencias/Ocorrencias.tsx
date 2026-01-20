@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, AlertCircle, Filter, Loader2, Edit, Trash2 } from 'lucide-react'
+import { Plus, Search, AlertCircle, Loader2, Edit, Trash2 } from 'lucide-react'
 import { useOcorrencias, useDeleteOcorrencia } from '@/hooks/useOcorrencias'
 import { Ocorrencia } from '@/types'
 import { useClientes } from '@/hooks/useClientes'

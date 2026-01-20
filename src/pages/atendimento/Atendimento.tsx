@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, MessageSquare, Calendar, Loader2, Edit, Trash2 } from 'lucide-react'
+import { Plus, Search, MessageSquare, Loader2, Edit, Trash2 } from 'lucide-react'
 import { useAtendimentos, useDeleteAtendimento } from '@/hooks/useAtendimentos'
 import { Atendimento as AtendimentoType } from '@/types'
 import { useClientes } from '@/hooks/useClientes'

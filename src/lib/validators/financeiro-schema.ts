@@ -26,7 +26,7 @@ export const transacaoUpdateSchema = z.object({
   valor: z.number().min(0.01, 'Valor deve ser maior que zero').optional(),
   moeda: z.string().length(3, 'Moeda deve ter 3 caracteres').optional(),
   descricao: z.string().min(3, 'Descrição deve ter pelo menos 3 caracteres').max(500, 'Descrição muito longa').optional(),
-  metodo_pagamento: z.string().max(50, 'Método de pagamento muito longo').optional().or(z.literal('')).nullable(),
+  metodo_pagamento: z.string().max(50, 'Método de pagamento muito longo').nullable().transform((val) => val ?? undefined).optional(),
   status: z.enum(['pendente', 'pago', 'vencido', 'cancelado', 'reembolsado']).optional(),
   data_vencimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data de vencimento inválida (formato: YYYY-MM-DD)').optional(),
   data_pagamento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data de pagamento inválida (formato: YYYY-MM-DD)').optional().or(z.literal('')),

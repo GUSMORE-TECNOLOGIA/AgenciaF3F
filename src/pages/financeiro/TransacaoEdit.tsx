@@ -44,11 +44,14 @@ export default function TransacaoEdit() {
     setErrors({})
 
     try {
-      const validated = transacaoUpdateSchema.parse({
-        ...formData,
+      const { metodo_pagamento, ...rest } = formData
+      const metodoFinal: string | undefined = metodo_pagamento === null ? undefined : metodo_pagamento
+      const dataToValidate = {
+        ...rest,
         data_pagamento: formData.data_pagamento || undefined,
-        metodo_pagamento: formData.metodo_pagamento || undefined,
-      })
+        metodo_pagamento: metodoFinal,
+      }
+      const validated = transacaoUpdateSchema.parse(dataToValidate)
       await update(id!, validated)
       await refetch()
       navigate('/financeiro')
@@ -219,7 +222,7 @@ export default function TransacaoEdit() {
                 </label>
                 <select
                   id="metodo_pagamento"
-                  value={formData.metodo_pagamento}
+                  value={formData.metodo_pagamento ?? ''}
                   onChange={(e) => setFormData((prev) => ({ ...prev, metodo_pagamento: e.target.value }))}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 >

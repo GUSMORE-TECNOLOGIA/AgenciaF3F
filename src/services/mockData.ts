@@ -24,13 +24,11 @@ export const mockClientes: Cliente[] = [
 export const mockServicos: Servico[] = [
   {
     id: '1',
-    cliente_id: '1',
+    // cliente_id removido - Servico não tem essa propriedade
     nome: 'Gestão de Redes Sociais',
     descricao: 'Gestão completa de Instagram e Facebook',
-    tipo: 'social_media',
-    status: 'ativo',
     valor: 1500.00,
-    data_inicio: '2026-01-01',
+    ativo: true,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -148,9 +146,9 @@ export async function fetchClientes(): Promise<Cliente[]> {
 // Simular fetch de serviços
 export async function fetchServicos(clienteId?: string): Promise<Servico[]> {
   await delay(500)
-  if (clienteId) {
-    return mockServicos.filter(s => s.cliente_id === clienteId)
-  }
+  // Mock data - retorna todos os serviços (filtro por cliente seria feito no backend)
+  // clienteId parâmetro mantido para compatibilidade, mas não usado no mock
+  void clienteId
   return [...mockServicos]
 }
 

@@ -78,7 +78,7 @@ export default function LinksUteisEditor({ links: initialLinks, onSave, loading:
       }
 
       // Limpar links (remover strings vazias)
-      const cleanedLinks = cleanLinksUteis(links)
+      const cleanedLinks = cleanLinksUteis(links as Record<string, string | undefined>)
 
       // Validar com Zod
       await linksUteisSchema.parseAsync(cleanedLinks)

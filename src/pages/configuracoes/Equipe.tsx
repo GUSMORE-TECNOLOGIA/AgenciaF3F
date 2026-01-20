@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, Search, Users, Shield, Settings } from 'lucide-react'
+import { Plus, Search, Users, Shield } from 'lucide-react'
 import { EquipeMembro } from '@/types'
 import { fetchEquipeMembros } from '@/services/mockData'
 

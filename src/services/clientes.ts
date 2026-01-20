@@ -61,8 +61,8 @@ export async function fetchClientes(filters?: ClienteFilters): Promise<ClientesR
 
     // Transformar dados para incluir responsável
     const clientes: Cliente[] = (data || []).map((item: any) => {
-      // Extrair dados do responsável se vier no formato nested
-      const responsavel = item.responsavel || null
+      // Extrair dados do responsável se vier no formato nested (usado no futuro)
+      // const responsavel = item.responsavel || null
       
       return {
         id: item.id,
@@ -233,7 +233,7 @@ export async function updateCliente(id: string, input: ClienteUpdateInput): Prom
  */
 export async function updateLinksUteis(id: string, links: LinksUteis): Promise<Cliente> {
   try {
-    const cleanedLinks = cleanLinksUteis(links)
+    const cleanedLinks = cleanLinksUteis(links as Record<string, string | undefined>)
 
     const { data, error } = await supabase
       .from('clientes')

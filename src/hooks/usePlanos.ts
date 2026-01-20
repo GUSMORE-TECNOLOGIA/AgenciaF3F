@@ -14,7 +14,7 @@ import {
   fetchPlanoServicos,
   addServicoToPlano,
   removeServicoFromPlano,
-  updatePlanoServicosOrdem,
+  // updatePlanoServicosOrdem, // Função reservada para uso futuro
   fetchClientePlanos,
   createClientePlano,
   updateClientePlano,
