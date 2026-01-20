@@ -51,7 +51,7 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
 
   const confirm = useCallback((options: BaseModalOptions) => {
     return new Promise<boolean>((resolve) => {
-      resolverRef.current = resolve
+      resolverRef.current = (value) => resolve(value === true)
       setModal({ type: 'confirm', ...options })
     })
   }, [])
