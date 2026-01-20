@@ -347,28 +347,26 @@ export async function deleteOcorrencia(id: string): Promise<void> {
 /**
  * Buscar grupos de ocorrências
  */
-export async function fetchOcorrenciaGrupos(query?: OcorrenciaGruposQuery): Promise<OcorrenciaGrupo[]> {
+export async function fetchOcorrenciaGrupos(params?: OcorrenciaGruposQuery): Promise<OcorrenciaGrupo[]> {
   try {
-    const queryArgs = typeof query === 'string' ? { responsavelId: query } : query || {}
-    const resolvedResponsavelId =
-      typeof queryArgs === 'object' ? (queryArgs as { responsavelId?: string }).responsavelId : undefined
-    const includeInactive =
-      typeof queryArgs === 'object' ? (queryArgs as { includeInactive?: boolean }).includeInactive : false
+    const queryArgs = typeof params === 'string' ? { responsavelId: params } : params ?? {}
+    const resolvedResponsavelId = (queryArgs as { responsavelId?: string }).responsavelId
+    const includeInactive = (queryArgs as { includeInactive?: boolean }).includeInactive ?? false
 
-    let query = supabase
+    let builder = supabase
       .from('ocorrencia_grupos')
       .select('*')
       .order('nome', { ascending: true })
 
     if (!includeInactive) {
-      query = query.eq('is_active', true)
+      builder = builder.eq('is_active', true)
     }
 
     if (resolvedResponsavelId) {
-      query = query.eq('responsavel_id', resolvedResponsavelId)
+      builder = builder.eq('responsavel_id', resolvedResponsavelId)
     }
 
-    const { data, error } = await query
+    const { data, error } = await builder
 
     if (error) {
       console.error('Erro ao buscar grupos de ocorrências:', error)
@@ -393,28 +391,26 @@ export async function fetchOcorrenciaGrupos(query?: OcorrenciaGruposQuery): Prom
 /**
  * Buscar tipos de ocorrências
  */
-export async function fetchOcorrenciaTipos(query?: OcorrenciaTiposQuery): Promise<OcorrenciaTipo[]> {
+export async function fetchOcorrenciaTipos(params?: OcorrenciaTiposQuery): Promise<OcorrenciaTipo[]> {
   try {
-    const queryArgs = typeof query === 'string' ? { grupoId: query } : query || {}
-    const resolvedGrupoId =
-      typeof queryArgs === 'object' ? (queryArgs as { grupoId?: string }).grupoId : undefined
-    const includeInactive =
-      typeof queryArgs === 'object' ? (queryArgs as { includeInactive?: boolean }).includeInactive : false
+    const queryArgs = typeof params === 'string' ? { grupoId: params } : params ?? {}
+    const resolvedGrupoId = (queryArgs as { grupoId?: string }).grupoId
+    const includeInactive = (queryArgs as { includeInactive?: boolean }).includeInactive ?? false
 
-    let query = supabase
+    let builder = supabase
       .from('ocorrencia_tipos')
       .select('*')
       .order('nome', { ascending: true })
 
     if (!includeInactive) {
-      query = query.eq('is_active', true)
+      builder = builder.eq('is_active', true)
     }
 
     if (resolvedGrupoId) {
-      query = query.eq('grupo_id', resolvedGrupoId)
+      builder = builder.eq('grupo_id', resolvedGrupoId)
     }
 
-    const { data, error } = await query
+    const { data, error } = await builder
 
     if (error) {
       console.error('Erro ao buscar tipos de ocorrências:', error)
@@ -441,13 +437,20 @@ export async function fetchOcorrenciaTipos(query?: OcorrenciaTiposQuery): Promis
  * Criar grupo de ocorrência
  */
 export async function createOcorrenciaGrupo(input: OcorrenciaGrupoInput): Promise<OcorrenciaGrupo> {
+  const nome = input.nome.trim()
+  if (!nome) {
+    throw new Error('Nome do grupo é obrigatório')
+  }
+
   const { data, error } = await supabase
     .from('ocorrencia_grupos')
-    .insert({
-      nome: input.nome,
+    .upsert({
+      nome,
       descricao: input.descricao || null,
       is_active: input.is_active ?? true,
       responsavel_id: input.responsavel_id,
+    }, {
+      onConflict: 'responsavel_id,nome',
     })
     .select()
     .single()
@@ -479,7 +482,13 @@ export async function updateOcorrenciaGrupo(
     updated_at: new Date().toISOString(),
   }
 
-  if (input.nome !== undefined) updateData.nome = input.nome
+  if (input.nome !== undefined) {
+    const nome = input.nome.trim()
+    if (!nome) {
+      throw new Error('Nome do grupo é obrigatório')
+    }
+    updateData.nome = nome
+  }
   if (input.descricao !== undefined) updateData.descricao = input.descricao || null
   if (input.is_active !== undefined) updateData.is_active = input.is_active
 
