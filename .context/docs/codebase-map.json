@@ -1,0 +1,1515 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-01-20T13:14:25.924Z",
+  "stack": {
+    "primaryLanguage": "typescript",
+    "languages": [
+      "javascript",
+      "typescript"
+    ],
+    "frameworks": [],
+    "buildTools": [
+      "vite"
+    ],
+    "testFrameworks": [],
+    "packageManager": "npm",
+    "isMonorepo": false,
+    "hasDocker": false,
+    "hasCI": false
+  },
+  "structure": {
+    "totalFiles": 135,
+    "topDirectories": [
+      {
+        "name": "AgenciaF3F.code-workspace",
+        "fileCount": 1
+      },
+      {
+        "name": "AGENTS.md",
+        "fileCount": 1
+      },
+      {
+        "name": "APLICAR_MIGRATIONS.md",
+        "fileCount": 1
+      },
+      {
+        "name": "CHECKLIST_ATUALIZACAO_CLIENTES.md",
+        "fileCount": 1
+      },
+      {
+        "name": "CHECKLIST_INTEGRACAO.md",
+        "fileCount": 1
+      },
+      {
+        "name": "Commands",
+        "fileCount": 32
+      },
+      {
+        "name": "CONFIGURAR_ENV.txt",
+        "fileCount": 1
+      },
+      {
+        "name": "criar_admin_via_dashboard.md",
+        "fileCount": 1
+      },
+      {
+        "name": "CRIAR_USUARIO_ADMIN.md",
+        "fileCount": 1
+      },
+      {
+        "name": "DEBUG_INSTRUCOES.md",
+        "fileCount": 1
+      },
+      {
+        "name": "Estrutura",
+        "fileCount": 2
+      },
+      {
+        "name": "FIX_ERRO_431.md",
+        "fileCount": 1
+      },
+      {
+        "name": "IMPLEMENTACAO_CLIENTES.md",
+        "fileCount": 1
+      },
+      {
+        "name": "index.html",
+        "fileCount": 1
+      },
+      {
+        "name": "INSTALAR_DEPENDENCIAS.md",
+        "fileCount": 1
+      },
+      {
+        "name": "INTEGRACAO_SUPABASE.md",
+        "fileCount": 1
+      },
+      {
+        "name": "LIMPAR_CHROME.md",
+        "fileCount": 1
+      },
+      {
+        "name": "package-lock.json",
+        "fileCount": 1
+      },
+      {
+        "name": "package.json",
+        "fileCount": 1
+      },
+      {
+        "name": "plano_de_acao.txt",
+        "fileCount": 1
+      },
+      {
+        "name": "PLANO_MODULO_CLIENTES.md",
+        "fileCount": 1
+      },
+      {
+        "name": "postcss.config.js",
+        "fileCount": 1
+      },
+      {
+        "name": "public",
+        "fileCount": 2
+      },
+      {
+        "name": "README.md",
+        "fileCount": 1
+      },
+      {
+        "name": "SOLUCAO_ERRO_431.md",
+        "fileCount": 1
+      },
+      {
+        "name": "src",
+        "fileCount": 65
+      },
+      {
+        "name": "supabase",
+        "fileCount": 7
+      },
+      {
+        "name": "tailwind.config.js",
+        "fileCount": 1
+      },
+      {
+        "name": "TESTE_COMPONENTES.md",
+        "fileCount": 1
+      },
+      {
+        "name": "tsconfig.json",
+        "fileCount": 1
+      },
+      {
+        "name": "tsconfig.node.json",
+        "fileCount": 1
+      },
+      {
+        "name": "vite.config.ts",
+        "fileCount": 1
+      }
+    ],
+    "languageDistribution": [
+      {
+        "extension": ".md",
+        "count": 45
+      },
+      {
+        "extension": ".tsx",
+        "count": 41
+      },
+      {
+        "extension": ".ts",
+        "count": 24
+      },
+      {
+        "extension": ".sql",
+        "count": 7
+      },
+      {
+        "extension": ".json",
+        "count": 4
+      },
+      {
+        "extension": ".txt",
+        "count": 4
+      },
+      {
+        "extension": ".html",
+        "count": 3
+      },
+      {
+        "extension": ".png",
+        "count": 3
+      },
+      {
+        "extension": ".js",
+        "count": 2
+      },
+      {
+        "extension": ".code-workspace",
+        "count": 1
+      }
+    ]
+  },
+  "architecture": {
+    "layers": [
+      {
+        "name": "Services",
+        "description": "Business logic and orchestration",
+        "directories": [
+          "src\\services"
+        ],
+        "symbolCount": 56,
+        "dependsOn": []
+      },
+      {
+        "name": "Models",
+        "description": "Data structures and domain objects",
+        "directories": [
+          "src\\lib\\validators"
+        ],
+        "symbolCount": 20,
+        "dependsOn": []
+      },
+      {
+        "name": "Components",
+        "description": "UI components and views",
+        "directories": [
+          "src\\pages",
+          "src\\pages\\servicos",
+          "src\\pages\\planos",
+          "src\\pages\\ocorrencias",
+          "src\\pages\\financeiro",
+          "src\\pages\\configuracoes",
+          "src\\pages\\clientes",
+          "src\\pages\\auth",
+          "src\\pages\\atendimento",
+          "src\\components\\layout",
+          "src\\pages\\clientes\\components",
+          "src\\pages\\clientes\\components\\tabs",
+          "src\\pages\\clientes\\components\\tabs\\modals"
+        ],
+        "symbolCount": 27,
+        "dependsOn": []
+      },
+      {
+        "name": "Controllers",
+        "description": "Request handling and routing",
+        "directories": [
+          "src\\components\\auth"
+        ],
+        "symbolCount": 2,
+        "dependsOn": []
+      }
+    ],
+    "patterns": [],
+    "entryPoints": [
+      "src\\types\\index.ts",
+      "src\\main.tsx"
+    ]
+  },
+  "symbols": {
+    "classes": [],
+    "interfaces": [
+      {
+        "name": "Atendimento",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 184,
+        "exported": true
+      },
+      {
+        "name": "AtendimentoCreateInput",
+        "kind": "interface",
+        "file": "src\\services\\atendimentos.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "AtendimentoFilters",
+        "kind": "interface",
+        "file": "src\\services\\atendimentos.ts",
+        "line": 22,
+        "exported": true
+      },
+      {
+        "name": "AtendimentoUpdateInput",
+        "kind": "interface",
+        "file": "src\\services\\atendimentos.ts",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "name": "Cliente",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 12,
+        "exported": true
+      },
+      {
+        "name": "ClienteFilters",
+        "kind": "interface",
+        "file": "src\\services\\clientes.ts",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "ClientePlano",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 84,
+        "exported": true
+      },
+      {
+        "name": "ClienteResponsavel",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 213,
+        "exported": true
+      },
+      {
+        "name": "ClienteServico",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 103,
+        "exported": true
+      },
+      {
+        "name": "ClientesResponse",
+        "kind": "interface",
+        "file": "src\\services\\clientes.ts",
+        "line": 16,
+        "exported": true
+      },
+      {
+        "name": "ContratoStatusHistorico",
+        "kind": "interface",
+        "file": "src\\services\\historico.ts",
+        "line": 3,
+        "exported": true
+      },
+      {
+        "name": "EquipeMembro",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 198,
+        "exported": true
+      },
+      {
+        "name": "LinksUteis",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 27,
+        "exported": true
+      },
+      {
+        "name": "Ocorrencia",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 165,
+        "exported": true
+      },
+      {
+        "name": "OcorrenciaCreateInput",
+        "kind": "interface",
+        "file": "src\\services\\ocorrencias.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "OcorrenciaFilters",
+        "kind": "interface",
+        "file": "src\\services\\ocorrencias.ts",
+        "line": 27,
+        "exported": true
+      },
+      {
+        "name": "OcorrenciaGrupo",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 144,
+        "exported": true
+      },
+      {
+        "name": "OcorrenciaTipo",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 154,
+        "exported": true
+      },
+      {
+        "name": "OcorrenciaUpdateInput",
+        "kind": "interface",
+        "file": "src\\services\\ocorrencias.ts",
+        "line": 16,
+        "exported": true
+      },
+      {
+        "name": "Plano",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 57,
+        "exported": true
+      },
+      {
+        "name": "PlanoServico",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 72,
+        "exported": true
+      },
+      {
+        "name": "Servico",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 45,
+        "exported": true
+      },
+      {
+        "name": "Transacao",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 122,
+        "exported": true
+      },
+      {
+        "name": "TransacaoCreateInput",
+        "kind": "interface",
+        "file": "src\\services\\transacoes.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "TransacaoFilters",
+        "kind": "interface",
+        "file": "src\\hooks\\useFinanceiro.ts",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "name": "User",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 2,
+        "exported": true
+      },
+      {
+        "name": "AuthContextType",
+        "kind": "interface",
+        "file": "src\\contexts\\AuthContext.tsx",
+        "line": 6,
+        "exported": false
+      },
+      {
+        "name": "ClienteFormProps",
+        "kind": "interface",
+        "file": "src\\pages\\clientes\\components\\ClienteForm.tsx",
+        "line": 7,
+        "exported": false
+      },
+      {
+        "name": "ClienteLogoUploadProps",
+        "kind": "interface",
+        "file": "src\\pages\\clientes\\components\\ClienteLogoUpload.tsx",
+        "line": 5,
+        "exported": false
+      },
+      {
+        "name": "ClienteResponsaveisTabProps",
+        "kind": "interface",
+        "file": "src\\pages\\clientes\\ClienteResponsaveisTab.tsx",
+        "line": 6,
+        "exported": false
+      },
+      {
+        "name": "EditClientePlanoModalProps",
+        "kind": "interface",
+        "file": "src\\pages\\clientes\\components\\tabs\\modals\\EditClientePlanoModal.tsx",
+        "line": 7,
+        "exported": false
+      },
+      {
+        "name": "EditClienteServicoModalProps",
+        "kind": "interface",
+        "file": "src\\pages\\clientes\\components\\tabs\\modals\\EditClienteServicoModal.tsx",
+        "line": 7,
+        "exported": false
+      },
+      {
+        "name": "FinanceiroTabProps",
+        "kind": "interface",
+        "file": "src\\pages\\clientes\\components\\tabs\\FinanceiroTab.tsx",
+        "line": 6,
+        "exported": false
+      },
+      {
+        "name": "HistoricoStatusModalProps",
+        "kind": "interface",
+        "file": "src\\pages\\clientes\\components\\tabs\\HistoricoStatusModal.tsx",
+        "line": 7,
+        "exported": false
+      },
+      {
+        "name": "IdentificacaoTabProps",
+        "kind": "interface",
+        "file": "src\\pages\\clientes\\components\\tabs\\IdentificacaoTab.tsx",
+        "line": 8,
+        "exported": false
+      },
+      {
+        "name": "LinksUteisEditorProps",
+        "kind": "interface",
+        "file": "src\\pages\\clientes\\components\\LinksUteisEditor.tsx",
+        "line": 6,
+        "exported": false
+      },
+      {
+        "name": "LinksUteisTabProps",
+        "kind": "interface",
+        "file": "src\\pages\\clientes\\components\\tabs\\LinksUteisTab.tsx",
+        "line": 7,
+        "exported": false
+      },
+      {
+        "name": "ProtectedRouteProps",
+        "kind": "interface",
+        "file": "src\\components\\auth\\ProtectedRoute.tsx",
+        "line": 4,
+        "exported": false
+      },
+      {
+        "name": "ServicosTabProps",
+        "kind": "interface",
+        "file": "src\\pages\\clientes\\components\\tabs\\ServicosTab.tsx",
+        "line": 20,
+        "exported": false
+      },
+      {
+        "name": "UseClienteReturn",
+        "kind": "interface",
+        "file": "src\\hooks\\useCliente.ts",
+        "line": 14,
+        "exported": false
+      },
+      {
+        "name": "UseClientesOptions",
+        "kind": "interface",
+        "file": "src\\hooks\\useClientes.ts",
+        "line": 5,
+        "exported": false
+      },
+      {
+        "name": "UseClientesReturn",
+        "kind": "interface",
+        "file": "src\\hooks\\useClientes.ts",
+        "line": 9,
+        "exported": false
+      },
+      {
+        "name": "UseCreateClienteReturn",
+        "kind": "interface",
+        "file": "src\\hooks\\useCliente.ts",
+        "line": 21,
+        "exported": false
+      },
+      {
+        "name": "UseDeleteClienteReturn",
+        "kind": "interface",
+        "file": "src\\hooks\\useCliente.ts",
+        "line": 45,
+        "exported": false
+      },
+      {
+        "name": "UseUpdateClienteReturn",
+        "kind": "interface",
+        "file": "src\\hooks\\useCliente.ts",
+        "line": 27,
+        "exported": false
+      },
+      {
+        "name": "UseUpdateLinksUteisReturn",
+        "kind": "interface",
+        "file": "src\\hooks\\useCliente.ts",
+        "line": 33,
+        "exported": false
+      },
+      {
+        "name": "UseUpdateStatusReturn",
+        "kind": "interface",
+        "file": "src\\hooks\\useCliente.ts",
+        "line": 39,
+        "exported": false
+      }
+    ],
+    "functions": [
+      {
+        "name": "AtendimentoEdit",
+        "kind": "function",
+        "file": "src\\pages\\atendimento\\AtendimentoEdit.tsx",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "atualizarTransacoesFuturasContrato",
+        "kind": "function",
+        "file": "src\\services\\financeiro.ts",
+        "line": 226,
+        "exported": true
+      },
+      {
+        "name": "AuthProvider",
+        "kind": "function",
+        "file": "src\\contexts\\AuthContext.tsx",
+        "line": 16,
+        "exported": true
+      },
+      {
+        "name": "baixarTitulo",
+        "kind": "function",
+        "file": "src\\services\\financeiro.ts",
+        "line": 289,
+        "exported": true
+      },
+      {
+        "name": "calcularPrevisaoRecebimento",
+        "kind": "function",
+        "file": "src\\services\\financeiro.ts",
+        "line": 341,
+        "exported": true
+      },
+      {
+        "name": "calcularTransacoesMensais",
+        "kind": "function",
+        "file": "src\\services\\financeiro.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "cleanLinksUteis",
+        "kind": "function",
+        "file": "src\\lib\\validators\\cliente-schema.ts",
+        "line": 70,
+        "exported": true
+      },
+      {
+        "name": "ClienteNovo",
+        "kind": "function",
+        "file": "src\\pages\\clientes\\ClienteNovo.tsx",
+        "line": 11,
+        "exported": true
+      },
+      {
+        "name": "Clientes",
+        "kind": "function",
+        "file": "src\\pages\\clientes\\Clientes.tsx",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "createAtendimento",
+        "kind": "function",
+        "file": "src\\services\\atendimentos.ts",
+        "line": 127,
+        "exported": true
+      },
+      {
+        "name": "createCliente",
+        "kind": "function",
+        "file": "src\\services\\clientes.ts",
+        "line": 137,
+        "exported": true
+      },
+      {
+        "name": "createOcorrencia",
+        "kind": "function",
+        "file": "src\\services\\ocorrencias.ts",
+        "line": 158,
+        "exported": true
+      },
+      {
+        "name": "createTransacao",
+        "kind": "function",
+        "file": "src\\services\\transacoes.ts",
+        "line": 24,
+        "exported": true
+      },
+      {
+        "name": "createTransacaoFromPlano",
+        "kind": "function",
+        "file": "src\\services\\transacoes.ts",
+        "line": 81,
+        "exported": true
+      },
+      {
+        "name": "createTransacaoFromServico",
+        "kind": "function",
+        "file": "src\\services\\transacoes.ts",
+        "line": 106,
+        "exported": true
+      },
+      {
+        "name": "deleteAtendimento",
+        "kind": "function",
+        "file": "src\\services\\atendimentos.ts",
+        "line": 213,
+        "exported": true
+      },
+      {
+        "name": "deleteCliente",
+        "kind": "function",
+        "file": "src\\services\\clientes.ts",
+        "line": 310,
+        "exported": true
+      },
+      {
+        "name": "deleteOcorrencia",
+        "kind": "function",
+        "file": "src\\services\\ocorrencias.ts",
+        "line": 259,
+        "exported": true
+      },
+      {
+        "name": "deleteTransacao",
+        "kind": "function",
+        "file": "src\\services\\financeiro.ts",
+        "line": 673,
+        "exported": true
+      },
+      {
+        "name": "fetchAtendimentoById",
+        "kind": "function",
+        "file": "src\\services\\atendimentos.ts",
+        "line": 89,
+        "exported": true
+      },
+      {
+        "name": "fetchAtendimentos",
+        "kind": "function",
+        "file": "src\\services\\mockData.ts",
+        "line": 191,
+        "exported": true
+      },
+      {
+        "name": "fetchAtendimentos",
+        "kind": "function",
+        "file": "src\\services\\atendimentos.ts",
+        "line": 33,
+        "exported": true
+      },
+      {
+        "name": "fetchClienteById",
+        "kind": "function",
+        "file": "src\\services\\clientes.ts",
+        "line": 97,
+        "exported": true
+      },
+      {
+        "name": "fetchClienteResponsaveis",
+        "kind": "function",
+        "file": "src\\services\\mockData.ts",
+        "line": 250,
+        "exported": true
+      },
+      {
+        "name": "fetchClientes",
+        "kind": "function",
+        "file": "src\\services\\mockData.ts",
+        "line": 143,
+        "exported": true
+      },
+      {
+        "name": "fetchClientes",
+        "kind": "function",
+        "file": "src\\services\\clientes.ts",
+        "line": 26,
+        "exported": true
+      },
+      {
+        "name": "fetchEquipeMembros",
+        "kind": "function",
+        "file": "src\\services\\mockData.ts",
+        "line": 244,
+        "exported": true
+      },
+      {
+        "name": "fetchHistoricoStatusContrato",
+        "kind": "function",
+        "file": "src\\services\\historico.ts",
+        "line": 18,
+        "exported": true
+      },
+      {
+        "name": "fetchOcorrenciaById",
+        "kind": "function",
+        "file": "src\\services\\ocorrencias.ts",
+        "line": 115,
+        "exported": true
+      },
+      {
+        "name": "fetchOcorrenciaGrupos",
+        "kind": "function",
+        "file": "src\\services\\ocorrencias.ts",
+        "line": 280,
+        "exported": true
+      },
+      {
+        "name": "fetchOcorrenciaGrupos",
+        "kind": "function",
+        "file": "src\\services\\mockData.ts",
+        "line": 176,
+        "exported": true
+      },
+      {
+        "name": "fetchOcorrencias",
+        "kind": "function",
+        "file": "src\\services\\ocorrencias.ts",
+        "line": 41,
+        "exported": true
+      },
+      {
+        "name": "fetchOcorrencias",
+        "kind": "function",
+        "file": "src\\services\\mockData.ts",
+        "line": 167,
+        "exported": true
+      },
+      {
+        "name": "fetchOcorrenciaTipos",
+        "kind": "function",
+        "file": "src\\services\\ocorrencias.ts",
+        "line": 317,
+        "exported": true
+      },
+      {
+        "name": "fetchOcorrenciaTipos",
+        "kind": "function",
+        "file": "src\\services\\mockData.ts",
+        "line": 182,
+        "exported": true
+      },
+      {
+        "name": "fetchServicos",
+        "kind": "function",
+        "file": "src\\services\\mockData.ts",
+        "line": 149,
+        "exported": true
+      },
+      {
+        "name": "fetchTransacaoById",
+        "kind": "function",
+        "file": "src\\services\\financeiro.ts",
+        "line": 411,
+        "exported": true
+      },
+      {
+        "name": "fetchTransacoes",
+        "kind": "function",
+        "file": "src\\services\\mockData.ts",
+        "line": 158,
+        "exported": true
+      },
+      {
+        "name": "fetchTransacoes",
+        "kind": "function",
+        "file": "src\\services\\financeiro.ts",
+        "line": 526,
+        "exported": true
+      },
+      {
+        "name": "fetchTransacoesCliente",
+        "kind": "function",
+        "file": "src\\services\\financeiro.ts",
+        "line": 457,
+        "exported": true
+      },
+      {
+        "name": "fetchUsuarioById",
+        "kind": "function",
+        "file": "src\\services\\usuarios.ts",
+        "line": 36,
+        "exported": true
+      },
+      {
+        "name": "fetchUsuarios",
+        "kind": "function",
+        "file": "src\\services\\usuarios.ts",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "gerarTransacoesContratoPlano",
+        "kind": "function",
+        "file": "src\\services\\financeiro.ts",
+        "line": 95,
+        "exported": true
+      },
+      {
+        "name": "gerarTransacoesContratoServico",
+        "kind": "function",
+        "file": "src\\services\\financeiro.ts",
+        "line": 162,
+        "exported": true
+      },
+      {
+        "name": "Header",
+        "kind": "function",
+        "file": "src\\components\\layout\\Header.tsx",
+        "line": 3,
+        "exported": true
+      },
+      {
+        "name": "IdentificacaoTab",
+        "kind": "function",
+        "file": "src\\pages\\clientes\\components\\tabs\\IdentificacaoTab.tsx",
+        "line": 13,
+        "exported": true
+      },
+      {
+        "name": "Layout",
+        "kind": "function",
+        "file": "src\\components\\layout\\Layout.tsx",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "name": "LinksUteisTab",
+        "kind": "function",
+        "file": "src\\pages\\clientes\\components\\tabs\\LinksUteisTab.tsx",
+        "line": 12,
+        "exported": true
+      },
+      {
+        "name": "loadUserProfile",
+        "kind": "function",
+        "file": "src\\contexts\\AuthContext.tsx",
+        "line": 48,
+        "exported": true
+      },
+      {
+        "name": "Ocorrencias",
+        "kind": "function",
+        "file": "src\\pages\\ocorrencias\\Ocorrencias.tsx",
+        "line": 8,
+        "exported": true
+      }
+    ],
+    "types": [
+      {
+        "name": "AtendimentoCreateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\atendimento-schema.ts",
+        "line": 26,
+        "exported": true
+      },
+      {
+        "name": "AtendimentoUpdateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\atendimento-schema.ts",
+        "line": 27,
+        "exported": true
+      },
+      {
+        "name": "ClienteCreateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\cliente-schema.ts",
+        "line": 54,
+        "exported": true
+      },
+      {
+        "name": "ClientePlanoCreateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\plano-schema.ts",
+        "line": 94,
+        "exported": true
+      },
+      {
+        "name": "ClientePlanoUpdateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\plano-schema.ts",
+        "line": 95,
+        "exported": true
+      },
+      {
+        "name": "ClienteServicoCreateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\plano-schema.ts",
+        "line": 96,
+        "exported": true
+      },
+      {
+        "name": "ClienteServicoUpdateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\plano-schema.ts",
+        "line": 97,
+        "exported": true
+      },
+      {
+        "name": "ClienteUpdateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\cliente-schema.ts",
+        "line": 55,
+        "exported": true
+      },
+      {
+        "name": "LinksUteisInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\cliente-schema.ts",
+        "line": 56,
+        "exported": true
+      },
+      {
+        "name": "OcorrenciaCreateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\ocorrencia-schema.ts",
+        "line": 29,
+        "exported": true
+      },
+      {
+        "name": "OcorrenciaUpdateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\ocorrencia-schema.ts",
+        "line": 30,
+        "exported": true
+      },
+      {
+        "name": "PlanoCreateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\plano-schema.ts",
+        "line": 91,
+        "exported": true
+      },
+      {
+        "name": "PlanoServicoCreateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\plano-schema.ts",
+        "line": 93,
+        "exported": true
+      },
+      {
+        "name": "PlanoUpdateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\plano-schema.ts",
+        "line": 92,
+        "exported": true
+      },
+      {
+        "name": "ServicoCreateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\plano-schema.ts",
+        "line": 89,
+        "exported": true
+      },
+      {
+        "name": "ServicoUpdateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\plano-schema.ts",
+        "line": 90,
+        "exported": true
+      },
+      {
+        "name": "TransacaoCreateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\financeiro-schema.ts",
+        "line": 38,
+        "exported": true
+      },
+      {
+        "name": "TransacaoUpdateInput",
+        "kind": "type",
+        "file": "src\\lib\\validators\\financeiro-schema.ts",
+        "line": 39,
+        "exported": true
+      },
+      {
+        "name": "TabType",
+        "kind": "type",
+        "file": "src\\pages\\configuracoes\\Equipe.tsx",
+        "line": 6,
+        "exported": false
+      }
+    ],
+    "enums": []
+  },
+  "publicAPI": [
+    {
+      "name": "Atendimento",
+      "kind": "interface",
+      "file": "src\\types\\index.ts",
+      "line": 184,
+      "exported": true
+    },
+    {
+      "name": "AtendimentoCreateInput",
+      "kind": "interface",
+      "file": "src\\services\\atendimentos.ts",
+      "line": 4,
+      "exported": true
+    },
+    {
+      "name": "AtendimentoCreateInput",
+      "kind": "type",
+      "file": "src\\lib\\validators\\atendimento-schema.ts",
+      "line": 26,
+      "exported": true
+    },
+    {
+      "name": "AtendimentoEdit",
+      "kind": "function",
+      "file": "src\\pages\\atendimento\\AtendimentoEdit.tsx",
+      "line": 8,
+      "exported": true
+    },
+    {
+      "name": "AtendimentoFilters",
+      "kind": "interface",
+      "file": "src\\services\\atendimentos.ts",
+      "line": 22,
+      "exported": true
+    },
+    {
+      "name": "AtendimentoUpdateInput",
+      "kind": "interface",
+      "file": "src\\services\\atendimentos.ts",
+      "line": 14,
+      "exported": true
+    },
+    {
+      "name": "AtendimentoUpdateInput",
+      "kind": "type",
+      "file": "src\\lib\\validators\\atendimento-schema.ts",
+      "line": 27,
+      "exported": true
+    },
+    {
+      "name": "atualizarTransacoesFuturasContrato",
+      "kind": "function",
+      "file": "src\\services\\financeiro.ts",
+      "line": 226,
+      "exported": true
+    },
+    {
+      "name": "AuthProvider",
+      "kind": "function",
+      "file": "src\\contexts\\AuthContext.tsx",
+      "line": 16,
+      "exported": true
+    },
+    {
+      "name": "baixarTitulo",
+      "kind": "function",
+      "file": "src\\services\\financeiro.ts",
+      "line": 289,
+      "exported": true
+    },
+    {
+      "name": "calcularPrevisaoRecebimento",
+      "kind": "function",
+      "file": "src\\services\\financeiro.ts",
+      "line": 341,
+      "exported": true
+    },
+    {
+      "name": "calcularTransacoesMensais",
+      "kind": "function",
+      "file": "src\\services\\financeiro.ts",
+      "line": 8,
+      "exported": true
+    },
+    {
+      "name": "cleanLinksUteis",
+      "kind": "function",
+      "file": "src\\lib\\validators\\cliente-schema.ts",
+      "line": 70,
+      "exported": true
+    },
+    {
+      "name": "Cliente",
+      "kind": "interface",
+      "file": "src\\types\\index.ts",
+      "line": 12,
+      "exported": true
+    },
+    {
+      "name": "ClienteCreateInput",
+      "kind": "type",
+      "file": "src\\lib\\validators\\cliente-schema.ts",
+      "line": 54,
+      "exported": true
+    },
+    {
+      "name": "ClienteFilters",
+      "kind": "interface",
+      "file": "src\\services\\clientes.ts",
+      "line": 7,
+      "exported": true
+    },
+    {
+      "name": "ClienteNovo",
+      "kind": "function",
+      "file": "src\\pages\\clientes\\ClienteNovo.tsx",
+      "line": 11,
+      "exported": true
+    },
+    {
+      "name": "ClientePlano",
+      "kind": "interface",
+      "file": "src\\types\\index.ts",
+      "line": 84,
+      "exported": true
+    },
+    {
+      "name": "ClientePlanoCreateInput",
+      "kind": "type",
+      "file": "src\\lib\\validators\\plano-schema.ts",
+      "line": 94,
+      "exported": true
+    },
+    {
+      "name": "ClientePlanoUpdateInput",
+      "kind": "type",
+      "file": "src\\lib\\validators\\plano-schema.ts",
+      "line": 95,
+      "exported": true
+    },
+    {
+      "name": "ClienteResponsavel",
+      "kind": "interface",
+      "file": "src\\types\\index.ts",
+      "line": 213,
+      "exported": true
+    },
+    {
+      "name": "Clientes",
+      "kind": "function",
+      "file": "src\\pages\\clientes\\Clientes.tsx",
+      "line": 6,
+      "exported": true
+    },
+    {
+      "name": "ClienteServico",
+      "kind": "interface",
+      "file": "src\\types\\index.ts",
+      "line": 103,
+      "exported": true
+    },
+    {
+      "name": "ClienteServicoCreateInput",
+      "kind": "type",
+      "file": "src\\lib\\validators\\plano-schema.ts",
+      "line": 96,
+      "exported": true
+    },
+    {
+      "name": "ClienteServicoUpdateInput",
+      "kind": "type",
+      "file": "src\\lib\\validators\\plano-schema.ts",
+      "line": 97,
+      "exported": true
+    },
+    {
+      "name": "ClientesResponse",
+      "kind": "interface",
+      "file": "src\\services\\clientes.ts",
+      "line": 16,
+      "exported": true
+    },
+    {
+      "name": "ClienteUpdateInput",
+      "kind": "type",
+      "file": "src\\lib\\validators\\cliente-schema.ts",
+      "line": 55,
+      "exported": true
+    },
+    {
+      "name": "ContratoStatusHistorico",
+      "kind": "interface",
+      "file": "src\\services\\historico.ts",
+      "line": 3,
+      "exported": true
+    },
+    {
+      "name": "createAtendimento",
+      "kind": "function",
+      "file": "src\\services\\atendimentos.ts",
+      "line": 127,
+      "exported": true
+    },
+    {
+      "name": "createCliente",
+      "kind": "function",
+      "file": "src\\services\\clientes.ts",
+      "line": 137,
+      "exported": true
+    },
+    {
+      "name": "createOcorrencia",
+      "kind": "function",
+      "file": "src\\services\\ocorrencias.ts",
+      "line": 158,
+      "exported": true
+    },
+    {
+      "name": "createTransacao",
+      "kind": "function",
+      "file": "src\\services\\transacoes.ts",
+      "line": 24,
+      "exported": true
+    },
+    {
+      "name": "createTransacaoFromPlano",
+      "kind": "function",
+      "file": "src\\services\\transacoes.ts",
+      "line": 81,
+      "exported": true
+    },
+    {
+      "name": "createTransacaoFromServico",
+      "kind": "function",
+      "file": "src\\services\\transacoes.ts",
+      "line": 106,
+      "exported": true
+    },
+    {
+      "name": "deleteAtendimento",
+      "kind": "function",
+      "file": "src\\services\\atendimentos.ts",
+      "line": 213,
+      "exported": true
+    },
+    {
+      "name": "deleteCliente",
+      "kind": "function",
+      "file": "src\\services\\clientes.ts",
+      "line": 310,
+      "exported": true
+    },
+    {
+      "name": "deleteOcorrencia",
+      "kind": "function",
+      "file": "src\\services\\ocorrencias.ts",
+      "line": 259,
+      "exported": true
+    },
+    {
+      "name": "deleteTransacao",
+      "kind": "function",
+      "file": "src\\services\\financeiro.ts",
+      "line": 673,
+      "exported": true
+    },
+    {
+      "name": "EquipeMembro",
+      "kind": "interface",
+      "file": "src\\types\\index.ts",
+      "line": 198,
+      "exported": true
+    },
+    {
+      "name": "fetchAtendimentoById",
+      "kind": "function",
+      "file": "src\\services\\atendimentos.ts",
+      "line": 89,
+      "exported": true
+    },
+    {
+      "name": "fetchAtendimentos",
+      "kind": "function",
+      "file": "src\\services\\mockData.ts",
+      "line": 191,
+      "exported": true
+    },
+    {
+      "name": "fetchAtendimentos",
+      "kind": "function",
+      "file": "src\\services\\atendimentos.ts",
+      "line": 33,
+      "exported": true
+    },
+    {
+      "name": "fetchClienteById",
+      "kind": "function",
+      "file": "src\\services\\clientes.ts",
+      "line": 97,
+      "exported": true
+    },
+    {
+      "name": "fetchClienteResponsaveis",
+      "kind": "function",
+      "file": "src\\services\\mockData.ts",
+      "line": 250,
+      "exported": true
+    },
+    {
+      "name": "fetchClientes",
+      "kind": "function",
+      "file": "src\\services\\mockData.ts",
+      "line": 143,
+      "exported": true
+    },
+    {
+      "name": "fetchClientes",
+      "kind": "function",
+      "file": "src\\services\\clientes.ts",
+      "line": 26,
+      "exported": true
+    },
+    {
+      "name": "fetchEquipeMembros",
+      "kind": "function",
+      "file": "src\\services\\mockData.ts",
+      "line": 244,
+      "exported": true
+    },
+    {
+      "name": "fetchHistoricoStatusContrato",
+      "kind": "function",
+      "file": "src\\services\\historico.ts",
+      "line": 18,
+      "exported": true
+    },
+    {
+      "name": "fetchOcorrenciaById",
+      "kind": "function",
+      "file": "src\\services\\ocorrencias.ts",
+      "line": 115,
+      "exported": true
+    },
+    {
+      "name": "fetchOcorrenciaGrupos",
+      "kind": "function",
+      "file": "src\\services\\ocorrencias.ts",
+      "line": 280,
+      "exported": true
+    }
+  ],
+  "dependencies": {
+    "mostImported": [
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\services\\supabase.ts",
+        "importedBy": 7
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\clientes\\components\\LinksUteisEditor.tsx",
+        "importedBy": 2
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\clientes\\components\\tabs\\IdentificacaoTab.tsx",
+        "importedBy": 2
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\clientes\\components\\tabs\\LinksUteisTab.tsx",
+        "importedBy": 2
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\clientes\\ClienteResponsaveisTab.tsx",
+        "importedBy": 2
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\clientes\\components\\tabs\\ServicosTab.tsx",
+        "importedBy": 2
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\services\\transacoes.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\App.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\index.css",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\contexts\\AuthContext.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\components\\auth\\ProtectedRoute.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\auth\\Login.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\Dashboard.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\clientes\\Clientes.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\clientes\\ClienteNovo.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\clientes\\ClienteEdit.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\clientes\\ClienteDetail.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\servicos\\Servicos.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\servicos\\ServicoNovo.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Projetos\\AgenciaF3F\\src\\pages\\servicos\\ServicoEdit.tsx",
+        "importedBy": 1
+      }
+    ]
+  },
+  "stats": {
+    "totalSymbols": 185,
+    "exportedSymbols": 161,
+    "analysisTimeMs": 561
+  }
+}

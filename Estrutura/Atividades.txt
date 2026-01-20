@@ -1,0 +1,153 @@
+================================================================================
+ATIVIDADES - AGÊNCIA F3F
+================================================================================
+
+Última Atualização: 16/01/2026 12:59:06
+Responsável: Sistema
+
+================================================================================
+STATUS & PROGRESSO
+================================================================================
+
+Data de Início: 15/01/2026
+Percentual de Conclusão: 90%
+Status Atual: Módulos Implementados - Aguardando Aplicação de Migrations no Supabase F3F
+
+Milestones:
+- [x] Estrutura inicial do projeto React + TypeScript
+- [x] Configuração de dependências e build
+- [x] Estrutura de rotas e autenticação
+- [x] Layout base com Sidebar e Header
+- [x] Módulo de Clientes (estrutura básica)
+- [x] Configuração do banco de dados Supabase
+- [x] Implementação completa do módulo de Clientes (CRUD)
+- [x] Implementação completa do módulo Financeiro (CRUD de Transações)
+- [x] Implementação completa do módulo de Ocorrências (CRUD)
+- [x] Implementação completa do módulo de Atendimento (CRUD)
+- [x] Verificação e validação do módulo de Planos (CRUD completo)
+- [x] Verificação e validação do módulo de Serviços (CRUD completo)
+- [x] Formulários de criação/edição para Financeiro
+- [x] Formulários de criação/edição para Ocorrências
+- [x] Formulários de criação/edição para Atendimento
+- [x] Documentação de integrações do projeto (.context/docs/PROJECT_INTEGRATIONS.md)
+- [ ] Aplicar migrations no Supabase F3F (script consolidado pronto)
+- [ ] Testes end-to-end
+
+================================================================================
+TAREFAS
+================================================================================
+
+CONCLUÍDAS:
+1. Criação da estrutura base do projeto (Vite + React + TypeScript)
+2. Configuração do Tailwind CSS com tema personalizado
+3. Estrutura de rotas com React Router
+4. Contexto de autenticação com Supabase
+5. Layout principal com Sidebar e Header
+6. Página de Login
+7. Dashboard básico
+8. Estrutura do módulo de Clientes
+9. Página de detalhes do cliente com Links Úteis
+10. Definição de tipos TypeScript para todas as entidades
+11. Configuração do projeto Supabase
+12. Aplicação de todas as migrations do banco de dados
+13. Configuração do arquivo .env com credenciais corretas
+14. Aplicação de migrations adicionais (histórico de status, datas de contratos)
+15. Implementação completa do CRUD de Clientes
+16. Integração de todos os componentes com Supabase
+17. Correção de queries do Supabase
+18. Implementação completa do módulo Financeiro (transações, hooks, página)
+19. Implementação completa do módulo de Ocorrências (serviços, hooks, página)
+20. Implementação completa do módulo de Atendimento (serviços, hooks, página)
+21. Verificação e validação dos módulos Planos e Serviços (já estavam completos)
+22. Exportação de tipos nos serviços de planos
+
+EM PROGRESSO:
+- Testes end-to-end de todos os módulos
+- Implementação de formulários de criação/edição para Financeiro, Ocorrências e Atendimento
+
+PRÓXIMAS:
+1. Implementar CRUD completo de Clientes (integração com banco)
+3. Implementar sistema de Links Úteis
+4. Desenvolver módulo de Serviços
+5. Desenvolver módulo Financeiro
+6. Desenvolver módulo de Ocorrências
+7. Desenvolver módulo de Atendimento
+
+================================================================================
+DECISÕES TÉCNICAS
+================================================================================
+
+1. Stack Tecnológica:
+   - Frontend: React 18 + TypeScript + Vite
+   - Estilização: Tailwind CSS
+   - Backend: Supabase (PostgreSQL + Auth + Storage)
+   - Roteamento: React Router DOM v6
+
+2. Estrutura de Pastas:
+   - components/: Componentes reutilizáveis
+   - pages/: Páginas da aplicação
+   - services/: Serviços (Supabase, APIs)
+   - types/: Definições TypeScript
+   - contexts/: Contextos React
+   - utils/: Funções utilitárias
+
+3. Links Úteis:
+   - Cada cliente terá um objeto LinksUteis com 11 campos específicos
+   - Armazenado como JSONB no Supabase
+   - Interface dedicada para gerenciamento
+
+4. Perfis de Usuário:
+   - Cada usuário será responsável por um ou mais clientes
+   - Sistema de roles: admin | user
+
+================================================================================
+IMPLEMENTAÇÃO DE AUTENTICAÇÃO
+================================================================================
+
+Status: Configurado e pronto para uso
+
+Implementado:
+- AuthContext com gerenciamento de sessão
+- ProtectedRoute para rotas privadas
+- Página de Login
+- Integração com Supabase Auth
+- Projeto Supabase configurado
+- Todas as tabelas criadas via migrations
+- Políticas RLS implementadas nas migrations
+
+Pendente:
+- Testar autenticação end-to-end
+- Criar primeiro usuário admin
+
+================================================================================
+PROBLEMAS & SOLUÇÕES
+================================================================================
+
+INCIDENTE 16/01/2026: Migrations Aplicadas no Supabase Errado
+- Problema: Migrations foram executadas no projeto Supabase "Uploaders" (Organização 10x)
+  ao invés do projeto "F3F" (Agência F3F).
+- Causa: Confusão entre projetos Supabase de workspaces diferentes.
+- Resolução:
+  1. Criado script de limpeza: .context/cleanup/uploaders_cleanup.sql
+  2. Criado script consolidado: .context/cleanup/f3f_apply_all.sql
+  3. Criado documento de integrações: .context/docs/PROJECT_INTEGRATIONS.md
+- Lição: SEMPRE verificar o Project ID antes de executar operações no Supabase.
+- Projeto Correto: F3F (ID: rhnkffeyspymjpellmnd)
+
+================================================================================
+PRÓXIMOS PASSOS
+================================================================================
+
+PRIORIDADE CRÍTICA:
+1. Executar script .context/cleanup/uploaders_cleanup.sql no Supabase Uploaders
+2. Executar script .context/cleanup/f3f_apply_all.sql no Supabase F3F
+3. Testar login com credenciais: adm@agenciaf3f.com.br / adm@123
+
+APÓS MIGRATIONS:
+4. Testar todos os módulos end-to-end
+5. Implementar dashboard com métricas gerais
+6. Desenvolver interface de edição de Links Úteis
+7. Implementar integração com Google Drive (opcional)
+8. Configurar deploy no Vercel
+
+================================================================================

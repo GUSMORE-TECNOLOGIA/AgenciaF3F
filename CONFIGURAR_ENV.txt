@@ -1,0 +1,19 @@
+================================================================================
+CONFIGURAÇÃO DO ARQUIVO .env
+================================================================================
+
+Crie um arquivo chamado ".env" na raiz do projeto com o seguinte conteúdo:
+
+VITE_SUPABASE_URL=https://rhnkffeyspymjpellmnd.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJobmtmZmV5c3B5bWpwZWxsbW5kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0OTAwNzEsImV4cCI6MjA4NDA2NjA3MX0.eoFacrVkqAodOniBpvE_PHlUH8Ajyz_oWb62k1HXypU
+
+================================================================================
+INSTRUÇÕES
+================================================================================
+
+1. Na raiz do projeto (C:\Projetos\AgenciaF3F), crie o arquivo .env
+2. Cole o conteúdo acima
+3. Salve o arquivo
+4. Reinicie o servidor de desenvolvimento (npm run dev)
+
+================================================================================

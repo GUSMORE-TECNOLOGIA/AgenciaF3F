@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Limpar Chrome - Erro 431</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      max-width: 600px;
+      width: 100%;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .method {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #667eea;
+    }
+    .method h3 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    .method p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+    .steps {
+      background: white;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+    .steps ol {
+      margin-left: 20px;
+      color: #333;
+    }
+    .steps li {
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      margin-top: 10px;
+      transition: all 0.3s;
+    }
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      border: 1px solid #c3e6cb;
+    }
+    .code {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+    .warning {
+      background: #fff3cd;
+      color: #856404;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      border: 1px solid #ffeaa7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧹 Limpar Chrome - Erro 431</h1>
+    <p class="subtitle">Solução para o erro "Request Header Fields Too Large" no Chrome</p>
+
+    <div class="method">
+      <h3>⚡ Método Rápido (Recomendado)</h3>
+      <p>Use o botão abaixo para limpar automaticamente:</p>
+      <button onclick="limparTudo()">Limpar Tudo Agora</button>
+      <div id="result"></div>
+    </div>
+
+    <div class="method">
+      <h3>📋 Método Manual - Via DevTools</h3>
+      <p>Se o botão não funcionar, siga estes passos:</p>
+      <div class="steps">
+        <ol>
+          <li>Pressione <strong>F12</strong> (ou botão direito > Inspecionar)</li>
+          <li>Vá na aba <strong>"Application"</strong> (Aplicativo)</li>
+          <li>No menu lateral, expanda <strong>"Storage"</strong></li>
+          <li>Clique em <strong>"Clear site data"</strong></li>
+          <li>Ou limpe manualmente: Local Storage, Cookies, Session Storage</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="method">
+      <h3>💻 Método via Console</h3>
+      <p>Cole este código no Console do Chrome (F12 > Console):</p>
+      <div class="code" onclick="copiarCodigo(this)">
+// Limpar tudo
+localStorage.clear();
+sessionStorage.clear();
+document.cookie.split(";").forEach(function(c) {
+  document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+});
+console.log('✅ Storage limpo! Recarregue a página.');
+      </div>
+      <p style="margin-top: 10px; font-size: 12px; color: #999;">Clique no código acima para copiar</p>
+    </div>
+
+    <div class="warning">
+      <strong>⚠️ Importante:</strong> Após limpar, feche TODAS as abas do Chrome com localhost:5173, feche o Chrome completamente, e abra novamente antes de testar.
+    </div>
+  </div>
+
+  <script>
+    function limparTudo() {
+      try {
+        // Limpar localStorage
+        localStorage.clear();
+        
+        // Limpar sessionStorage
+        sessionStorage.clear();
+        
+        // Limpar cookies
+        document.cookie.split(";").forEach(function(c) {
+          document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
+        
+        // Verificar tamanho
+        const tamanho = JSON.stringify(localStorage).length + document.cookie.length;
+        
+        const result = document.getElementById('result');
+        result.innerHTML = `
+          <div class="success">
+            <strong>✅ Limpeza concluída!</strong><br>
+            Storage atual: ${tamanho} bytes<br><br>
+            <strong>Próximos passos:</strong><br>
+            1. Feche TODAS as abas do Chrome com localhost:5173<br>
+            2. Feche o Chrome completamente<br>
+            3. Abra o Chrome novamente<br>
+            4. Acesse http://localhost:5173<br>
+            5. O erro 431 não deve mais aparecer
+          </div>
+        `;
+      } catch (e) {
+        const result = document.getElementById('result');
+        result.innerHTML = `
+          <div class="warning">
+            <strong>⚠️ Erro:</strong> ${e.message}<br>
+            Tente usar o método manual via DevTools.
+          </div>
+        `;
+      }
+    }
+
+    function copiarCodigo(element) {
+      const texto = element.textContent.trim();
+      navigator.clipboard.writeText(texto).then(() => {
+        const original = element.style.background;
+        element.style.background = '#4caf50';
+        element.textContent = '✅ Código copiado! Cole no Console (F12)';
+        setTimeout(() => {
+          element.style.background = original;
+          element.textContent = texto;
+        }, 2000);
+      });
+    }
+
+    // Verificar tamanho atual ao carregar
+    window.onload = function() {
+      const tamanho = JSON.stringify(localStorage).length + document.cookie.length;
+      if (tamanho > 10000) {
+        const result = document.getElementById('result');
+        result.innerHTML = `
+          <div class="warning">
+            <strong>⚠️ Storage muito grande detectado!</strong><br>
+            Tamanho atual: ${tamanho} bytes<br>
+            Recomendado limpar para evitar erro 431.
+          </div>
+        `;
+      }
+    };
+  </script>
+</body>
+</html>

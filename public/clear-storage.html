@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Limpar Storage - Agência F3F</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-top: 0;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .success {
+      color: #28a745;
+      margin-top: 20px;
+      padding: 10px;
+      background: #d4edda;
+      border-radius: 4px;
+    }
+    .info {
+      color: #666;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧹 Limpar Storage</h1>
+    <p>Use esta página para limpar localStorage e cookies que podem estar causando o erro 431.</p>
+    
+    <button onclick="clearAll()">Limpar Tudo (localStorage + Cookies)</button>
+    <button onclick="clearLocalStorage()">Limpar apenas localStorage</button>
+    <button onclick="clearCookies()">Limpar apenas Cookies</button>
+    <button onclick="checkStorage()">Verificar Storage</button>
+    
+    <div id="result"></div>
+    
+    <div class="info">
+      <strong>O que fazer após limpar:</strong>
+      <ol>
+        <li>Feche todas as abas do localhost:5173</li>
+        <li>Reinicie o servidor Vite (Ctrl+C e depois npm run dev)</li>
+        <li>Abra uma nova aba e acesse http://localhost:5173</li>
+        <li>Faça login novamente</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    function clearAll() {
+      localStorage.clear();
+      clearAllCookies();
+      showResult('✅ localStorage e cookies limpos com sucesso!', 'success');
+    }
+
+    function clearLocalStorage() {
+      localStorage.clear();
+      showResult('✅ localStorage limpo!', 'success');
+    }
+
+    function clearCookies() {
+      clearAllCookies();
+      showResult('✅ Cookies limpos!', 'success');
+    }
+
+    function clearAllCookies() {
+      document.cookie.split(";").forEach(function(c) {
+        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
+    }
+
+    function checkStorage() {
+      const localStorageSize = JSON.stringify(localStorage).length;
+      const cookies = document.cookie;
+      const cookiesSize = cookies.length;
+      
+      let html = '<div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 4px;">';
+      html += '<strong>Status do Storage:</strong><br>';
+      html += `localStorage: ${localStorageSize} bytes<br>`;
+      html += `Cookies: ${cookiesSize} bytes<br>`;
+      html += `Total: ${localStorageSize + cookiesSize} bytes<br><br>`;
+      
+      if (localStorageSize > 10000 || cookiesSize > 4000) {
+        html += '<span style="color: #dc3545;">⚠️ Storage muito grande! Recomendado limpar.</span>';
+      } else {
+        html += '<span style="color: #28a745;">✅ Tamanho do storage está OK.</span>';
+      }
+      
+      html += '</div>';
+      showResult(html, '');
+    }
+
+    function showResult(message, className) {
+      const result = document.getElementById('result');
+      result.innerHTML = `<div class="${className}">${message}</div>`;
+    }
+
+    // Verificar automaticamente ao carregar
+    window.onload = function() {
+      checkStorage();
+    };
+  </script>
+</body>
+</html>

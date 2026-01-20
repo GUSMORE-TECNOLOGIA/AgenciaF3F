@@ -1,0 +1,312 @@
+================================================================================
+PENDÊNCIAS - AGÊNCIA F3F
+================================================================================
+
+Última Atualização: 16/01/2026 12:59:06
+Responsável: Sistema
+
+================================================================================
+LEGENDA DE STATUS
+================================================================================
+
+PENDENTE    - Tarefa não iniciada
+EM_PROGRESSO - Tarefa em desenvolvimento
+BLOQUEADA   - Tarefa bloqueada por dependência
+CONCLUIDA   - Tarefa finalizada
+CANCELADA   - Tarefa cancelada
+
+================================================================================
+LEGENDA DE PRIORIDADE
+================================================================================
+
+CRITICA     - Bloqueia funcionalidades principais
+ALTA        - Importante para o funcionamento
+MEDIA       - Melhoria ou funcionalidade secundária
+BAIXA       - Nice to have
+
+================================================================================
+STATUS DO PROJETO
+================================================================================
+
+Progresso Geral: 90%
+Módulos Implementados: 6/6 (Clientes, Financeiro, Ocorrências, Atendimento, Planos, Serviços)
+Formulários Implementados: 6/6 (Clientes, Financeiro, Ocorrências, Atendimento, Planos, Serviços)
+Banco de Dados: Aguardando aplicação de migrations no Supabase F3F
+
+================================================================================
+INCIDENTE CRÍTICO - 16/01/2026
+================================================================================
+
+PROBLEMA: Migrations foram aplicadas no projeto Supabase errado (Uploaders)
+CAUSA: Confusão entre projetos de workspaces diferentes
+RESOLUÇÃO:
+  1. Script de limpeza: .context/cleanup/uploaders_cleanup.sql
+  2. Script consolidado: .context/cleanup/f3f_apply_all.sql
+  3. Documentação: .context/docs/PROJECT_INTEGRATIONS.md
+STATUS: Aguardando execução dos scripts pelo usuário
+
+================================================================================
+PENDÊNCIAS
+================================================================================
+
+PEND-001
+Descrição: Configurar projeto no Supabase e criar banco de dados
+Componente: Backend/Infraestrutura
+Prioridade: CRITICA
+Status: BLOQUEADA (Aguardando re-execução no projeto correto)
+Data Criação: 15/01/2026
+Responsável: Usuário
+Dependências: -
+Horas Estimadas: 2
+Observações: Script consolidado criado em .context/cleanup/f3f_apply_all.sql
+             Projeto correto: F3F (ID: rhnkffeyspymjpellmnd)
+             NÃO usar Uploaders (ID: thckhkrbqtecouqlnaeq)
+
+PEND-002
+Descrição: Criar migrations do Supabase para tabela 'usuarios'
+Componente: Backend/Database
+Prioridade: CRITICA
+Status: CONCLUIDA (Incluído no script consolidado)
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-001
+Horas Estimadas: 1
+Observações: Migration incluída no script f3f_apply_all.sql
+
+PEND-003
+Descrição: Criar migrations do Supabase para tabela 'clientes'
+Componente: Backend/Database
+Prioridade: CRITICA
+Status: CONCLUIDA (Incluído no script consolidado)
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-001, PEND-002
+Horas Estimadas: 2
+Observações: Migration incluída no script f3f_apply_all.sql, inclui logo_url
+
+PEND-004
+Descrição: Criar migrations do Supabase para tabela 'servicos'
+Componente: Backend/Database
+Prioridade: ALTA
+Status: CONCLUIDA (Incluído no script consolidado)
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-001, PEND-003
+Horas Estimadas: 1
+Observações: Estrutura completa: servicos (mestre), servicos_prestados (legado), planos, plano_servicos
+
+PEND-005
+Descrição: Criar migrations do Supabase para tabela 'transacoes'
+Componente: Backend/Database
+Prioridade: ALTA
+Status: CONCLUIDA (Incluído no script consolidado)
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-001, PEND-003, PEND-004
+Horas Estimadas: 1
+Observações: Migration incluída no script f3f_apply_all.sql
+
+PEND-006
+Descrição: Criar migrations do Supabase para tabela 'ocorrencias'
+Componente: Backend/Database
+Prioridade: ALTA
+Status: CONCLUIDA (Incluído no script consolidado)
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-001, PEND-002, PEND-003
+Horas Estimadas: 1
+Observações: Inclui ocorrencia_grupos, ocorrencia_tipos, ocorrencias
+
+PEND-007
+Descrição: Criar migrations do Supabase para tabela 'atendimentos'
+Componente: Backend/Database
+Prioridade: ALTA
+Status: CONCLUIDA (Incluído no script consolidado)
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-001, PEND-002, PEND-003
+Horas Estimadas: 1
+Observações: Migration incluída no script f3f_apply_all.sql
+
+PEND-008
+Descrição: Implementar CRUD completo de Clientes
+Componente: Frontend/Clientes
+Prioridade: CRITICA
+Status: CONCLUIDA
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-003
+Horas Estimadas: 4
+Horas Reais: 1
+Observações: CRUD completo implementado e integrado com Supabase. Inclui: listagem com filtros, criação, edição, exclusão (soft delete), gerenciamento de Links Úteis, upload de logo
+
+PEND-009
+Descrição: Implementar interface de edição de Links Úteis
+Componente: Frontend/Clientes
+Prioridade: MEDIA
+Status: CONCLUIDA
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-008
+Horas Estimadas: 3
+Observações: Implementado como aba na página de edição de cliente
+
+PEND-010
+Descrição: Implementar módulo completo de Serviços
+Componente: Frontend/Servicos
+Prioridade: ALTA
+Status: CONCLUIDA
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-004
+Horas Estimadas: 6
+Horas Reais: 0 (já estava implementado)
+Observações: CRUD completo de serviços já estava implementado. Inclui: listagem com filtros, criação, edição, exclusão, validação com Zod, integração completa com Supabase
+
+PEND-011
+Descrição: Implementar módulo completo Financeiro
+Componente: Frontend/Financeiro
+Prioridade: ALTA
+Status: CONCLUIDA
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-005
+Horas Estimadas: 8
+Horas Reais: 2
+Observações: CRUD completo implementado. Inclui: listagem com filtros, cards de resumo, formulários de criação/edição com Zod, integração com clientes
+
+PEND-012
+Descrição: Implementar módulo completo de Ocorrências
+Componente: Frontend/Ocorrencias
+Prioridade: ALTA
+Status: CONCLUIDA
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-006
+Horas Estimadas: 6
+Horas Reais: 2
+Observações: CRUD completo implementado. Inclui: serviços, hooks, listagem com filtros, formulários de criação/edição com Zod, badges visuais
+
+PEND-013
+Descrição: Implementar módulo completo de Atendimento
+Componente: Frontend/Atendimento
+Prioridade: ALTA
+Status: CONCLUIDA
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-007
+Horas Estimadas: 6
+Horas Reais: 2
+Observações: CRUD completo implementado. Inclui: serviços, hooks, listagem com filtros, formulários de criação/edição com Zod, formatação de duração
+
+PEND-014
+Descrição: Aplicar políticas RLS (Row Level Security) no Supabase
+Componente: Backend/Segurança
+Prioridade: CRITICA
+Status: CONCLUIDA (Incluído no script consolidado)
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-002 até PEND-007
+Horas Estimadas: 4
+Observações: Todas as políticas RLS incluídas no script f3f_apply_all.sql
+
+PEND-015
+Descrição: Implementar sistema de permissões e roles
+Componente: Frontend/Backend
+Prioridade: MEDIA
+Status: CONCLUIDA
+Data Criação: 15/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-002
+Horas Estimadas: 3
+Observações: Diferenciação admin/user implementada nas políticas RLS
+
+PEND-016
+Descrição: Formulários de criação/edição para módulos restantes
+Componente: Frontend
+Prioridade: ALTA
+Status: CONCLUIDA
+Data Criação: 16/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: PEND-011, PEND-012, PEND-013
+Horas Estimadas: 4
+Horas Reais: 2
+Observações: Formulários implementados para Financeiro (TransacaoNovo, TransacaoEdit), Ocorrências (OcorrenciaNovo, OcorrenciaEdit), Atendimento (AtendimentoNovo, AtendimentoEdit)
+
+PEND-017
+Descrição: Documentar integrações do projeto
+Componente: Documentação
+Prioridade: CRITICA
+Status: CONCLUIDA
+Data Criação: 16/01/2026
+Data Conclusão: 16/01/2026
+Responsável: Sistema
+Dependências: -
+Horas Estimadas: 1
+Horas Reais: 0.5
+Observações: Criado .context/docs/PROJECT_INTEGRATIONS.md com todas as integrações (Supabase, GitHub, Vercel)
+
+================================================================================
+PRÓXIMAS PENDÊNCIAS (Pós-Migrations)
+================================================================================
+
+PEND-018
+Descrição: Testar login e autenticação end-to-end
+Componente: Frontend/Auth
+Prioridade: CRITICA
+Status: PENDENTE
+Data Criação: 16/01/2026
+Responsável: -
+Dependências: PEND-001 (migrations aplicadas)
+Horas Estimadas: 1
+Observações: Testar com credenciais: adm@agenciaf3f.com.br / adm@123
+
+PEND-019
+Descrição: Testar todos os módulos CRUD end-to-end
+Componente: Frontend
+Prioridade: ALTA
+Status: PENDENTE
+Data Criação: 16/01/2026
+Responsável: -
+Dependências: PEND-018
+Horas Estimadas: 4
+Observações: Testar criação, edição, exclusão em todos os módulos
+
+PEND-020
+Descrição: Implementar dashboard com métricas reais
+Componente: Frontend/Dashboard
+Prioridade: MEDIA
+Status: PENDENTE
+Data Criação: 16/01/2026
+Responsável: -
+Dependências: PEND-019
+Horas Estimadas: 4
+Observações: Total de clientes, transações pendentes, ocorrências abertas, etc.
+
+PEND-021
+Descrição: Configurar deploy no Vercel
+Componente: DevOps
+Prioridade: MEDIA
+Status: PENDENTE
+Data Criação: 16/01/2026
+Responsável: -
+Dependências: PEND-019
+Horas Estimadas: 2
+Observações: Deploy de produção
+
+================================================================================

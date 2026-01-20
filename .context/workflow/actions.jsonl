@@ -1,0 +1,5 @@
+{"timestamp":"2026-01-20T13:14:19.912Z","tool":"context","action":"check","status":"success","details":{"params":{"action":"check","repoPath":"C:\\Projetos\\AgenciaF3F"}}}
+{"timestamp":"2026-01-20T13:14:29.386Z","tool":"context","action":"init","status":"success","details":{"params":{"action":"init","repoPath":"C:\\Projetos\\AgenciaF3F","type":"both","semantic":true,"autoFill":true,"skipContentGeneration":false},"result":{"status":"incomplete"}}}
+{"timestamp":"2026-01-20T13:14:36.569Z","tool":"context","action":"fillSingle","status":"success","details":{"params":{"action":"fillSingle","repoPath":"C:\\Projetos\\AgenciaF3F","filePath":"C:\\Projetos\\AgenciaF3F\\.context\\docs\\PROJECT_INTEGRATIONS.md"},"result":{"success":true}}}
+{"timestamp":"2026-01-20T13:14:43.082Z","tool":"context","action":"fill","status":"success","details":{"params":{"action":"fill","repoPath":"C:\\Projetos\\AgenciaF3F","target":"all"},"result":{"success":true}}}
+{"timestamp":"2026-01-20T13:14:49.435Z","tool":"context","action":"listToFill","status":"success","details":{"params":{"action":"listToFill","repoPath":"C:\\Projetos\\AgenciaF3F"},"result":{"success":true}}}

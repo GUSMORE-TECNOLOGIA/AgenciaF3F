@@ -1,0 +1,443 @@
+================================================================================
+PLANO DE AÇÃO - AGÊNCIA F3F
+================================================================================
+
+Última Atualização: 16/01/2026 12:59:06
+Status: Aguardando Aplicação de Migrations no Supabase F3F
+
+================================================================================
+INFORMAÇÕES DO PROJETO
+================================================================================
+
+Projeto Supabase: F3F
+Project ID: rhnkffeyspymjpellmnd
+URL: https://rhnkffeyspymjpellmnd.supabase.co
+Dashboard: https://app.supabase.com/project/rhnkffeyspymjpellmnd
+
+IMPORTANTE: Documentação completa de integrações em:
+.context/docs/PROJECT_INTEGRATIONS.md
+
+================================================================================
+OBJETIVO
+================================================================================
+
+Desenvolver um sistema web completo para gestão de clientes e serviços da
+Agência F3F, permitindo que cada usuário gerencie seus clientes atribuídos,
+com foco em:
+- Gestão completa de clientes com links úteis específicos
+- Gestão de planos e serviços prestados
+- Controle financeiro (transações)
+- Sistema de ocorrências e atendimento
+- Gestão de equipe e responsáveis
+
+================================================================================
+ESTRUTURA DE DADOS
+================================================================================
+
+ENTIDADES PRINCIPAIS:
+
+1. Usuários (usuarios)
+   - id (UUID, PK, FK auth.users)
+   - email (TEXT, UNIQUE)
+   - name (TEXT)
+   - role (admin | user)
+   - timestamps
+
+2. Clientes (clientes)
+   - id (UUID, PK)
+   - nome (TEXT)
+   - email (TEXT, opcional)
+   - telefone (TEXT, opcional)
+   - responsavel_id (UUID, FK usuarios)
+   - status (ativo | inativo | pausado)
+   - links_uteis (JSONB) - 11 campos específicos
+   - drive_url (TEXT, opcional)
+   - logo_url (TEXT, opcional)
+   - timestamps + soft delete
+
+3. Serviços (servicos) - Cadastro Mestre
+   - id (UUID, PK)
+   - nome (TEXT)
+   - descricao (TEXT, opcional)
+   - valor (DECIMAL, opcional)
+   - ativo (BOOLEAN)
+   - timestamps + soft delete
+
+4. Serviços Prestados (servicos_prestados) - Legado
+   - id (UUID, PK)
+   - cliente_id (UUID, FK clientes)
+   - nome (TEXT)
+   - descricao (TEXT, opcional)
+   - tipo (TEXT)
+   - status (ativo | pausado | finalizado)
+   - valor (DECIMAL)
+   - data_inicio (DATE)
+   - data_fim (DATE, opcional)
+   - timestamps + soft delete
+
+5. Planos (planos)
+   - id (UUID, PK)
+   - nome (TEXT)
+   - descricao (TEXT, opcional)
+   - valor (DECIMAL)
+   - moeda (TEXT, default 'BRL')
+   - ativo (BOOLEAN)
+   - timestamps + soft delete
+
+6. Plano-Serviços (plano_servicos) - Relação N:N
+   - id (UUID, PK)
+   - plano_id (UUID, FK planos)
+   - servico_id (UUID, FK servicos)
+   - ordem (INTEGER)
+   - timestamps
+
+7. Cliente-Planos (cliente_planos) - Contratos
+   - id (UUID, PK)
+   - cliente_id (UUID, FK clientes)
+   - plano_id (UUID, FK planos)
+   - valor (DECIMAL)
+   - moeda (TEXT)
+   - status (ativo | pausado | cancelado | finalizado)
+   - data_inicio (DATE)
+   - data_fim (DATE, opcional)
+   - observacoes (TEXT)
+   - timestamps + soft delete
+
+8. Cliente-Serviços (cliente_servicos) - Contratos Avulsos
+   - id (UUID, PK)
+   - cliente_id (UUID, FK clientes)
+   - servico_id (UUID, FK servicos)
+   - valor (DECIMAL)
+   - moeda (TEXT)
+   - status (ativo | pausado | cancelado | finalizado)
+   - data_inicio (DATE)
+   - data_fim (DATE, opcional)
+   - observacoes (TEXT)
+   - timestamps + soft delete
+
+9. Transações (transacoes)
+   - id (UUID, PK)
+   - cliente_id (UUID, FK clientes)
+   - servico_id (UUID, FK, opcional)
+   - tipo (receita | despesa)
+   - categoria (TEXT)
+   - valor (DECIMAL)
+   - moeda (TEXT)
+   - descricao (TEXT)
+   - metodo_pagamento (TEXT)
+   - status (pendente | pago | vencido | cancelado | reembolsado)
+   - data_vencimento (DATE)
+   - data_pagamento (TIMESTAMPTZ, opcional)
+   - external_transaction_id (TEXT, opcional)
+   - external_source (TEXT, opcional)
+   - metadata (JSONB)
+   - timestamps + soft delete
+
+10. Ocorrência Grupos (ocorrencia_grupos)
+    - id (UUID, PK)
+    - nome (TEXT)
+    - descricao (TEXT)
+    - is_active (BOOLEAN)
+    - responsavel_id (UUID, FK usuarios)
+    - timestamps
+
+11. Ocorrência Tipos (ocorrencia_tipos)
+    - id (UUID, PK)
+    - grupo_id (UUID, FK ocorrencia_grupos)
+    - nome (TEXT)
+    - descricao (TEXT)
+    - is_active (BOOLEAN)
+    - responsavel_id (UUID, FK usuarios)
+    - timestamps
+
+12. Ocorrências (ocorrencias)
+    - id (UUID, PK)
+    - cliente_id (UUID, FK clientes)
+    - grupo_id (UUID, FK ocorrencia_grupos)
+    - tipo_id (UUID, FK ocorrencia_tipos)
+    - ocorreu_em (DATE)
+    - notas (TEXT)
+    - responsavel_id (UUID, FK usuarios)
+    - prioridade (baixa | media | alta | urgente)
+    - is_sensitive (BOOLEAN)
+    - status (aberta | em_andamento | resolvida | cancelada)
+    - timestamps + soft delete
+
+13. Atendimentos (atendimentos)
+    - id (UUID, PK)
+    - cliente_id (UUID, FK clientes)
+    - usuario_id (UUID, FK usuarios)
+    - tipo (email | whatsapp | telefone | presencial)
+    - assunto (TEXT)
+    - descricao (TEXT)
+    - data_atendimento (TIMESTAMPTZ)
+    - duracao_minutos (INTEGER, opcional)
+    - timestamps + soft delete
+
+14. Equipe Membros (equipe_membros)
+    - id (UUID, PK)
+    - nome_completo (TEXT)
+    - email (TEXT, opcional)
+    - telefone (TEXT, opcional)
+    - cargo (admin | gerente | agente | suporte)
+    - status (ativo | inativo)
+    - user_id (UUID, FK auth.users, opcional)
+    - responsavel_id (UUID, FK usuarios)
+    - timestamps + soft delete
+
+15. Cliente Responsáveis (cliente_responsaveis)
+    - id (UUID, PK)
+    - cliente_id (UUID, FK clientes)
+    - responsavel_id (UUID, FK usuarios)
+    - roles (TEXT[]) - principal, comercial, suporte, backup
+    - observacao (TEXT)
+    - timestamps + soft delete
+
+16. Contrato Status Histórico (contrato_status_historico)
+    - id (UUID, PK)
+    - tipo_contrato (plano | servico)
+    - contrato_id (UUID)
+    - status_anterior (TEXT)
+    - status_novo (TEXT)
+    - usuario_id (UUID, FK usuarios)
+    - observacoes (TEXT)
+    - metadata (JSONB)
+    - created_at (TIMESTAMPTZ)
+
+LINKS ÚTEIS (JSONB em clientes.links_uteis):
+- conta_anuncio_f3f
+- conta_anuncio_lt
+- instagram
+- business_suite
+- dashboard
+- planilha_dados
+- pasta_drive
+- utmify
+- wordpress
+- pagina_vendas_lt
+- checkout
+
+================================================================================
+COMPONENTES IMPLEMENTADOS
+================================================================================
+
+FRONTEND:
+
+1. Autenticação ✅
+   - Login.tsx
+   - ProtectedRoute.tsx
+   - AuthContext.tsx
+
+2. Layout ✅
+   - Layout.tsx (container principal)
+   - Sidebar.tsx (navegação)
+   - Header.tsx (barra superior)
+
+3. Páginas Principais ✅
+   - Dashboard.tsx
+   - Clientes/
+     - Clientes.tsx (lista com filtros)
+     - ClienteNovo.tsx (formulário de criação)
+     - ClienteEdit.tsx (formulário de edição com abas)
+     - components/tabs/ (IdentificacaoTab, LinksUteisTab, ResponsaveisTab)
+   - Servicos/
+     - Servicos.tsx (lista com filtros)
+     - ServicoNovo.tsx (formulário de criação)
+     - ServicoEdit.tsx (formulário de edição)
+   - Planos/
+     - Planos.tsx (lista com filtros)
+     - PlanoNovo.tsx (formulário de criação)
+     - PlanoEdit.tsx (formulário de edição)
+     - PlanoDetail.tsx (detalhes + relação N:N com serviços)
+   - Financeiro/
+     - Financeiro.tsx (lista com filtros e cards de resumo)
+     - TransacaoNovo.tsx (formulário de criação)
+     - TransacaoEdit.tsx (formulário de edição)
+   - Ocorrencias/
+     - Ocorrencias.tsx (lista com filtros)
+     - OcorrenciaNovo.tsx (formulário de criação)
+     - OcorrenciaEdit.tsx (formulário de edição)
+   - Atendimento/
+     - Atendimento.tsx (lista com filtros)
+     - AtendimentoNovo.tsx (formulário de criação)
+     - AtendimentoEdit.tsx (formulário de edição)
+
+4. Services ✅
+   - supabase.ts (cliente Supabase)
+   - clientes.ts (CRUD de clientes)
+   - planos.ts (CRUD de planos, serviços, relações)
+   - financeiro.ts (CRUD de transações)
+   - ocorrencias.ts (CRUD de ocorrências)
+   - atendimentos.ts (CRUD de atendimentos)
+   - usuarios.ts (consulta de usuários)
+
+5. Hooks ✅
+   - useClientes.ts, useCliente.ts
+   - usePlanos.ts (serviços, planos, relações, contratos)
+   - useFinanceiro.ts
+   - useOcorrencias.ts
+   - useAtendimentos.ts
+   - useUsuarios.ts
+
+6. Validators (Zod) ✅
+   - cliente-schema.ts
+   - plano-schema.ts
+   - servico-schema.ts
+   - financeiro-schema.ts
+   - ocorrencia-schema.ts
+   - atendimento-schema.ts
+
+7. Types ✅
+   - types/index.ts (definições TypeScript completas)
+
+BACKEND (Supabase):
+
+1. Script Consolidado ✅
+   - .context/cleanup/f3f_apply_all.sql (706 linhas)
+   - Inclui: tabelas, índices, funções, triggers, políticas RLS
+   - Idempotente (pode ser executado múltiplas vezes)
+
+2. Políticas RLS ✅
+   - Implementadas no script consolidado
+   - Baseadas em responsavel_id para clientes
+   - Diferenciação admin/user
+
+================================================================================
+FASES DE DESENVOLVIMENTO
+================================================================================
+
+FASE 1: Estrutura Base ✅ CONCLUÍDA
+- [x] Configuração do projeto React + TypeScript
+- [x] Estrutura de pastas
+- [x] Configuração Tailwind CSS
+- [x] Sistema de rotas
+- [x] Autenticação básica
+- [x] Layout principal
+- [x] Estrutura de tipos
+
+FASE 2: Banco de Dados ⏳ AGUARDANDO
+- [x] Script SQL consolidado criado
+- [ ] Executar script no Supabase F3F
+- [ ] Testar conexão
+
+FASE 3: Módulo de Clientes ✅ CONCLUÍDA
+- [x] Estrutura básica
+- [x] Página de listagem com filtros
+- [x] Formulário de criação
+- [x] Formulário de edição com abas
+- [x] Interface de edição de Links Úteis
+- [x] Integração com Supabase
+
+FASE 4: Módulos Restantes ✅ CONCLUÍDA
+- [x] Módulo de Serviços (CRUD completo)
+- [x] Módulo de Planos (CRUD completo + relação N:N)
+- [x] Módulo Financeiro (CRUD completo + resumos)
+- [x] Módulo de Ocorrências (CRUD completo + badges)
+- [x] Módulo de Atendimento (CRUD completo + formatação)
+
+FASE 5: Melhorias e Polimento 📋 PENDENTE
+- [ ] Dashboard com métricas reais
+- [ ] Filtros e buscas avançadas
+- [ ] Relatórios
+- [ ] Exportação de dados
+- [ ] Notificações
+- [ ] Deploy no Vercel
+
+================================================================================
+VALIDAÇÕES
+================================================================================
+
+1. Autenticação
+   - [ ] Login funcional
+   - [ ] Proteção de rotas
+   - [ ] Sessão persistente
+
+2. Clientes
+   - [x] Listagem de clientes
+   - [x] Criação de cliente
+   - [x] Edição de cliente
+   - [x] Exclusão (soft delete)
+   - [x] Links úteis funcionais
+   - [x] Acesso ao Drive
+
+3. Segurança
+   - [x] RLS no script consolidado
+   - [ ] Testar RLS após aplicar migrations
+   - [ ] Validação de permissões
+
+4. Performance
+   - [x] Índices no script consolidado
+   - [ ] Testar queries após aplicar migrations
+   - [ ] Paginação implementada
+
+================================================================================
+CHECKLIST TÉCNICO
+================================================================================
+
+Configuração:
+- [x] package.json com dependências
+- [x] tsconfig.json configurado
+- [x] vite.config.ts configurado
+- [x] tailwind.config.js configurado
+- [x] .eslintrc.cjs configurado
+- [x] .gitignore configurado
+- [x] .env configurado (F3F)
+
+Estrutura:
+- [x] Pastas organizadas
+- [x] Componentes criados
+- [x] Páginas criadas
+- [x] Tipos definidos
+- [x] Serviços criados
+- [x] Hooks criados
+- [x] Validators criados
+
+Funcionalidades:
+- [x] Rotas configuradas
+- [x] Autenticação estruturada
+- [x] Layout responsivo
+- [x] CRUD de clientes (completo)
+- [x] CRUD de serviços (completo)
+- [x] CRUD de planos (completo)
+- [x] CRUD de financeiro (completo)
+- [x] CRUD de ocorrências (completo)
+- [x] CRUD de atendimento (completo)
+
+Documentação:
+- [x] README.md
+- [x] Atividades.txt
+- [x] Pendencias.txt
+- [x] plano_de_acao.txt
+- [x] PROJECT_INTEGRATIONS.md
+- [x] Script SQL consolidado
+
+================================================================================
+PRÓXIMOS PASSOS IMEDIATOS
+================================================================================
+
+1. EXECUTAR SCRIPT NO SUPABASE F3F
+   - Acessar: https://app.supabase.com/project/rhnkffeyspymjpellmnd
+   - SQL Editor > Colar conteúdo de .context/cleanup/f3f_apply_all.sql
+   - Executar
+
+2. LIMPAR SUPABASE UPLOADERS (se necessário)
+   - Acessar: https://app.supabase.com/project/thckhkrbqtecouqlnaeq
+   - SQL Editor > Colar conteúdo de .context/cleanup/uploaders_cleanup.sql
+   - Executar
+
+3. TESTAR AUTENTICAÇÃO
+   - Login com: adm@agenciaf3f.com.br / adm@123
+   - Verificar se sessão persiste
+   - Testar logout
+
+4. TESTAR MÓDULOS
+   - Criar um cliente de teste
+   - Criar transações, ocorrências, atendimentos
+   - Verificar integração com banco
+
+5. DEPLOY
+   - Configurar projeto no Vercel
+   - Configurar variáveis de ambiente
+   - Deploy de produção
+
+================================================================================

@@ -1,0 +1,43 @@
+# 🔍 Instruções de Debug
+
+## Passos para identificar o problema:
+
+1. **Abra o Console do Navegador:**
+   - Pressione F12
+   - Vá para a aba "Console"
+
+2. **Acesse um cliente:**
+   - Vá para `/clientes`
+   - Clique em "Ver detalhes" de qualquer cliente
+   - OU acesse: `/clientes/[ID_DO_CLIENTE]`
+
+3. **Verifique os logs no console:**
+   - Deve aparecer: `ClienteDetail renderizado`
+   - Se clicar na aba "Identificação": `IdentificacaoTab renderizado`
+   - Se clicar na aba "Links Úteis": `LinksUteisTab renderizado`
+
+4. **Se NÃO aparecer nenhum log:**
+   - O componente não está sendo carregado
+   - Verifique se há erros em vermelho no console
+   - Verifique a URL (deve ser `/clientes/[ID]` e não `/clientes/novo`)
+
+5. **Se aparecer erro de importação:**
+   - Verifique se os arquivos existem em:
+     - `src/pages/clientes/components/tabs/IdentificacaoTab.tsx`
+     - `src/pages/clientes/components/tabs/LinksUteisTab.tsx`
+
+6. **Se aparecer erro de "Cannot read property":**
+   - Pode ser que `cliente` seja `null` ou `undefined`
+   - Verifique se o cliente existe no banco
+
+## ⚠️ IMPORTANTE:
+- As mudanças estão na página de **DETALHES** (`/clientes/:id`)
+- **NÃO** na página de criação (`/clientes/novo`)
+- Você precisa ter pelo menos 1 cliente cadastrado
+
+## 📋 Checklist:
+- [ ] Console aberto (F12)
+- [ ] Acessou `/clientes/[ID]` (não `/clientes/novo`)
+- [ ] Cliente existe no banco
+- [ ] Viu os logs no console
+- [ ] Verificou erros em vermelho

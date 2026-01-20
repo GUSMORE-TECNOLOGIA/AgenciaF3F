@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../Organizacao10x"
+		}
+	],
+	"settings": {
+		"powershell.cwd": "AgenciaF3F"
+	}
+}

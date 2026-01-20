@@ -1,0 +1,200 @@
+import { useState, useEffect } from 'react'
+import { X, Save, Loader2 } from 'lucide-react'
+import { ClienteServico } from '@/types'
+import { useUpdateClienteServico } from '@/hooks/usePlanos'
+import { clienteServicoUpdateSchema, type ClienteServicoUpdateInput } from '@/lib/validators/plano-schema'
+
+interface EditClienteServicoModalProps {
+  contrato: ClienteServico
+  isOpen: boolean
+  onClose: () => void
+  onSuccess: () => void
+}
+
+export default function EditClienteServicoModal({
+  contrato,
+  isOpen,
+  onClose,
+  onSuccess,
+}: EditClienteServicoModalProps) {
+  const { update, loading } = useUpdateClienteServico(contrato.id)
+  const [formData, setFormData] = useState<ClienteServicoUpdateInput>({
+    valor: contrato.valor,
+    moeda: contrato.moeda,
+    status: contrato.status,
+    observacoes: contrato.observacoes || '',
+  })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    if (isOpen && contrato) {
+      setFormData({
+        valor: contrato.valor,
+        moeda: contrato.moeda,
+        status: contrato.status,
+        observacoes: contrato.observacoes || '',
+      })
+      setErrors({})
+    }
+  }, [isOpen, contrato])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setErrors({})
+
+    try {
+      const validated = clienteServicoUpdateSchema.parse(formData)
+      await update(validated)
+      onSuccess()
+      onClose()
+    } catch (error: any) {
+      if (error.errors) {
+        const zodErrors: Record<string, string> = {}
+        error.errors.forEach((err: any) => {
+          if (err.path && err.path.length > 0) {
+            zodErrors[err.path[0]] = err.message
+          }
+        })
+        setErrors(zodErrors)
+      } else {
+        console.error('Erro ao atualizar contrato:', error)
+        alert('Erro ao atualizar contrato. Tente novamente.')
+      }
+    }
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-foreground">Editar Contrato de Serviço</h2>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            disabled={loading}
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6">
+          <div className="space-y-6">
+            {/* Informações do Serviço */}
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="text-sm font-medium text-gray-700 mb-2">Serviço</div>
+              <div className="text-lg font-semibold text-foreground">
+                {contrato.servico?.nome || 'Serviço não encontrado'}
+              </div>
+              {contrato.servico?.valor && (
+                <div className="text-sm text-gray-600 mt-1">
+                  Valor original: R$ {contrato.servico.valor.toFixed(2).replace('.', ',')}
+                </div>
+              )}
+            </div>
+
+            {/* Valor */}
+            <div>
+              <label htmlFor="valor" className="block text-sm font-medium text-gray-700 mb-2">
+                Valor do Contrato (R$) <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="valor"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.valor}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, valor: Number(e.target.value) }))
+                }
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                  errors.valor ? 'border-red-500' : 'border-gray-300'
+                }`}
+                required
+              />
+              {errors.valor && <p className="mt-1 text-sm text-red-600">{errors.valor}</p>}
+            </div>
+
+            {/* Moeda */}
+            <div>
+              <label htmlFor="moeda" className="block text-sm font-medium text-gray-700 mb-2">
+                Moeda
+              </label>
+              <select
+                id="moeda"
+                value={formData.moeda}
+                onChange={(e) => setFormData((prev) => ({ ...prev, moeda: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              >
+                <option value="BRL">BRL - Real Brasileiro</option>
+                <option value="USD">USD - Dólar Americano</option>
+                <option value="EUR">EUR - Euro</option>
+              </select>
+            </div>
+
+            {/* Status */}
+            <div>
+              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+                Status <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="status"
+                value={formData.status}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    status: e.target.value as 'ativo' | 'pausado' | 'cancelado' | 'finalizado',
+                  }))
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                required
+              >
+                <option value="ativo">Ativo</option>
+                <option value="pausado">Pausado</option>
+                <option value="cancelado">Cancelado</option>
+                <option value="finalizado">Finalizado</option>
+              </select>
+            </div>
+
+            {/* Observações */}
+            <div>
+              <label htmlFor="observacoes" className="block text-sm font-medium text-gray-700 mb-2">
+                Observações
+              </label>
+              <textarea
+                id="observacoes"
+                value={formData.observacoes}
+                onChange={(e) => setFormData((prev) => ({ ...prev, observacoes: e.target.value }))}
+                rows={4}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                placeholder="Observações sobre o contrato..."
+              />
+            </div>
+          </div>
+
+          {/* Botões */}
+          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+              <Save className="w-4 h-4" />
+              Salvar Alterações
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
