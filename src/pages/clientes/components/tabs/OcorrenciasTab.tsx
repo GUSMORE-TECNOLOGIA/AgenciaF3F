@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { AlertCircle, Edit, Trash2 } from 'lucide-react'
 import { useOcorrencias, useDeleteOcorrencia, useOcorrenciaGrupos, useOcorrenciaTipos } from '@/hooks/useOcorrencias'
 import { Ocorrencia } from '@/types'
+import { useModal } from '@/contexts/ModalContext'
 
 interface OcorrenciasTabProps {
   clienteId: string
@@ -14,18 +15,29 @@ export default function OcorrenciasTab({ clienteId, clienteNome }: OcorrenciasTa
   const { remove: deleteOcorrencia, loading: deleting } = useDeleteOcorrencia()
   const { grupos } = useOcorrenciaGrupos()
   const { tipos } = useOcorrenciaTipos()
+  const { confirm, alert } = useModal()
 
   const grupoMap = useMemo(() => new Map(grupos.map((grupo) => [grupo.id, grupo.nome])), [grupos])
   const tipoMap = useMemo(() => new Map(tipos.map((tipo) => [tipo.id, tipo.nome])), [tipos])
 
   const handleDelete = async (ocorrencia: Ocorrencia) => {
-    if (!confirm('Deseja realmente excluir esta ocorrência?\n\nEsta ação é irreversível.')) return
+    const ok = await confirm({
+      title: 'Excluir ocorrência',
+      message: 'Deseja realmente excluir esta ocorrência?\n\nEsta ação é irreversível.',
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
+    if (!ok) return
     try {
       await deleteOcorrencia(ocorrencia.id)
       await refetch()
     } catch (error) {
       console.error('Erro ao excluir ocorrência:', error)
-      alert('Erro ao excluir ocorrência. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao excluir ocorrência. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 

@@ -5,12 +5,14 @@ import { useCreateTransacao } from '@/hooks/useFinanceiro'
 import { transacaoCreateSchema, type TransacaoCreateInput } from '@/lib/validators/financeiro-schema'
 import { useClientes } from '@/hooks/useClientes'
 import { useServicos } from '@/hooks/usePlanos'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function TransacaoNovo() {
   const navigate = useNavigate()
   const { create, loading } = useCreateTransacao()
   const { clientes } = useClientes({ autoFetch: true, limit: 1000 })
   const { servicos } = useServicos(true) // Apenas serviços ativos
+  const { alert } = useModal()
 
   const [formData, setFormData] = useState<TransacaoCreateInput>({
     cliente_id: '',
@@ -57,7 +59,11 @@ export default function TransacaoNovo() {
         setErrors(zodErrors)
       } else {
         console.error('Erro ao criar transação:', error)
-        alert('Erro ao criar transação. Tente novamente.')
+        await alert({
+          title: 'Erro',
+          message: 'Erro ao criar transação. Tente novamente.',
+          variant: 'danger',
+        })
       }
     }
   }

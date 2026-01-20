@@ -10,6 +10,7 @@ import {
   useDeleteOcorrenciaTipo,
 } from '@/hooks/useOcorrencias'
 import { updateOcorrenciaTipo } from '@/services/ocorrencias'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function OcorrenciaTiposTab() {
   const { user } = useAuth()
@@ -17,6 +18,7 @@ export default function OcorrenciaTiposTab() {
   const { tipos, loading, refetch } = useOcorrenciaTipos({ includeInactive: true })
   const { create, loading: creating } = useCreateOcorrenciaTipo()
   const { remove: removeTipo, loading: deleting } = useDeleteOcorrenciaTipo()
+  const { confirm, alert } = useModal()
 
   const [editing, setEditing] = useState<OcorrenciaTipo | null>(null)
   const [grupoId, setGrupoId] = useState('')
@@ -45,11 +47,19 @@ export default function OcorrenciaTiposTab() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!user) {
-      alert('Usuário não autenticado. Faça login novamente.')
+      await alert({
+        title: 'Sessão expirada',
+        message: 'Usuário não autenticado. Faça login novamente.',
+        variant: 'warning',
+      })
       return
     }
     if (!grupoId) {
-      alert('Selecione um grupo para o tipo.')
+      await alert({
+        title: 'Seleção obrigatória',
+        message: 'Selecione um grupo para o tipo.',
+        variant: 'warning',
+      })
       return
     }
 
@@ -69,7 +79,11 @@ export default function OcorrenciaTiposTab() {
       await refetch()
     } catch (error) {
       console.error('Erro ao salvar tipo:', error)
-      alert('Erro ao salvar tipo. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao salvar tipo. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 
@@ -79,18 +93,32 @@ export default function OcorrenciaTiposTab() {
       await refetch()
     } catch (error) {
       console.error('Erro ao atualizar status do tipo:', error)
-      alert('Erro ao atualizar status. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao atualizar status. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 
   const handleDelete = async (tipo: OcorrenciaTipo) => {
-    if (!confirm('Deseja realmente inativar este tipo?\n\nEsta ação é irreversível.')) return
+    const ok = await confirm({
+      title: 'Inativar tipo',
+      message: 'Deseja realmente inativar este tipo?\n\nEsta ação é irreversível.',
+      confirmLabel: 'Inativar',
+      variant: 'danger',
+    })
+    if (!ok) return
     try {
       await removeTipo(tipo.id)
       await refetch()
     } catch (error) {
       console.error('Erro ao inativar tipo:', error)
-      alert('Erro ao inativar tipo. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao inativar tipo. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 

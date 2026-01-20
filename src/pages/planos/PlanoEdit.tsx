@@ -3,12 +3,14 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { usePlano, useUpdatePlano } from '@/hooks/usePlanos'
 import { planoUpdateSchema, type PlanoUpdateInput } from '@/lib/validators/plano-schema'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function PlanoEdit() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { plano, loading: loadingPlano, refetch } = usePlano(id || null)
   const { update, loading: updating } = useUpdatePlano(id || '')
+  const { alert } = useModal()
 
   const [formData, setFormData] = useState<PlanoUpdateInput>({
     nome: '',
@@ -52,7 +54,11 @@ export default function PlanoEdit() {
         setErrors(zodErrors)
       } else {
         console.error('Erro ao atualizar plano:', error)
-        alert('Erro ao atualizar plano. Tente novamente.')
+        await alert({
+          title: 'Erro',
+          message: 'Erro ao atualizar plano. Tente novamente.',
+          variant: 'danger',
+        })
       }
     }
   }

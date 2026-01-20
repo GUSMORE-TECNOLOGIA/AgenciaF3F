@@ -4,12 +4,14 @@ import { ArrowLeft, Save, Loader2, DollarSign } from 'lucide-react'
 import { useTransacao, useUpdateTransacao } from '@/hooks/useFinanceiro'
 import { transacaoUpdateSchema, type TransacaoUpdateInput } from '@/lib/validators/financeiro-schema'
 import { useClientes } from '@/hooks/useClientes'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function TransacaoEdit() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { clientes } = useClientes({ autoFetch: true, limit: 1000 })
   const { transacao, loading: loadingTransacao, refetch } = useTransacao(id || null)
+  const { alert } = useModal()
 
   const [formData, setFormData] = useState<TransacaoUpdateInput>({
     valor: 0,
@@ -66,7 +68,11 @@ export default function TransacaoEdit() {
         setErrors(zodErrors)
       } else {
         console.error('Erro ao atualizar transação:', error)
-        alert('Erro ao atualizar transação. Tente novamente.')
+        await alert({
+          title: 'Erro',
+          message: 'Erro ao atualizar transação. Tente novamente.',
+          variant: 'danger',
+        })
       }
     }
   }

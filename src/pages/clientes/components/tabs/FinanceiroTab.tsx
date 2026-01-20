@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, Clock, Edit, Loader2, XCircle, AlertCircle } from 'lucide-react'
 import { useBaixarTitulo, useDeleteTransacao, useTransacoesCliente } from '@/hooks/useFinanceiro'
 import type { Transacao } from '@/types'
+import { useModal } from '@/contexts/ModalContext'
 
 interface FinanceiroTabProps {
   clienteId: string
@@ -12,6 +13,7 @@ export default function FinanceiroTab({ clienteId, clienteNome }: FinanceiroTabP
   const { transacoes, loading, refetch } = useTransacoesCliente(clienteId, { tipo: 'receita' })
   const { remove: deleteTransacao, loading: deleting } = useDeleteTransacao()
   const { baixar, loading: baixando } = useBaixarTitulo()
+  const { confirm, alert, prompt } = useModal()
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -40,32 +42,60 @@ export default function FinanceiroTab({ clienteId, clienteNome }: FinanceiroTabP
     .reduce((sum, t) => sum + t.valor, 0)
 
   const handleDelete = async (transacao: Transacao) => {
-    if (!confirm(`Deseja realmente excluir este lançamento?\n\n${transacao.descricao}\n\nEsta ação é irreversível.`)) {
-      return
-    }
+    const ok = await confirm({
+      title: 'Excluir lançamento',
+      message: `Deseja realmente excluir este lançamento?\n\n${transacao.descricao}\n\nEsta ação é irreversível.`,
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
+    if (!ok) return
 
     try {
       await deleteTransacao(transacao.id)
       await refetch()
     } catch (error) {
       console.error('Erro ao excluir transação:', error)
-      alert('Erro ao excluir transação. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao excluir transação. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 
   const handleBaixarTitulo = async (transacao: Transacao) => {
-    const dataPagamento = prompt('Data de pagamento (YYYY-MM-DD):', new Date().toISOString().split('T')[0])
+    const dataPagamento = await prompt({
+      title: 'Baixar título',
+      message: 'Data de pagamento (YYYY-MM-DD):',
+      inputType: 'date',
+      defaultValue: new Date().toISOString().split('T')[0],
+      confirmLabel: 'Confirmar',
+    })
     if (!dataPagamento) return
 
-    const metodoPagamento = prompt('Método de pagamento (PIX, Cartão, Boleto, etc.):', 'PIX') || undefined
+    const metodoPagamento = await prompt({
+      title: 'Baixar título',
+      message: 'Método de pagamento (PIX, Cartão, Boleto, etc.):',
+      defaultValue: 'PIX',
+      placeholder: 'PIX',
+      confirmLabel: 'Confirmar',
+    })
 
     try {
-      await baixar(transacao.id, dataPagamento, metodoPagamento)
+      await baixar(transacao.id, dataPagamento, metodoPagamento || undefined)
       await refetch()
-      alert('Título baixado com sucesso!')
+      await alert({
+        title: 'Sucesso',
+        message: 'Título baixado com sucesso!',
+        variant: 'success',
+      })
     } catch (error) {
       console.error('Erro ao baixar título:', error)
-      alert('Erro ao baixar título. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao baixar título. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { Camera, Upload, X, Loader2 } from 'lucide-react'
 import { supabase } from '@/services/supabase'
+import { useModal } from '@/contexts/ModalContext'
 
 interface ClienteLogoUploadProps {
   logoUrl?: string
@@ -20,6 +21,7 @@ export default function ClienteLogoUpload({
   const [uploading, setUploading] = useState(false)
   const [preview, setPreview] = useState<string | null>(logoUrl || null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { confirm, alert } = useModal()
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -27,13 +29,21 @@ export default function ClienteLogoUpload({
 
     // Validar tipo de arquivo
     if (!file.type.startsWith('image/')) {
-      alert('Por favor, selecione um arquivo de imagem')
+      await alert({
+        title: 'Arquivo inválido',
+        message: 'Por favor, selecione um arquivo de imagem',
+        variant: 'warning',
+      })
       return
     }
 
     // Validar tamanho (máximo 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('A imagem deve ter no máximo 5MB')
+      await alert({
+        title: 'Arquivo muito grande',
+        message: 'A imagem deve ter no máximo 5MB',
+        variant: 'warning',
+      })
       return
     }
 
@@ -65,7 +75,11 @@ export default function ClienteLogoUpload({
         console.warn('Erro ao fazer upload para Supabase Storage:', uploadError)
         // Por enquanto, usar data URL como fallback
         // Em produção, você deve configurar o bucket 'clientes-logos' no Supabase
-        alert('Erro ao fazer upload. Configure o bucket "clientes-logos" no Supabase Storage.')
+        await alert({
+          title: 'Erro de upload',
+          message: 'Erro ao fazer upload. Configure o bucket \"clientes-logos\" no Supabase Storage.',
+          variant: 'danger',
+        })
         setUploading(false)
         return
       }
@@ -78,14 +92,24 @@ export default function ClienteLogoUpload({
       await onUpload(publicUrl)
     } catch (error) {
       console.error('Erro ao processar imagem:', error)
-      alert('Erro ao fazer upload da logo. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao fazer upload da logo. Tente novamente.',
+        variant: 'danger',
+      })
     } finally {
       setUploading(false)
     }
   }
 
   const handleRemove = async () => {
-    if (!confirm('Deseja remover a logo do cliente?')) return
+    const ok = await confirm({
+      title: 'Remover logo',
+      message: 'Deseja remover a logo do cliente?',
+      confirmLabel: 'Remover',
+      variant: 'danger',
+    })
+    if (!ok) return
 
     try {
       setUploading(true)
@@ -93,7 +117,11 @@ export default function ClienteLogoUpload({
       await onRemove()
     } catch (error) {
       console.error('Erro ao remover logo:', error)
-      alert('Erro ao remover logo. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao remover logo. Tente novamente.',
+        variant: 'danger',
+      })
     } finally {
       setUploading(false)
     }

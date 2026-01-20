@@ -3,10 +3,12 @@ import { useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { useCreateServico } from '@/hooks/usePlanos'
 import { servicoCreateSchema, type ServicoCreateInput } from '@/lib/validators/plano-schema'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function ServicoNovo() {
   const navigate = useNavigate()
   const { create, loading } = useCreateServico()
+  const { alert } = useModal()
 
   const [formData, setFormData] = useState<ServicoCreateInput>({
     nome: '',
@@ -37,7 +39,11 @@ export default function ServicoNovo() {
         setErrors(zodErrors)
       } else {
         console.error('Erro ao criar serviço:', error)
-        alert('Erro ao criar serviço. Tente novamente.')
+        await alert({
+          title: 'Erro',
+          message: 'Erro ao criar serviço. Tente novamente.',
+          variant: 'danger',
+        })
       }
     }
   }

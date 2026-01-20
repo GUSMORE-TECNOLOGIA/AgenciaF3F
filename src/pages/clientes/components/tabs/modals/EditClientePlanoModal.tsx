@@ -3,6 +3,7 @@ import { X, Save, Loader2 } from 'lucide-react'
 import { ClientePlano } from '@/types'
 import { useUpdateClientePlano } from '@/hooks/usePlanos'
 import { clientePlanoUpdateSchema, type ClientePlanoUpdateInput } from '@/lib/validators/plano-schema'
+import { useModal } from '@/contexts/ModalContext'
 
 interface EditClientePlanoModalProps {
   contrato: ClientePlano
@@ -18,6 +19,7 @@ export default function EditClientePlanoModal({
   onSuccess,
 }: EditClientePlanoModalProps) {
   const { update, loading } = useUpdateClientePlano(contrato.id)
+  const { alert } = useModal()
   const [formData, setFormData] = useState<ClientePlanoUpdateInput>({
     valor: contrato.valor,
     moeda: contrato.moeda,
@@ -58,7 +60,11 @@ export default function EditClientePlanoModal({
         setErrors(zodErrors)
       } else {
         console.error('Erro ao atualizar contrato:', error)
-        alert('Erro ao atualizar contrato. Tente novamente.')
+        await alert({
+          title: 'Erro',
+          message: 'Erro ao atualizar contrato. Tente novamente.',
+          variant: 'danger',
+        })
       }
     }
   }

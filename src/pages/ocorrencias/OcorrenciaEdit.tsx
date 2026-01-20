@@ -5,6 +5,7 @@ import { useOcorrencia, useUpdateOcorrencia } from '@/hooks/useOcorrencias'
 import { useOcorrenciaGrupos, useOcorrenciaTipos } from '@/hooks/useOcorrencias'
 import { ocorrenciaUpdateSchema, type OcorrenciaUpdateInput } from '@/lib/validators/ocorrencia-schema'
 import { useUsuarios } from '@/hooks/useUsuarios'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function OcorrenciaEdit() {
   const { id } = useParams<{ id: string }>()
@@ -13,6 +14,7 @@ export default function OcorrenciaEdit() {
   const { update, loading: updating } = useUpdateOcorrencia(id || '')
   const { usuarios } = useUsuarios()
   const { grupos } = useOcorrenciaGrupos()
+  const { alert } = useModal()
   const [selectedGrupoId, setSelectedGrupoId] = useState<string>('')
   const { tipos } = useOcorrenciaTipos({ grupoId: selectedGrupoId || undefined })
 
@@ -33,6 +35,9 @@ export default function OcorrenciaEdit() {
 
   useEffect(() => {
     if (ocorrencia) {
+      const reminderAt = ocorrencia.reminder_at
+        ? new Date(ocorrencia.reminder_at).toISOString().slice(0, 16)
+        : ''
       setFormData({
         grupo_id: ocorrencia.grupo_id,
         tipo_id: ocorrencia.tipo_id,
@@ -42,7 +47,7 @@ export default function OcorrenciaEdit() {
         prioridade: ocorrencia.prioridade,
         is_sensitive: ocorrencia.is_sensitive,
         status: ocorrencia.status,
-        reminder_at: ocorrencia.reminder_at || '',
+        reminder_at: reminderAt,
         reminder_status: ocorrencia.reminder_status || 'pendente',
       })
       setSelectedGrupoId(ocorrencia.grupo_id)
@@ -75,7 +80,11 @@ export default function OcorrenciaEdit() {
         setErrors(zodErrors)
       } else {
         console.error('Erro ao atualizar ocorrência:', error)
-        alert('Erro ao atualizar ocorrência. Tente novamente.')
+        await alert({
+          title: 'Erro',
+          message: 'Erro ao atualizar ocorrência. Tente novamente.',
+          variant: 'danger',
+        })
       }
     }
   }

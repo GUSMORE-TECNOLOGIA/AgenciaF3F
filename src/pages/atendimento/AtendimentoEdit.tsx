@@ -4,6 +4,7 @@ import { ArrowLeft, Save, Loader2, MessageSquare } from 'lucide-react'
 import { useAtendimento, useUpdateAtendimento } from '@/hooks/useAtendimentos'
 import { atendimentoUpdateSchema, type AtendimentoUpdateInput } from '@/lib/validators/atendimento-schema'
 import { useUsuarios } from '@/hooks/useUsuarios'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function AtendimentoEdit() {
   const { id } = useParams<{ id: string }>()
@@ -11,6 +12,7 @@ export default function AtendimentoEdit() {
   const { atendimento, loading: loadingAtendimento, refetch } = useAtendimento(id || null)
   const { update, loading: updating } = useUpdateAtendimento(id || '')
   const { usuarios } = useUsuarios()
+  const { alert } = useModal()
 
   const [formData, setFormData] = useState<AtendimentoUpdateInput>({
     tipo: 'email',
@@ -77,7 +79,11 @@ export default function AtendimentoEdit() {
         setErrors(zodErrors)
       } else {
         console.error('Erro ao atualizar atendimento:', error)
-        alert('Erro ao atualizar atendimento. Tente novamente.')
+        await alert({
+          title: 'Erro',
+          message: 'Erro ao atualizar atendimento. Tente novamente.',
+          variant: 'danger',
+        })
       }
     }
   }

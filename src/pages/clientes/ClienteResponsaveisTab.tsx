@@ -3,6 +3,7 @@ import { Plus, User, X } from 'lucide-react'
 import { ClienteResponsavel } from '@/types'
 import { fetchClienteResponsaveis } from '@/services/mockData'
 import { fetchEquipeMembros } from '@/services/equipe'
+import { useModal } from '@/contexts/ModalContext'
 
 interface ClienteResponsaveisTabProps {
   clienteId: string
@@ -20,6 +21,7 @@ export default function ClienteResponsaveisTab({
   const [selectedMembroId, setSelectedMembroId] = useState('')
   const [selectedRoles, setSelectedRoles] = useState<string[]>(['principal'])
   const [observacao, setObservacao] = useState('')
+  const { confirm } = useModal()
 
   useEffect(() => {
     loadData()
@@ -66,7 +68,13 @@ export default function ClienteResponsaveisTab({
   }
 
   const handleRemoveResponsavel = async (responsavelId: string) => {
-    if (!confirm('Deseja realmente remover este responsável?')) return
+    const ok = await confirm({
+      title: 'Remover responsável',
+      message: 'Deseja realmente remover este responsável?',
+      confirmLabel: 'Remover',
+      variant: 'danger',
+    })
+    if (!ok) return
 
     try {
       // TODO: Implementar chamada real ao Supabase

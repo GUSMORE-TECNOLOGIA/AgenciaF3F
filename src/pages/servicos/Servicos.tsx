@@ -3,24 +3,34 @@ import { Link } from 'react-router-dom'
 import { Plus, Search, Package, Edit, Trash2, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
 import { useServicos, useDeleteServico } from '@/hooks/usePlanos'
 import { Servico } from '@/types'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function Servicos() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterAtivo, setFilterAtivo] = useState<boolean | undefined>(undefined)
   const { servicos, loading, refetch } = useServicos(filterAtivo)
   const { remove: deleteServico, loading: deleting } = useDeleteServico()
+  const { confirm, alert } = useModal()
 
   const handleDelete = async (servico: Servico) => {
-    if (!confirm(`Deseja realmente excluir o serviço "${servico.nome}"?\n\nEsta ação é irreversível.`)) {
-      return
-    }
+    const ok = await confirm({
+      title: 'Excluir serviço',
+      message: `Deseja realmente excluir o serviço \"${servico.nome}\"?\n\nEsta ação é irreversível.`,
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
+    if (!ok) return
 
     try {
       await deleteServico(servico.id)
       await refetch()
     } catch (error) {
       console.error('Erro ao excluir serviço:', error)
-      alert('Erro ao excluir serviço. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao excluir serviço. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
+import { ModalProvider } from './contexts/ModalContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import Login from './pages/auth/Login'
 import ResetPassword from './pages/auth/ResetPassword'
@@ -31,7 +32,8 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
+        <ModalProvider>
+          <Routes>
           <Route path="/login" element={<Login />} />
           <Route
             path="/"
@@ -66,7 +68,8 @@ function App() {
             <Route path="atendimento/:id/editar" element={<AtendimentoEdit />} />
             <Route path="configuracoes/equipe" element={<Equipe />} />
           </Route>
-        </Routes>
+          </Routes>
+        </ModalProvider>
       </AuthProvider>
     </BrowserRouter>
   )

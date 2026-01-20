@@ -6,6 +6,7 @@ import { atendimentoCreateSchema, type AtendimentoCreateInput } from '@/lib/vali
 import { useClientes } from '@/hooks/useClientes'
 import { useUsuarios } from '@/hooks/useUsuarios'
 import { useAuth } from '@/contexts/AuthContext'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function AtendimentoNovo() {
   const navigate = useNavigate()
@@ -13,6 +14,7 @@ export default function AtendimentoNovo() {
   const { clientes } = useClientes({ autoFetch: true, limit: 1000 })
   const { usuarios } = useUsuarios()
   const { user } = useAuth()
+  const { alert } = useModal()
 
   const [formData, setFormData] = useState<AtendimentoCreateInput>({
     cliente_id: '',
@@ -51,7 +53,11 @@ export default function AtendimentoNovo() {
         setErrors(zodErrors)
       } else {
         console.error('Erro ao criar atendimento:', error)
-        alert('Erro ao criar atendimento. Tente novamente.')
+        await alert({
+          title: 'Erro',
+          message: 'Erro ao criar atendimento. Tente novamente.',
+          variant: 'danger',
+        })
       }
     }
   }

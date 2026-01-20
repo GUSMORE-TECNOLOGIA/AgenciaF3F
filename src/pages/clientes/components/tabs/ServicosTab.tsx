@@ -16,6 +16,7 @@ import EditClientePlanoModal from './modals/EditClientePlanoModal'
 import EditClienteServicoModal from './modals/EditClienteServicoModal'
 import HistoricoStatusModal from './HistoricoStatusModal'
 import { gerarTransacoesContratoPlano, gerarTransacoesContratoServico } from '@/services/financeiro'
+import { useModal } from '@/contexts/ModalContext'
 
 interface ServicosTabProps {
   cliente: Cliente
@@ -31,6 +32,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
   const { create: createClienteServico, loading: creatingServico } = useCreateClienteServico()
   const { remove: deleteClientePlano, loading: deletingPlano } = useDeleteClientePlano()
   const { remove: deleteClienteServico, loading: deletingServico } = useDeleteClienteServico()
+  const { confirm, alert } = useModal()
 
   const [showAddPlano, setShowAddPlano] = useState(false)
   const [showAddServico, setShowAddServico] = useState(false)
@@ -49,7 +51,11 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
 
   const handleAddPlano = async () => {
     if (!selectedPlanoId || !valorPlano || !dataInicioPlano) {
-      alert('Preencha todos os campos obrigatórios: plano, valor e data de início')
+      await alert({
+        title: 'Campos obrigatórios',
+        message: 'Preencha todos os campos obrigatórios: plano, valor e data de início',
+        variant: 'warning',
+      })
       return
     }
 
@@ -75,7 +81,11 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
         })
       } catch (transacaoError) {
         console.error('Erro ao gerar parcelas:', transacaoError)
-        alert('Contrato criado, mas houve erro ao gerar parcelas. Verifique o console.')
+        await alert({
+          title: 'Atenção',
+          message: 'Contrato criado, mas houve erro ao gerar parcelas. Verifique o console.',
+          variant: 'warning',
+        })
       }
 
       await refetchPlanos()
@@ -87,13 +97,21 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       setDataFimPlano('')
     } catch (error) {
       console.error('Erro ao adicionar plano:', error)
-      alert('Erro ao adicionar plano. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao adicionar plano. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 
   const handleAddServico = async () => {
     if (!selectedServicoId || !valorServico || !dataInicioServico) {
-      alert('Preencha todos os campos obrigatórios: serviço, valor e data de início')
+      await alert({
+        title: 'Campos obrigatórios',
+        message: 'Preencha todos os campos obrigatórios: serviço, valor e data de início',
+        variant: 'warning',
+      })
       return
     }
 
@@ -119,7 +137,11 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
         })
       } catch (transacaoError) {
         console.error('Erro ao gerar parcelas:', transacaoError)
-        alert('Contrato criado, mas houve erro ao gerar parcelas. Verifique o console.')
+        await alert({
+          title: 'Atenção',
+          message: 'Contrato criado, mas houve erro ao gerar parcelas. Verifique o console.',
+          variant: 'warning',
+        })
       }
 
       await refetchServicos()
@@ -131,18 +153,22 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       setDataFimServico('')
     } catch (error) {
       console.error('Erro ao adicionar serviço:', error)
-      alert('Erro ao adicionar serviço. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao adicionar serviço. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 
   const handleDeletePlanoContrato = async (contrato: ClientePlano) => {
-    if (
-      !confirm(
-        `Deseja realmente excluir este plano contratado?\n\n${contrato.plano?.nome || 'Plano'}\n\nEsta ação é irreversível.`
-      )
-    ) {
-      return
-    }
+    const ok = await confirm({
+      title: 'Excluir contrato',
+      message: `Deseja realmente excluir este plano contratado?\n\n${contrato.plano?.nome || 'Plano'}\n\nEsta ação é irreversível.`,
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
+    if (!ok) return
 
     try {
       await deleteClientePlano(contrato.id)
@@ -150,18 +176,22 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       if (onSave) onSave()
     } catch (error) {
       console.error('Erro ao excluir contrato de plano:', error)
-      alert('Erro ao excluir contrato de plano. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao excluir contrato de plano. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 
   const handleDeleteServicoContrato = async (contrato: ClienteServico) => {
-    if (
-      !confirm(
-        `Deseja realmente excluir este serviço contratado?\n\n${contrato.servico?.nome || 'Serviço'}\n\nEsta ação é irreversível.`
-      )
-    ) {
-      return
-    }
+    const ok = await confirm({
+      title: 'Excluir contrato',
+      message: `Deseja realmente excluir este serviço contratado?\n\n${contrato.servico?.nome || 'Serviço'}\n\nEsta ação é irreversível.`,
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
+    if (!ok) return
 
     try {
       await deleteClienteServico(contrato.id)
@@ -169,7 +199,11 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       if (onSave) onSave()
     } catch (error) {
       console.error('Erro ao excluir contrato de serviço:', error)
-      alert('Erro ao excluir contrato de serviço. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao excluir contrato de serviço. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 

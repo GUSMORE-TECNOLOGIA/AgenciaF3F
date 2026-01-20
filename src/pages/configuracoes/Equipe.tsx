@@ -11,6 +11,7 @@ import {
 } from '@/services/equipe'
 import EquipeMembroForm from './components/EquipeMembroForm'
 import EquipeMembrosTable from './components/EquipeMembrosTable'
+import { useModal } from '@/contexts/ModalContext'
 
 type TabType = 'membros' | 'perfis'
 
@@ -24,6 +25,7 @@ export default function Equipe() {
   const [searchTerm, setSearchTerm] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [editingMembro, setEditingMembro] = useState<EquipeMembro | null>(null)
+  const { confirm, alert } = useModal()
 
   useEffect(() => {
     loadMembros()
@@ -52,7 +54,11 @@ export default function Equipe() {
 
   const handleSubmit = async (data: EquipeMembroInput) => {
     if (!user) {
-      alert('Usuário não autenticado. Faça login novamente.')
+      await alert({
+        title: 'Sessão expirada',
+        message: 'Usuário não autenticado. Faça login novamente.',
+        variant: 'warning',
+      })
       return
     }
 
@@ -68,14 +74,23 @@ export default function Equipe() {
       await loadMembros()
     } catch (error) {
       console.error('Erro ao salvar membro:', error)
-      alert('Erro ao salvar membro. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao salvar membro. Tente novamente.',
+        variant: 'danger',
+      })
     } finally {
       setSaving(false)
     }
   }
 
   const handleDelete = async (membro: EquipeMembro) => {
-    const ok = confirm('Deseja realmente excluir este membro da equipe?\n\nEsta ação é irreversível.')
+    const ok = await confirm({
+      title: 'Excluir membro',
+      message: 'Deseja realmente excluir este membro da equipe?\n\nEsta ação é irreversível.',
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
     if (!ok) return
 
     try {
@@ -84,7 +99,11 @@ export default function Equipe() {
       await loadMembros()
     } catch (error) {
       console.error('Erro ao excluir membro:', error)
-      alert('Erro ao excluir membro. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao excluir membro. Tente novamente.',
+        variant: 'danger',
+      })
     } finally {
       setDeletingId(null)
     }

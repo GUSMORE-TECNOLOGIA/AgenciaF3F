@@ -4,6 +4,7 @@ import { Plus, Search, AlertCircle, Loader2, Edit, Trash2 } from 'lucide-react'
 import { useOcorrencias, useDeleteOcorrencia, useOcorrenciaGrupos, useOcorrenciaTipos } from '@/hooks/useOcorrencias'
 import { Ocorrencia } from '@/types'
 import { useClientes } from '@/hooks/useClientes'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function OcorrenciasList() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -32,18 +33,27 @@ export default function OcorrenciasList() {
   const { grupos } = useOcorrenciaGrupos()
   const { tipos } = useOcorrenciaTipos({ grupoId: grupoFilter || undefined })
   const { remove: deleteOcorrencia, loading: deleting } = useDeleteOcorrencia()
+  const { confirm, alert } = useModal()
 
   const handleDelete = async (ocorrencia: Ocorrencia) => {
-    if (!confirm(`Deseja realmente excluir esta ocorrência?\n\nEsta ação é irreversível.`)) {
-      return
-    }
+    const ok = await confirm({
+      title: 'Excluir ocorrência',
+      message: 'Deseja realmente excluir esta ocorrência?\n\nEsta ação é irreversível.',
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
+    if (!ok) return
 
     try {
       await deleteOcorrencia(ocorrencia.id)
       await refetch()
     } catch (error) {
       console.error('Erro ao excluir ocorrência:', error)
-      alert('Erro ao excluir ocorrência. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao excluir ocorrência. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 

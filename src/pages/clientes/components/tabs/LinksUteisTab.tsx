@@ -3,6 +3,7 @@ import { Cliente } from '@/types'
 import { useUpdateLinksUteis, useUpdateCliente } from '@/hooks/useCliente'
 import LinksUteisEditor from '../LinksUteisEditor'
 import { Save, Loader2, Folder } from 'lucide-react'
+import { useModal } from '@/contexts/ModalContext'
 
 interface LinksUteisTabProps {
   cliente: Cliente
@@ -14,6 +15,7 @@ export default function LinksUteisTab({ cliente, onSave }: LinksUteisTabProps) {
   const { update: updateCliente, loading: updatingCliente } = useUpdateCliente(cliente.id)
   const [driveUrl, setDriveUrl] = useState(cliente.drive_url || '')
   const [savingDriveUrl, setSavingDriveUrl] = useState(false)
+  const { alert } = useModal()
 
   const handleSaveLinks = async (links: any) => {
     try {
@@ -32,7 +34,11 @@ export default function LinksUteisTab({ cliente, onSave }: LinksUteisTabProps) {
       if (onSave) onSave()
     } catch (error) {
       console.error('Erro ao salvar URL do Google Drive:', error)
-      alert('Erro ao salvar URL do Google Drive. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao salvar URL do Google Drive. Tente novamente.',
+        variant: 'danger',
+      })
     } finally {
       setSavingDriveUrl(false)
     }

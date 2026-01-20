@@ -4,12 +4,14 @@ import { CheckCircle2, XCircle, Loader2 } from 'lucide-react'
 import { useOcorrencias, useOcorrenciaGrupos, useOcorrenciaTipos } from '@/hooks/useOcorrencias'
 import { useClientes } from '@/hooks/useClientes'
 import { updateOcorrencia } from '@/services/ocorrencias'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function OcorrenciaLembretesTab() {
   const { ocorrencias, loading, refetch } = useOcorrencias({ reminder_status: 'pendente' })
   const { clientes } = useClientes({ autoFetch: true, limit: 1000 })
   const { grupos } = useOcorrenciaGrupos()
   const { tipos } = useOcorrenciaTipos()
+  const { alert } = useModal()
 
   const grupoMap = useMemo(() => new Map(grupos.map((grupo) => [grupo.id, grupo.nome])), [grupos])
   const tipoMap = useMemo(() => new Map(tipos.map((tipo) => [tipo.id, tipo.nome])), [tipos])
@@ -29,7 +31,11 @@ export default function OcorrenciaLembretesTab() {
       await refetch()
     } catch (error) {
       console.error('Erro ao atualizar lembrete:', error)
-      alert('Erro ao atualizar lembrete. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao atualizar lembrete. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 

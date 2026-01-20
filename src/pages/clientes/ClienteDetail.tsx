@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, User, Briefcase, DollarSign, AlertCircle, MessageSquare, Edit, Link as LinkIcon, Trash2 } from 'lucide-react'
 import { useCliente, useUpdateClienteStatus, useDeleteCliente } from '@/hooks/useCliente'
+import { useModal } from '@/contexts/ModalContext'
 import ClienteResponsaveisTab from './ClienteResponsaveisTab'
 import IdentificacaoTab from './components/tabs/IdentificacaoTab'
 import LinksUteisTab from './components/tabs/LinksUteisTab'
@@ -15,26 +16,40 @@ export default function ClienteDetail() {
   const { cliente, loading, refetch } = useCliente(id || null)
   const { update: updateStatus } = useUpdateClienteStatus(id || '')
   const { remove: deleteCliente, loading: deleting } = useDeleteCliente(id || '')
+  const { confirm, alert } = useModal()
   
   const [activeTab, setActiveTab] = useState<
     'identificacao' | 'links' | 'responsaveis' | 'servicos' | 'financeiro' | 'ocorrencias' | 'atendimento'
   >('identificacao')
 
   const handleStatusChange = async (newStatus: 'ativo' | 'inativo' | 'pausado') => {
-    if (!confirm(`Deseja alterar o status do cliente para "${newStatus}"?`)) return
+    const ok = await confirm({
+      title: 'Confirmar alteração',
+      message: `Deseja alterar o status do cliente para \"${newStatus}\"?`,
+    })
+    if (!ok) return
 
     try {
       await updateStatus(newStatus)
       await refetch()
     } catch (error) {
       console.error('Erro ao atualizar status:', error)
-      alert('Erro ao atualizar status. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao atualizar status. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 
   const handleDeleteCliente = async () => {
     if (!cliente) return
-    const ok = confirm('Deseja realmente excluir este cliente?\\n\\nEsta ação é irreversível.')
+    const ok = await confirm({
+      title: 'Excluir cliente',
+      message: 'Deseja realmente excluir este cliente?\\n\\nEsta ação é irreversível.',
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
     if (!ok) return
 
     try {
@@ -42,7 +57,11 @@ export default function ClienteDetail() {
       navigate('/clientes')
     } catch (error) {
       console.error('Erro ao excluir cliente:', error)
-      alert('Erro ao excluir cliente. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao excluir cliente. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 

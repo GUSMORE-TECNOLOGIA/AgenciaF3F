@@ -4,6 +4,7 @@ import { useUpdateCliente } from '@/hooks/useCliente'
 import { ClienteUpdateInput } from '@/lib/validators/cliente-schema'
 import ClienteLogoUpload from '../ClienteLogoUpload'
 import { Save, Loader2, User2, Image, Settings, Calendar } from 'lucide-react'
+import { useModal } from '@/contexts/ModalContext'
 
 interface IdentificacaoTabProps {
   cliente: Cliente
@@ -13,6 +14,7 @@ interface IdentificacaoTabProps {
 export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabProps) {
   const { update, loading } = useUpdateCliente(cliente.id)
   const [saving, setSaving] = useState(false)
+  const { alert } = useModal()
   
   const [formData, setFormData] = useState({
     nome: cliente.nome,
@@ -34,7 +36,11 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
       if (onSave) onSave()
     } catch (error) {
       console.error('Erro ao salvar dados:', error)
-      alert('Erro ao salvar dados. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao salvar dados. Tente novamente.',
+        variant: 'danger',
+      })
     } finally {
       setSaving(false)
     }

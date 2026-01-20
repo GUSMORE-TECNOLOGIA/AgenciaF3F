@@ -3,10 +3,12 @@ import { useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { useCreatePlano } from '@/hooks/usePlanos'
 import { planoCreateSchema, type PlanoCreateInput } from '@/lib/validators/plano-schema'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function PlanoNovo() {
   const navigate = useNavigate()
   const { create, loading } = useCreatePlano()
+  const { alert } = useModal()
 
   const [formData, setFormData] = useState<PlanoCreateInput>({
     nome: '',
@@ -37,7 +39,11 @@ export default function PlanoNovo() {
         setErrors(zodErrors)
       } else {
         console.error('Erro ao criar plano:', error)
-        alert('Erro ao criar plano. Tente novamente.')
+        await alert({
+          title: 'Erro',
+          message: 'Erro ao criar plano. Tente novamente.',
+          variant: 'danger',
+        })
       }
     }
   }

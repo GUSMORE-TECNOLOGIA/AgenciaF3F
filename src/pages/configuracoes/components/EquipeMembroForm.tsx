@@ -13,7 +13,7 @@ export default function EquipeMembroForm({ initialData, onSubmit, onCancel, load
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [telefone, setTelefone] = useState('')
-  const [cargo, setCargo] = useState<EquipeMembro['cargo']>('agente')
+  const [perfil, setPerfil] = useState<EquipeMembro['perfil']>('agente')
   const [status, setStatus] = useState<EquipeMembro['status']>('ativo')
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export default function EquipeMembroForm({ initialData, onSubmit, onCancel, load
     setNome(initialData.nome_completo)
     setEmail(initialData.email || '')
     setTelefone(initialData.telefone || '')
-    setCargo(initialData.cargo)
+    setPerfil(initialData.perfil)
     setStatus(initialData.status)
   }, [initialData])
 
@@ -31,7 +31,7 @@ export default function EquipeMembroForm({ initialData, onSubmit, onCancel, load
       nome_completo: nome.trim(),
       email: email.trim() || undefined,
       telefone: telefone.trim() || undefined,
-      cargo,
+      perfil,
       status,
     })
   }
@@ -80,10 +80,10 @@ export default function EquipeMembroForm({ initialData, onSubmit, onCancel, load
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Cargo</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Perfil</label>
           <select
-            value={cargo}
-            onChange={(e) => setCargo(e.target.value as EquipeMembro['cargo'])}
+            value={perfil}
+            onChange={(e) => setPerfil(e.target.value as EquipeMembro['perfil'])}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="admin">Admin</option>

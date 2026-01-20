@@ -7,6 +7,7 @@ import { ocorrenciaCreateSchema, type OcorrenciaCreateInput } from '@/lib/valida
 import { useClientes } from '@/hooks/useClientes'
 import { useUsuarios } from '@/hooks/useUsuarios'
 import { useAuth } from '@/contexts/AuthContext'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function OcorrenciaNovo() {
   const navigate = useNavigate()
@@ -16,6 +17,7 @@ export default function OcorrenciaNovo() {
   const { usuarios } = useUsuarios()
   const { user } = useAuth()
   const { grupos } = useOcorrenciaGrupos()
+  const { alert } = useModal()
   const [selectedGrupoId, setSelectedGrupoId] = useState<string>('')
   const { tipos } = useOcorrenciaTipos({ grupoId: selectedGrupoId || undefined })
 
@@ -67,7 +69,11 @@ export default function OcorrenciaNovo() {
         setErrors(zodErrors)
       } else {
         console.error('Erro ao criar ocorrência:', error)
-        alert('Erro ao criar ocorrência. Tente novamente.')
+        await alert({
+          title: 'Erro',
+          message: 'Erro ao criar ocorrência. Tente novamente.',
+          variant: 'danger',
+        })
       }
     }
   }

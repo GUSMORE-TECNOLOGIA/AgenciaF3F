@@ -3,12 +3,14 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { useServico, useUpdateServico } from '@/hooks/usePlanos'
 import { servicoUpdateSchema, type ServicoUpdateInput } from '@/lib/validators/plano-schema'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function ServicoEdit() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { servico, loading: loadingServico, refetch } = useServico(id || null)
   const { update, loading: updating } = useUpdateServico(id || '')
+  const { alert } = useModal()
 
   const [formData, setFormData] = useState<ServicoUpdateInput>({
     nome: '',
@@ -50,7 +52,11 @@ export default function ServicoEdit() {
         setErrors(zodErrors)
       } else {
         console.error('Erro ao atualizar serviço:', error)
-        alert('Erro ao atualizar serviço. Tente novamente.')
+        await alert({
+          title: 'Erro',
+          message: 'Erro ao atualizar serviço. Tente novamente.',
+          variant: 'danger',
+        })
       }
     }
   }

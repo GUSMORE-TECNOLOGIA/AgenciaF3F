@@ -4,12 +4,14 @@ import { useAuth } from '@/contexts/AuthContext'
 import { OcorrenciaGrupo } from '@/types'
 import { useOcorrenciaGrupos, useCreateOcorrenciaGrupo, useUpdateOcorrenciaGrupo, useDeleteOcorrenciaGrupo } from '@/hooks/useOcorrencias'
 import { updateOcorrenciaGrupo } from '@/services/ocorrencias'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function OcorrenciaGruposTab() {
   const { user } = useAuth()
   const { grupos, loading, refetch } = useOcorrenciaGrupos({ includeInactive: true })
   const { create, loading: creating } = useCreateOcorrenciaGrupo()
   const { remove: removeGrupo, loading: deleting } = useDeleteOcorrenciaGrupo()
+  const { confirm, alert } = useModal()
 
   const [editing, setEditing] = useState<OcorrenciaGrupo | null>(null)
   const [nome, setNome] = useState('')
@@ -35,7 +37,11 @@ export default function OcorrenciaGruposTab() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!user) {
-      alert('Usuário não autenticado. Faça login novamente.')
+      await alert({
+        title: 'Sessão expirada',
+        message: 'Usuário não autenticado. Faça login novamente.',
+        variant: 'warning',
+      })
       return
     }
 
@@ -54,7 +60,11 @@ export default function OcorrenciaGruposTab() {
       await refetch()
     } catch (error) {
       console.error('Erro ao salvar grupo:', error)
-      alert('Erro ao salvar grupo. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao salvar grupo. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 
@@ -64,18 +74,32 @@ export default function OcorrenciaGruposTab() {
       await refetch()
     } catch (error) {
       console.error('Erro ao atualizar status do grupo:', error)
-      alert('Erro ao atualizar status. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao atualizar status. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 
   const handleDelete = async (grupo: OcorrenciaGrupo) => {
-    if (!confirm('Deseja realmente inativar este grupo?\n\nEsta ação é irreversível.')) return
+    const ok = await confirm({
+      title: 'Inativar grupo',
+      message: 'Deseja realmente inativar este grupo?\n\nEsta ação é irreversível.',
+      confirmLabel: 'Inativar',
+      variant: 'danger',
+    })
+    if (!ok) return
     try {
       await removeGrupo(grupo.id)
       await refetch()
     } catch (error) {
       console.error('Erro ao inativar grupo:', error)
-      alert('Erro ao inativar grupo. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao inativar grupo. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 

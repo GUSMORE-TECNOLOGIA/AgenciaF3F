@@ -4,24 +4,34 @@ import { Plus, Search, Package, Edit, Trash2, CheckCircle2, XCircle, Loader2, Ey
 import { usePlanos } from '@/hooks/usePlanos'
 import { useDeletePlano } from '@/hooks/usePlanos'
 import { Plano } from '@/types'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function Planos() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterAtivo, setFilterAtivo] = useState<boolean | undefined>(undefined)
   const { planos, loading, refetch } = usePlanos(filterAtivo)
   const { remove: deletePlano, loading: deleting } = useDeletePlano()
+  const { confirm, alert } = useModal()
 
   const handleDelete = async (plano: Plano) => {
-    if (!confirm(`Deseja realmente excluir o plano "${plano.nome}"?\n\nEsta ação é irreversível.`)) {
-      return
-    }
+    const ok = await confirm({
+      title: 'Excluir plano',
+      message: `Deseja realmente excluir o plano \"${plano.nome}\"?\n\nEsta ação é irreversível.`,
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
+    if (!ok) return
 
     try {
       await deletePlano(plano.id)
       await refetch()
     } catch (error) {
       console.error('Erro ao excluir plano:', error)
-      alert('Erro ao excluir plano. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao excluir plano. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 

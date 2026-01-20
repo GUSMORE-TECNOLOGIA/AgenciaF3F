@@ -4,6 +4,7 @@ import { Plus, Search, MessageSquare, Loader2, Edit, Trash2 } from 'lucide-react
 import { useAtendimentos, useDeleteAtendimento } from '@/hooks/useAtendimentos'
 import { Atendimento as AtendimentoType } from '@/types'
 import { useClientes } from '@/hooks/useClientes'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function Atendimento() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -13,6 +14,7 @@ export default function Atendimento() {
   const [dataFim, setDataFim] = useState('')
 
   const isEmDesenvolvimento = true
+  const { confirm, alert } = useModal()
 
   const { atendimentos, loading, refetch } = useAtendimentos({
     cliente_id: clienteFilter || undefined,
@@ -36,16 +38,24 @@ export default function Atendimento() {
   const { remove: deleteAtendimento, loading: deleting } = useDeleteAtendimento()
 
   const handleDelete = async (atendimento: AtendimentoType) => {
-    if (!confirm(`Deseja realmente excluir este atendimento?\n\n${atendimento.assunto}\n\nEsta ação é irreversível.`)) {
-      return
-    }
+    const ok = await confirm({
+      title: 'Excluir atendimento',
+      message: `Deseja realmente excluir este atendimento?\n\n${atendimento.assunto}\n\nEsta ação é irreversível.`,
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
+    if (!ok) return
 
     try {
       await deleteAtendimento(atendimento.id)
       await refetch()
     } catch (error) {
       console.error('Erro ao excluir atendimento:', error)
-      alert('Erro ao excluir atendimento. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao excluir atendimento. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 

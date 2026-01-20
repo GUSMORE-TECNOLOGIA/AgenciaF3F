@@ -4,6 +4,7 @@ import { ArrowLeft, Edit, Package, Plus, Trash2, Loader2, CheckCircle2, XCircle 
 import { usePlano } from '@/hooks/usePlanos'
 import { useServicos } from '@/hooks/usePlanos'
 import { useAddServicoToPlano, useRemoveServicoFromPlano } from '@/hooks/usePlanos'
+import { useModal } from '@/contexts/ModalContext'
 
 export default function PlanoDetail() {
   const { id } = useParams<{ id: string }>()
@@ -11,6 +12,7 @@ export default function PlanoDetail() {
   const { servicos: servicosDisponiveis } = useServicos(true) // Apenas serviços ativos
   const { add: addServico, loading: adding } = useAddServicoToPlano()
   const { remove: removeServico, loading: removing } = useRemoveServicoFromPlano()
+  const { confirm, alert } = useModal()
 
   const [selectedServicoId, setSelectedServicoId] = useState<string>('')
 
@@ -19,7 +21,11 @@ export default function PlanoDetail() {
 
     // Verificar se o serviço já está no plano
     if (plano.servicos?.some((s) => s.id === selectedServicoId)) {
-      alert('Este serviço já está vinculado ao plano')
+      await alert({
+        title: 'Atenção',
+        message: 'Este serviço já está vinculado ao plano',
+        variant: 'warning',
+      })
       return
     }
 
@@ -33,21 +39,35 @@ export default function PlanoDetail() {
       setSelectedServicoId('')
     } catch (error) {
       console.error('Erro ao adicionar serviço:', error)
-      alert('Erro ao adicionar serviço. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao adicionar serviço. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 
   const handleRemoveServico = async (servicoId: string) => {
     if (!plano) return
 
-    if (!confirm('Deseja remover este serviço do plano?')) return
+    const ok = await confirm({
+      title: 'Remover serviço',
+      message: 'Deseja remover este serviço do plano?',
+      confirmLabel: 'Remover',
+      variant: 'danger',
+    })
+    if (!ok) return
 
     try {
       await removeServico(plano.id, servicoId)
       await refetch()
     } catch (error) {
       console.error('Erro ao remover serviço:', error)
-      alert('Erro ao remover serviço. Tente novamente.')
+      await alert({
+        title: 'Erro',
+        message: 'Erro ao remover serviço. Tente novamente.',
+        variant: 'danger',
+      })
     }
   }
 
