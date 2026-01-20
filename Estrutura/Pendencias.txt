@@ -2,7 +2,7 @@
 PENDÊNCIAS - AGÊNCIA F3F
 ================================================================================
 
-Última Atualização: 16/01/2026 12:59:06
+Última Atualização: 20/01/2026 10:54:59
 Responsável: Sistema
 
 ================================================================================
@@ -28,10 +28,11 @@ BAIXA       - Nice to have
 STATUS DO PROJETO
 ================================================================================
 
-Progresso Geral: 90%
+Progresso Geral: 95%
 Módulos Implementados: 6/6 (Clientes, Financeiro, Ocorrências, Atendimento, Planos, Serviços)
 Formulários Implementados: 6/6 (Clientes, Financeiro, Ocorrências, Atendimento, Planos, Serviços)
-Banco de Dados: Aguardando aplicação de migrations no Supabase F3F
+Banco de Dados: ✅ Configurado e funcionando (16 tabelas, RLS habilitado, dados existentes)
+Deploy: ✅ Concluído na Vercel (agenciaf3f.app)
 
 ================================================================================
 INCIDENTE CRÍTICO - 16/01/2026
@@ -53,14 +54,17 @@ PEND-001
 Descrição: Configurar projeto no Supabase e criar banco de dados
 Componente: Backend/Infraestrutura
 Prioridade: CRITICA
-Status: BLOQUEADA (Aguardando re-execução no projeto correto)
+Status: CONCLUIDA
 Data Criação: 15/01/2026
+Data Conclusão: 20/01/2026
 Responsável: Usuário
 Dependências: -
 Horas Estimadas: 2
-Observações: Script consolidado criado em .context/cleanup/f3f_apply_all.sql
-             Projeto correto: F3F (ID: rhnkffeyspymjpellmnd)
-             NÃO usar Uploaders (ID: thckhkrbqtecouqlnaeq)
+Horas Reais: 2
+Observações: ✅ Migrations aplicadas com sucesso no projeto F3F (ID: rhnkffeyspymjpellmnd)
+             16 tabelas criadas, RLS habilitado, 7 migrations aplicadas
+             Dados existentes: 1 usuário, 1 cliente, 1 plano, 2 contratos, 25 transações
+             Verificado em 20/01/2026 10:54:59
 
 PEND-002
 Descrição: Criar migrations do Supabase para tabela 'usuarios'
@@ -302,11 +306,16 @@ PEND-021
 Descrição: Configurar deploy no Vercel
 Componente: DevOps
 Prioridade: MEDIA
-Status: PENDENTE
+Status: CONCLUIDA
 Data Criação: 16/01/2026
-Responsável: -
-Dependências: PEND-019
+Data Conclusão: 20/01/2026
+Responsável: Sistema
+Dependências: -
 Horas Estimadas: 2
-Observações: Deploy de produção
+Horas Reais: 1
+Observações: ✅ Deploy concluído com sucesso na Vercel
+             Projeto online em: agenciaf3f.app
+             Configuração: vercel.json criado, integração GitHub ativa
+             Build TypeScript corrigido para produção
 
 ================================================================================
