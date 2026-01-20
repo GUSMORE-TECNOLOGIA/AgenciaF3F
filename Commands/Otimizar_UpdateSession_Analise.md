@@ -130,6 +130,15 @@ N/A
 2. ⏭️ Revisar utilitários
 3. ⏭️ Validar otimizações
 
+## Checklist rápido (AgenciaF3F)
+
+- [ ] Algum componente chamou `supabase.auth.getUser()` diretamente?
+- [ ] Algum hook criou `createClient()` localmente?
+- [ ] Existe mais de um client Supabase no mesmo arquivo?
+- [ ] Uso do `useAuth()` sempre que possível?
+- [ ] Serviços importam `supabase` de `src/services/supabase.ts`?
+- [ ] Não há chamadas de `updateSession()` (projeto Vite/React)?
+
 ## Métricas de Progresso
 
 ### Antes
