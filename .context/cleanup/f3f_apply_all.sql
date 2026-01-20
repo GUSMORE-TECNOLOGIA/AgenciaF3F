@@ -483,6 +483,9 @@ DROP POLICY IF EXISTS "clientes_update_responsavel" ON clientes;
 CREATE POLICY "clientes_update_responsavel" ON clientes FOR UPDATE USING (
   (responsavel_id = auth.uid() OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin'))
   AND deleted_at IS NULL
+) WITH CHECK (
+  responsavel_id = auth.uid()
+  OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
 );
 
 -- SERVICOS_PRESTADOS
@@ -508,6 +511,9 @@ CREATE POLICY "servicos_prestados_update" ON servicos_prestados FOR UPDATE USING
     OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
   )
   AND servicos_prestados.deleted_at IS NULL
+) WITH CHECK (
+  EXISTS (SELECT 1 FROM clientes WHERE clientes.id = servicos_prestados.cliente_id AND clientes.responsavel_id = auth.uid() AND clientes.deleted_at IS NULL)
+  OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
 );
 
 -- SERVICOS (cadastro mestre, sem cliente_id)
@@ -622,6 +628,9 @@ CREATE POLICY "transacoes_update" ON transacoes FOR UPDATE USING (
     OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
   )
   AND transacoes.deleted_at IS NULL
+) WITH CHECK (
+  EXISTS (SELECT 1 FROM clientes WHERE clientes.id = transacoes.cliente_id AND clientes.responsavel_id = auth.uid() AND clientes.deleted_at IS NULL)
+  OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
 );
 
 -- OCORRENCIA_GRUPOS
@@ -695,6 +704,15 @@ CREATE POLICY "ocorrencias_update" ON ocorrencias FOR UPDATE USING (
     OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
   )
   AND ocorrencias.deleted_at IS NULL
+) WITH CHECK (
+  (
+    EXISTS (SELECT 1 FROM clientes WHERE clientes.id = ocorrencias.cliente_id AND clientes.responsavel_id = auth.uid() AND clientes.deleted_at IS NULL)
+    OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
+  )
+  AND (
+    ocorrencias.responsavel_id = auth.uid()
+    OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
+  )
 );
 
 -- ATENDIMENTOS
@@ -730,6 +748,15 @@ CREATE POLICY "atendimentos_update" ON atendimentos FOR UPDATE USING (
     OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
   )
   AND atendimentos.deleted_at IS NULL
+) WITH CHECK (
+  (
+    EXISTS (SELECT 1 FROM clientes WHERE clientes.id = atendimentos.cliente_id AND clientes.responsavel_id = auth.uid() AND clientes.deleted_at IS NULL)
+    OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
+  )
+  AND (
+    atendimentos.usuario_id = auth.uid()
+    OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
+  )
 );
 
 -- EQUIPE_MEMBROS
@@ -749,6 +776,9 @@ DROP POLICY IF EXISTS "equipe_membros_update" ON equipe_membros;
 CREATE POLICY "equipe_membros_update" ON equipe_membros FOR UPDATE USING (
   (responsavel_id = auth.uid() OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin'))
   AND deleted_at IS NULL
+) WITH CHECK (
+  responsavel_id = auth.uid()
+  OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
 );
 
 -- CLIENTE_RESPONSAVEIS
@@ -774,6 +804,9 @@ CREATE POLICY "cliente_responsaveis_update" ON cliente_responsaveis FOR UPDATE U
     OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
   )
   AND cliente_responsaveis.deleted_at IS NULL
+) WITH CHECK (
+  EXISTS (SELECT 1 FROM clientes WHERE clientes.id = cliente_responsaveis.cliente_id AND clientes.responsavel_id = auth.uid() AND clientes.deleted_at IS NULL)
+  OR EXISTS (SELECT 1 FROM usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')
 );
 
 -- CONTRATO_STATUS_HISTORICO
