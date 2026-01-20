@@ -2,7 +2,7 @@
 PENDÊNCIAS - AGÊNCIA F3F
 ================================================================================
 
-Última Atualização: 20/01/2026 11:04:27
+Última Atualização: 20/01/2026 11:20:18
 Responsável: Sistema
 
 ================================================================================
@@ -28,11 +28,12 @@ BAIXA       - Nice to have
 STATUS DO PROJETO
 ================================================================================
 
-Progresso Geral: 97%
-Módulos Implementados: 6/6 (Clientes, Financeiro, Ocorrências, Atendimento, Planos, Serviços)
-Formulários Implementados: 6/6 (Clientes, Financeiro, Ocorrências, Atendimento, Planos, Serviços)
+Progresso Geral: 88%
+Módulos Implementados: 5/6 (Atendimento em desenvolvimento)
+Formulários Implementados: 5/6 (Atendimento em desenvolvimento)
 Banco de Dados: ✅ Configurado e funcionando (16 tabelas, RLS habilitado, dados existentes)
 Deploy: ✅ Concluído na Vercel (agenciaf3f.app)
+Equipe: ⚠️ CRUD em implementação
 
 ================================================================================
 INCIDENTE CRÍTICO - 16/01/2026
@@ -44,7 +45,7 @@ RESOLUÇÃO:
   1. Script de limpeza: .context/cleanup/uploaders_cleanup.sql
   2. Script consolidado: .context/cleanup/f3f_apply_all.sql
   3. Documentação: .context/docs/PROJECT_INTEGRATIONS.md
-STATUS: Aguardando execução dos scripts pelo usuário
+STATUS: ✅ Migrations aplicadas no Supabase F3F
 
 ================================================================================
 PENDÊNCIAS
@@ -290,12 +291,12 @@ PEND-019
 Descrição: Testar todos os módulos CRUD end-to-end
 Componente: Frontend
 Prioridade: ALTA
-Status: PENDENTE
+Status: EM_PROGRESSO
 Data Criação: 16/01/2026
 Responsável: -
 Dependências: PEND-018
 Horas Estimadas: 4
-Observações: Testar criação, edição, exclusão em todos os módulos
+Observações: Validação no código em andamento + testes no sistema pendentes
 
 PEND-020
 Descrição: Implementar dashboard com métricas reais
@@ -323,5 +324,27 @@ Observações: ✅ Deploy concluído com sucesso na Vercel
              Projeto online em: agenciaf3f.app
              Configuração: vercel.json criado, integração GitHub ativa
              Build TypeScript corrigido para produção
+
+PEND-022
+Descrição: Implementar CRUD de Equipe (membros)
+Componente: Frontend/Configurações
+Prioridade: ALTA
+Status: EM_PROGRESSO
+Data Criação: 20/01/2026
+Responsável: Sistema
+Dependências: PEND-001
+Horas Estimadas: 3
+Observações: Tela estava usando mockData e sem criação/exclusão
+
+PEND-023
+Descrição: Módulo de Atendimento em desenvolvimento (adiado)
+Componente: Frontend/Atendimento
+Prioridade: MEDIA
+Status: PENDENTE
+Data Criação: 20/01/2026
+Responsável: -
+Dependências: -
+Horas Estimadas: 6
+Observações: Módulo marcado como "em desenvolvimento" e não será entregue nesta fase
 
 ================================================================================

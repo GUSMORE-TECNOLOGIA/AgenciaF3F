@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, User, Briefcase, DollarSign, AlertCircle, MessageSquare, Edit, Link as LinkIcon } from 'lucide-react'
-import { useCliente, useUpdateClienteStatus } from '@/hooks/useCliente'
+import { useParams, Link, useNavigate } from 'react-router-dom'
+import { ArrowLeft, User, Briefcase, DollarSign, AlertCircle, MessageSquare, Edit, Link as LinkIcon, Trash2 } from 'lucide-react'
+import { useCliente, useUpdateClienteStatus, useDeleteCliente } from '@/hooks/useCliente'
 import ClienteResponsaveisTab from './ClienteResponsaveisTab'
 import IdentificacaoTab from './components/tabs/IdentificacaoTab'
 import LinksUteisTab from './components/tabs/LinksUteisTab'
@@ -10,8 +10,10 @@ import FinanceiroTab from './components/tabs/FinanceiroTab'
 
 export default function ClienteDetail() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const { cliente, loading, refetch } = useCliente(id || null)
   const { update: updateStatus } = useUpdateClienteStatus(id || '')
+  const { remove: deleteCliente, loading: deleting } = useDeleteCliente(id || '')
   
   const [activeTab, setActiveTab] = useState<
     'identificacao' | 'links' | 'responsaveis' | 'servicos' | 'financeiro' | 'ocorrencias' | 'atendimento'
@@ -26,6 +28,20 @@ export default function ClienteDetail() {
     } catch (error) {
       console.error('Erro ao atualizar status:', error)
       alert('Erro ao atualizar status. Tente novamente.')
+    }
+  }
+
+  const handleDeleteCliente = async () => {
+    if (!cliente) return
+    const ok = confirm('Deseja realmente excluir este cliente?\\n\\nEsta ação é irreversível.')
+    if (!ok) return
+
+    try {
+      await deleteCliente()
+      navigate('/clientes')
+    } catch (error) {
+      console.error('Erro ao excluir cliente:', error)
+      alert('Erro ao excluir cliente. Tente novamente.')
     }
   }
 
@@ -109,6 +125,14 @@ export default function ClienteDetail() {
                   <Edit className="w-4 h-4" />
                   Editar
                 </Link>
+                <button
+                  onClick={handleDeleteCliente}
+                  disabled={deleting}
+                  className="flex items-center gap-2 px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Excluir
+                </button>
                 {cliente.status === 'ativo' && (
                   <button
                     onClick={() => handleStatusChange('inativo')}

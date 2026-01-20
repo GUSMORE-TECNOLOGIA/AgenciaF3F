@@ -2,7 +2,7 @@
 ATIVIDADES - AGÊNCIA F3F
 ================================================================================
 
-Última Atualização: 20/01/2026 11:04:27
+Última Atualização: 20/01/2026 11:20:18
 Responsável: Sistema
 
 ================================================================================
@@ -10,8 +10,8 @@ STATUS & PROGRESSO
 ================================================================================
 
 Data de Início: 15/01/2026
-Percentual de Conclusão: 97%
-Status Atual: Sistema completo e em produção - Banco de dados configurado, deploy concluído
+Percentual de Conclusão: 88%
+Status Atual: Banco e deploy ok, validações e módulos pendentes em andamento
 
 Milestones:
 - [x] Estrutura inicial do projeto React + TypeScript
@@ -34,6 +34,7 @@ Milestones:
 - [x] Deploy na Vercel (✅ concluído - 20/01/2026)
 - [x] Teste de login e autenticação (✅ concluído - 20/01/2026)
 - [ ] Testes CRUD end-to-end de todos os módulos
+- [ ] Implementação do CRUD de Equipe (membros)
 
 ================================================================================
 TAREFAS
@@ -65,15 +66,12 @@ CONCLUÍDAS:
 
 EM PROGRESSO:
 - Testes end-to-end de todos os módulos
-- Implementação de formulários de criação/edição para Financeiro, Ocorrências e Atendimento
+- Implementação do CRUD de Equipe (membros)
 
 PRÓXIMAS:
-1. Implementar CRUD completo de Clientes (integração com banco)
-3. Implementar sistema de Links Úteis
-4. Desenvolver módulo de Serviços
-5. Desenvolver módulo Financeiro
-6. Desenvolver módulo de Ocorrências
-7. Desenvolver módulo de Atendimento
+1. Testar CRUD end-to-end (Clientes, Serviços, Planos, Financeiro, Ocorrências)
+2. Implementar métricas reais no Dashboard
+3. Revisar módulo de Atendimento (adiado, em desenvolvimento)
 
 ================================================================================
 DECISÕES TÉCNICAS

@@ -1,0 +1,76 @@
+import { Edit, Trash2 } from 'lucide-react'
+import { EquipeMembro } from '@/types'
+
+interface EquipeMembrosTableProps {
+  membros: EquipeMembro[]
+  onEdit: (membro: EquipeMembro) => void
+  onDelete: (membro: EquipeMembro) => void
+  deletingId?: string | null
+}
+
+export default function EquipeMembrosTable({ membros, onEdit, onDelete, deletingId }: EquipeMembrosTableProps) {
+  if (membros.length === 0) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-600">
+        Nenhum membro encontrado
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <table className="w-full">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cargo</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {membros.map((membro) => (
+            <tr key={membro.id} className="hover:bg-gray-50">
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{membro.nome_completo}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{membro.email || '-'}</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                  {membro.cargo}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span
+                  className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                    membro.status === 'ativo' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                  }`}
+                >
+                  {membro.status}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                <div className="inline-flex items-center gap-3">
+                  <button
+                    onClick={() => onEdit(membro)}
+                    className="text-primary hover:text-primary/80"
+                    title="Editar"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => onDelete(membro)}
+                    className="text-red-600 hover:text-red-800 disabled:opacity-50"
+                    title="Excluir"
+                    disabled={deletingId === membro.id}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}

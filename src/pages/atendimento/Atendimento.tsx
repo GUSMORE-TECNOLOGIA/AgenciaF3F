@@ -12,6 +12,8 @@ export default function Atendimento() {
   const [dataInicio, setDataInicio] = useState('')
   const [dataFim, setDataFim] = useState('')
 
+  const isEmDesenvolvimento = true
+
   const { atendimentos, loading, refetch } = useAtendimentos({
     cliente_id: clienteFilter || undefined,
     tipo: tipoFilter || undefined,
@@ -20,6 +22,17 @@ export default function Atendimento() {
   })
 
   const { clientes } = useClientes({ autoFetch: true, limit: 1000 })
+
+  if (isEmDesenvolvimento) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h1 className="text-3xl font-bold text-foreground mb-2">Atendimento</h1>
+        <p className="text-gray-600">
+          Módulo em desenvolvimento. Esta funcionalidade será implementada em uma próxima fase.
+        </p>
+      </div>
+    )
+  }
   const { remove: deleteAtendimento, loading: deleting } = useDeleteAtendimento()
 
   const handleDelete = async (atendimento: AtendimentoType) => {

@@ -2,8 +2,8 @@
 PLANO DE AÇÃO - AGÊNCIA F3F
 ================================================================================
 
-Última Atualização: 20/01/2026 10:54:59
-Status: Sistema completo e em produção - Banco configurado, deploy concluído
+Última Atualização: 20/01/2026 11:20:18
+Status: Banco e deploy ok; validações pendentes; Equipe em implementação; Atendimento em desenvolvimento
 
 ================================================================================
 INFORMAÇÕES DO PROJETO
@@ -328,12 +328,12 @@ FASE 3: Módulo de Clientes ✅ CONCLUÍDA
 - [x] Interface de edição de Links Úteis
 - [x] Integração com Supabase
 
-FASE 4: Módulos Restantes ✅ CONCLUÍDA
+FASE 4: Módulos Restantes 🔄 EM ANDAMENTO
 - [x] Módulo de Serviços (CRUD completo)
 - [x] Módulo de Planos (CRUD completo + relação N:N)
 - [x] Módulo Financeiro (CRUD completo + resumos)
 - [x] Módulo de Ocorrências (CRUD completo + badges)
-- [x] Módulo de Atendimento (CRUD completo + formatação)
+- [ ] Módulo de Atendimento (em desenvolvimento, adiado)
 
 FASE 5: Melhorias e Polimento 🔄 EM ANDAMENTO
 - [ ] Dashboard com métricas reais
@@ -341,6 +341,7 @@ FASE 5: Melhorias e Polimento 🔄 EM ANDAMENTO
 - [ ] Relatórios
 - [ ] Exportação de dados
 - [ ] Notificações
+- [ ] CRUD de Equipe (membros)
 - [x] Deploy no Vercel (✅ concluído - 20/01/2026)
 
 ================================================================================
@@ -348,7 +349,7 @@ VALIDAÇÕES
 ================================================================================
 
 1. Autenticação
-   - [ ] Login funcional
+   - [x] Login funcional
    - [ ] Proteção de rotas
    - [ ] Sessão persistente
 
