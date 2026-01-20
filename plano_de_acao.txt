@@ -2,8 +2,8 @@
 PLANO DE AÇÃO - AGÊNCIA F3F
 ================================================================================
 
-Última Atualização: 20/01/2026 11:20:18
-Status: Banco e deploy ok; validações pendentes; Equipe em implementação; Atendimento em desenvolvimento
+Última Atualização: 20/01/2026 11:48:55
+Status: Banco e deploy ok; validações pendentes; Equipe/Perfis em implementação; Atendimento em desenvolvimento
 
 ================================================================================
 INFORMAÇÕES DO PROJETO
@@ -342,6 +342,7 @@ FASE 5: Melhorias e Polimento 🔄 EM ANDAMENTO
 - [ ] Exportação de dados
 - [ ] Notificações
 - [ ] CRUD de Equipe (membros)
+- [ ] Perfil de usuário + reset de senha no primeiro login
 - [x] Deploy no Vercel (✅ concluído - 20/01/2026)
 
 ================================================================================
@@ -350,6 +351,7 @@ VALIDAÇÕES
 
 1. Autenticação
    - [x] Login funcional
+   - [ ] Reset de senha no primeiro login
    - [ ] Proteção de rotas
    - [ ] Sessão persistente
 

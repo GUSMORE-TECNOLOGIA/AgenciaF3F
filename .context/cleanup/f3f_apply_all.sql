@@ -19,6 +19,9 @@ CREATE TABLE IF NOT EXISTS usuarios (
   email TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('admin', 'user')),
+  perfil TEXT NOT NULL DEFAULT 'agente' CHECK (perfil IN ('admin', 'gerente', 'agente', 'suporte')),
+  must_reset_password BOOLEAN NOT NULL DEFAULT true,
+  password_reset_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -142,7 +145,7 @@ CREATE TABLE IF NOT EXISTS equipe_membros (
   nome_completo TEXT NOT NULL CHECK (length(trim(nome_completo)) >= 2),
   email TEXT CHECK (email IS NULL OR email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
   telefone TEXT,
-  cargo TEXT NOT NULL DEFAULT 'agente' CHECK (cargo IN ('admin', 'gerente', 'agente', 'suporte')),
+  perfil TEXT NOT NULL DEFAULT 'agente' CHECK (perfil IN ('admin', 'gerente', 'agente', 'suporte')),
   status TEXT NOT NULL DEFAULT 'ativo' CHECK (status IN ('ativo', 'inativo')),
   user_id UUID NULL REFERENCES auth.users(id) ON DELETE SET NULL,
   responsavel_id UUID NOT NULL REFERENCES usuarios(id) ON DELETE RESTRICT,
@@ -303,7 +306,7 @@ CREATE INDEX IF NOT EXISTS idx_atendimentos_deleted ON atendimentos(deleted_at) 
 
 CREATE INDEX IF NOT EXISTS idx_equipe_membros_responsavel ON equipe_membros(responsavel_id);
 CREATE INDEX IF NOT EXISTS idx_equipe_membros_status ON equipe_membros(status) WHERE deleted_at IS NULL;
-CREATE INDEX IF NOT EXISTS idx_equipe_membros_cargo ON equipe_membros(cargo);
+CREATE INDEX IF NOT EXISTS idx_equipe_membros_perfil ON equipe_membros(perfil);
 CREATE INDEX IF NOT EXISTS idx_equipe_membros_user_id ON equipe_membros(user_id) WHERE user_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_equipe_membros_deleted ON equipe_membros(deleted_at) WHERE deleted_at IS NULL;
 

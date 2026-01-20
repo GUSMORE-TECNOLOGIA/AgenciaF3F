@@ -12,7 +12,7 @@ import {
 import EquipeMembroForm from './components/EquipeMembroForm'
 import EquipeMembrosTable from './components/EquipeMembrosTable'
 
-type TabType = 'membros' | 'cargos'
+type TabType = 'membros' | 'perfis'
 
 export default function Equipe() {
   const { user } = useAuth()
@@ -95,7 +95,7 @@ export default function Equipe() {
       <div>
         <h1 className="text-3xl font-bold text-foreground">Equipe</h1>
         <p className="text-gray-600 mt-2">
-          Gerencie membros da equipe e cargos da agência
+          Gerencie membros da equipe e perfis de acesso
         </p>
       </div>
 
@@ -122,22 +122,22 @@ export default function Equipe() {
         </button>
 
         <button
-          onClick={() => setActiveTab('cargos')}
+          onClick={() => setActiveTab('perfis')}
           className={`p-4 rounded-lg border-2 transition-all ${
-            activeTab === 'cargos'
+            activeTab === 'perfis'
               ? 'border-primary bg-primary/5 shadow-md'
               : 'border-gray-200 hover:border-primary/50'
           }`}
         >
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-              activeTab === 'cargos' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'
+              activeTab === 'perfis' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'
             }`}>
               <Shield className="w-5 h-5" />
             </div>
             <div className="text-left">
-              <h3 className="font-semibold">Cargos</h3>
-              <p className="text-sm text-gray-600">Configure cargos e permissões</p>
+              <h3 className="font-semibold">Perfis</h3>
+              <p className="text-sm text-gray-600">Configure perfis e permissões</p>
             </div>
           </div>
         </button>
@@ -198,11 +198,11 @@ export default function Equipe() {
         </div>
       )}
 
-      {activeTab === 'cargos' && (
+      {activeTab === 'perfis' && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-foreground mb-4">Cargos e Permissões</h2>
+          <h2 className="text-xl font-semibold text-foreground mb-4">Perfis e Permissões</h2>
           <p className="text-gray-600">
-            Configure cargos e permissões da equipe. (Em desenvolvimento)
+            Configure perfis e permissões da equipe. (Em desenvolvimento)
           </p>
         </div>
       )}

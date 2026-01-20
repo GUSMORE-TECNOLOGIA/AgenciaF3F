@@ -21,6 +21,9 @@ export async function fetchUsuarios(): Promise<User[]> {
       email: item.email,
       name: item.name,
       role: item.role,
+      perfil: item.perfil,
+      must_reset_password: item.must_reset_password,
+      password_reset_at: item.password_reset_at || undefined,
       created_at: item.created_at,
       updated_at: item.updated_at,
     }))
@@ -54,6 +57,9 @@ export async function fetchUsuarioById(id: string): Promise<User | null> {
       email: data.email,
       name: data.name,
       role: data.role,
+      perfil: data.perfil,
+      must_reset_password: data.must_reset_password,
+      password_reset_at: data.password_reset_at || undefined,
       created_at: data.created_at,
       updated_at: data.updated_at,
     }

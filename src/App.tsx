@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import Login from './pages/auth/Login'
+import ResetPassword from './pages/auth/ResetPassword'
 import Dashboard from './pages/Dashboard'
 import Clientes from './pages/clientes/Clientes'
 import ClienteNovo from './pages/clientes/ClienteNovo'
@@ -42,6 +43,7 @@ function App() {
           >
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="alterar-senha" element={<ResetPassword />} />
             <Route path="clientes" element={<Clientes />} />
             <Route path="clientes/novo" element={<ClienteNovo />} />
             <Route path="clientes/:id/editar" element={<ClienteEdit />} />

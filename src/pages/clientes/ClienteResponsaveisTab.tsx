@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Plus, User, X } from 'lucide-react'
 import { ClienteResponsavel } from '@/types'
-import { fetchClienteResponsaveis, fetchEquipeMembros } from '@/services/mockData'
+import { fetchClienteResponsaveis } from '@/services/mockData'
+import { fetchEquipeMembros } from '@/services/equipe'
 
 interface ClienteResponsaveisTabProps {
   clienteId: string
@@ -224,7 +225,7 @@ export default function ClienteResponsaveisTab({
                     .filter((m) => m.status === 'ativo')
                     .map((membro) => (
                       <option key={membro.id} value={membro.id}>
-                        {membro.nome_completo} ({membro.cargo})
+                        {membro.nome_completo} ({membro.perfil})
                       </option>
                     ))}
                 </select>

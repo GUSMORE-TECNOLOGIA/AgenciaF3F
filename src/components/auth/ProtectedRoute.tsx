@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 
 interface ProtectedRouteProps {
@@ -6,7 +6,8 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { user, loading } = useAuth()
+  const { user, loading, mustResetPassword } = useAuth()
+  const location = useLocation()
 
   if (loading) {
     return (
@@ -18,6 +19,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   if (!user) {
     return <Navigate to="/login" replace />
+  }
+
+  if (mustResetPassword && location.pathname !== '/alterar-senha') {
+    return <Navigate to="/alterar-senha" replace />
   }
 
   return children ? <>{children}</> : <Outlet />

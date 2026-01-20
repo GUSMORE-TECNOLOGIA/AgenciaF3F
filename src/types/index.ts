@@ -4,6 +4,9 @@ export interface User {
   email: string
   name: string
   role: 'admin' | 'user'
+  perfil: 'admin' | 'gerente' | 'agente' | 'suporte'
+  must_reset_password: boolean
+  password_reset_at?: string
   created_at: string
   updated_at: string
 }
@@ -200,7 +203,7 @@ export interface EquipeMembro {
   nome_completo: string
   email?: string
   telefone?: string
-  cargo: 'admin' | 'gerente' | 'agente' | 'suporte'
+  perfil: 'admin' | 'gerente' | 'agente' | 'suporte'
   status: 'ativo' | 'inativo'
   user_id?: string
   responsavel_id: string

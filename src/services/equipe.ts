@@ -5,7 +5,7 @@ export interface EquipeMembroInput {
   nome_completo: string
   email?: string
   telefone?: string
-  cargo: EquipeMembro['cargo']
+  perfil: EquipeMembro['perfil']
   status: EquipeMembro['status']
   user_id?: string | null
 }
@@ -16,7 +16,7 @@ function mapEquipeMembro(data: any): EquipeMembro {
     nome_completo: data.nome_completo,
     email: data.email || undefined,
     telefone: data.telefone || undefined,
-    cargo: data.cargo,
+    perfil: data.perfil,
     status: data.status,
     user_id: data.user_id || undefined,
     responsavel_id: data.responsavel_id,
@@ -51,7 +51,7 @@ export async function createEquipeMembro(
       nome_completo: input.nome_completo,
       email: input.email || null,
       telefone: input.telefone || null,
-      cargo: input.cargo,
+      perfil: input.perfil,
       status: input.status,
       user_id: input.user_id || null,
       responsavel_id: responsavelId,
@@ -74,7 +74,7 @@ export async function updateEquipeMembro(id: string, input: EquipeMembroInput): 
       nome_completo: input.nome_completo,
       email: input.email || null,
       telefone: input.telefone || null,
-      cargo: input.cargo,
+      perfil: input.perfil,
       status: input.status,
       user_id: input.user_id || null,
       updated_at: new Date().toISOString(),

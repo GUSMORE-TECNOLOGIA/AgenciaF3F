@@ -7,6 +7,8 @@ interface AuthContextType {
   user: User | null
   supabaseUser: SupabaseUser | null
   loading: boolean
+  mustResetPassword: boolean
+  refreshProfile: () => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
 }
@@ -17,6 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null)
   const [loading, setLoading] = useState(true)
+  const [mustResetPassword, setMustResetPassword] = useState(false)
 
   useEffect(() => {
     // Verificar sessão atual
@@ -38,12 +41,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loadUserProfile(session.user.id)
       } else {
         setUser(null)
+        setMustResetPassword(false)
         setLoading(false)
       }
     })
 
     return () => subscription.unsubscribe()
   }, [])
+
+  async function createUserProfileFromAuth(authUser: SupabaseUser) {
+    try {
+      const payload = {
+        id: authUser.id,
+        email: authUser.email || '',
+        name: authUser.email?.split('@')[0] || 'Usuário',
+        role: 'user',
+        perfil: 'agente',
+        must_reset_password: true,
+      }
+
+      const { data, error } = await supabase
+        .from('usuarios')
+        .insert(payload)
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Erro ao criar perfil do usuário:', error)
+        return null
+      }
+
+      return data as User
+    } catch (error) {
+      console.error('Erro ao criar perfil do usuário:', error)
+      return null
+    }
+  }
 
   async function loadUserProfile(userId: string) {
     try {
@@ -60,27 +93,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Criar perfil básico temporário
           const { data: authUser } = await supabase.auth.getUser()
           if (authUser?.user) {
-            const basicUser: User = {
-              id: authUser.user.id,
-              email: authUser.user.email || '',
-              name: authUser.user.email?.split('@')[0] || 'Usuário',
-              role: 'user',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
+            const createdProfile = await createUserProfileFromAuth(authUser.user)
+            if (createdProfile) {
+              setUser(createdProfile)
+              setMustResetPassword(true)
+            } else {
+              const basicUser: User = {
+                id: authUser.user.id,
+                email: authUser.user.email || '',
+                name: authUser.user.email?.split('@')[0] || 'Usuário',
+                role: 'user',
+                perfil: 'agente',
+                must_reset_password: true,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              }
+              setUser(basicUser)
+              setMustResetPassword(true)
             }
-            setUser(basicUser)
           }
         } else {
           throw error
         }
       } else {
         setUser(data)
+        setMustResetPassword(!!data.must_reset_password)
       }
     } catch (error) {
       console.error('Erro ao carregar perfil:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  async function refreshProfile() {
+    if (!supabaseUser) return
+    setLoading(true)
+    await loadUserProfile(supabaseUser.id)
   }
 
   async function signIn(email: string, password: string) {
@@ -116,10 +165,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error
     setUser(null)
     setSupabaseUser(null)
+    setMustResetPassword(false)
   }
 
   return (
-    <AuthContext.Provider value={{ user, supabaseUser, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, supabaseUser, loading, mustResetPassword, refreshProfile, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   )
