@@ -14,7 +14,7 @@ export default function OcorrenciaEdit() {
   const { usuarios } = useUsuarios()
   const { grupos } = useOcorrenciaGrupos()
   const [selectedGrupoId, setSelectedGrupoId] = useState<string>('')
-  const { tipos } = useOcorrenciaTipos(selectedGrupoId || undefined)
+  const { tipos } = useOcorrenciaTipos({ grupoId: selectedGrupoId || undefined })
 
   const [formData, setFormData] = useState<OcorrenciaUpdateInput>({
     grupo_id: '',
@@ -25,6 +25,8 @@ export default function OcorrenciaEdit() {
     prioridade: 'media',
     is_sensitive: false,
     status: 'aberta',
+    reminder_at: '',
+    reminder_status: 'pendente',
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -40,6 +42,8 @@ export default function OcorrenciaEdit() {
         prioridade: ocorrencia.prioridade,
         is_sensitive: ocorrencia.is_sensitive,
         status: ocorrencia.status,
+        reminder_at: ocorrencia.reminder_at || '',
+        reminder_status: ocorrencia.reminder_status || 'pendente',
       })
       setSelectedGrupoId(ocorrencia.grupo_id)
     }
@@ -273,6 +277,44 @@ export default function OcorrenciaEdit() {
                 <option value="em_andamento">Em Andamento</option>
                 <option value="resolvida">Resolvida</option>
                 <option value="cancelada">Cancelada</option>
+              </select>
+            </div>
+
+            {/* Lembrete */}
+            <div>
+              <label htmlFor="reminder_at" className="block text-sm font-medium text-gray-700 mb-2">
+                Lembrete (opcional)
+              </label>
+              <input
+                id="reminder_at"
+                type="datetime-local"
+                value={formData.reminder_at || ''}
+                onChange={(e) => setFormData((prev) => ({ ...prev, reminder_at: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="reminder_status" className="block text-sm font-medium text-gray-700 mb-2">
+                Status do lembrete
+              </label>
+              <select
+                id="reminder_status"
+                value={formData.reminder_status || 'pendente'}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    reminder_status: e.target.value as 'pendente' | 'feito' | 'cancelado',
+                  }))
+                }
+                disabled={!formData.reminder_at}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                  !formData.reminder_at ? 'bg-gray-50 cursor-not-allowed' : 'border-gray-300'
+                }`}
+              >
+                <option value="pendente">Pendente</option>
+                <option value="feito">Feito</option>
+                <option value="cancelado">Cancelado</option>
               </select>
             </div>
 

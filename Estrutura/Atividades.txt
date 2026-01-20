@@ -2,7 +2,7 @@
 ATIVIDADES - AGÊNCIA F3F
 ================================================================================
 
-Última Atualização: 20/01/2026 11:48:55
+Última Atualização: 20/01/2026 12:20:42
 Responsável: Sistema
 
 ================================================================================
@@ -11,7 +11,7 @@ STATUS & PROGRESSO
 
 Data de Início: 15/01/2026
 Percentual de Conclusão: 86%
-Status Atual: Banco e deploy ok, validações e módulos pendentes em andamento (Equipe e Perfis)
+Status Atual: Banco e deploy ok, validações e módulos pendentes em andamento (Equipe, Perfis e Ocorrências)
 
 Milestones:
 - [x] Estrutura inicial do projeto React + TypeScript
@@ -36,6 +36,7 @@ Milestones:
 - [ ] Testes CRUD end-to-end de todos os módulos
 - [ ] Implementação do CRUD de Equipe (membros)
 - [ ] Perfil de usuário + reset de senha no primeiro login
+- [ ] Reestruturação do módulo de Ocorrências (grupos/tipos/lembretes)
 
 ================================================================================
 TAREFAS
@@ -69,6 +70,7 @@ EM PROGRESSO:
 - Testes end-to-end de todos os módulos
 - Implementação do CRUD de Equipe (membros)
 - Perfil de usuário + reset de senha no primeiro login
+- Reestruturação do módulo de Ocorrências (grupos/tipos/lembretes)
 
 PRÓXIMAS:
 1. Testar CRUD end-to-end (Clientes, Serviços, Planos, Financeiro, Ocorrências)

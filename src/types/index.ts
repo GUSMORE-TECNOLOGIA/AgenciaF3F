@@ -176,6 +176,8 @@ export interface Ocorrencia {
   prioridade: 'baixa' | 'media' | 'alta' | 'urgente'
   is_sensitive: boolean
   status: 'aberta' | 'em_andamento' | 'resolvida' | 'cancelada'
+  reminder_at?: string | null
+  reminder_status?: 'pendente' | 'feito' | 'cancelado' | null
   created_at: string
   created_by?: string
   updated_at: string

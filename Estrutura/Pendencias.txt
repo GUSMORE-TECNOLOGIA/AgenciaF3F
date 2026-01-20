@@ -2,7 +2,7 @@
 PENDÊNCIAS - AGÊNCIA F3F
 ================================================================================
 
-Última Atualização: 20/01/2026 11:48:55
+Última Atualização: 20/01/2026 12:20:42
 Responsável: Sistema
 
 ================================================================================
@@ -34,6 +34,7 @@ Formulários Implementados: 5/6 (Atendimento em desenvolvimento)
 Banco de Dados: ✅ Configurado e funcionando (16 tabelas, RLS habilitado, dados existentes)
 Deploy: ✅ Concluído na Vercel (agenciaf3f.app)
 Equipe: ⚠️ CRUD em implementação
+Ocorrências: ⚠️ Reestruturação (grupos/tipos/lembretes) em validação
 
 ================================================================================
 INCIDENTE CRÍTICO - 16/01/2026
@@ -357,5 +358,16 @@ Responsável: Sistema
 Dependências: PEND-001
 Horas Estimadas: 3
 Observações: Adicionar campos perfil/must_reset_password em usuarios, tela de reset e redirect
+
+PEND-025
+Descrição: Reestruturar módulo de Ocorrências (grupos, tipos, lembretes)
+Componente: Frontend/Ocorrencias + Backend/Database
+Prioridade: ALTA
+Status: EM_PROGRESSO
+Data Criação: 20/01/2026
+Responsável: Sistema
+Dependências: PEND-001
+Horas Estimadas: 4
+Observações: Implementação baseada na lógica do Organizacao10x, sem seeds padrão
 
 ================================================================================

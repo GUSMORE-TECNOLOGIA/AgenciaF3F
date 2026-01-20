@@ -7,6 +7,7 @@ import IdentificacaoTab from './components/tabs/IdentificacaoTab'
 import LinksUteisTab from './components/tabs/LinksUteisTab'
 import ServicosTab from './components/tabs/ServicosTab'
 import FinanceiroTab from './components/tabs/FinanceiroTab'
+import OcorrenciasTab from './components/tabs/OcorrenciasTab'
 
 export default function ClienteDetail() {
   const { id } = useParams<{ id: string }>()
@@ -202,9 +203,7 @@ export default function ClienteDetail() {
           )}
 
           {activeTab === 'ocorrencias' && (
-            <div className="text-center py-12 text-gray-500">
-              Módulo de Ocorrências em desenvolvimento
-            </div>
+            <OcorrenciasTab clienteId={cliente.id} clienteNome={cliente.nome} />
           )}
 
           {activeTab === 'atendimento' && (

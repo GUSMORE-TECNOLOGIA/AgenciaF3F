@@ -115,6 +115,8 @@ CREATE TABLE IF NOT EXISTS ocorrencias (
   prioridade TEXT NOT NULL DEFAULT 'media' CHECK (prioridade IN ('baixa', 'media', 'alta', 'urgente')),
   is_sensitive BOOLEAN DEFAULT false,
   status TEXT NOT NULL DEFAULT 'aberta' CHECK (status IN ('aberta', 'em_andamento', 'resolvida', 'cancelada')),
+  reminder_at TIMESTAMPTZ,
+  reminder_status TEXT CHECK (reminder_status IN ('pendente', 'feito', 'cancelado') OR reminder_status IS NULL),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   created_by UUID REFERENCES usuarios(id),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -298,6 +300,8 @@ CREATE INDEX IF NOT EXISTS idx_ocorrencias_responsavel ON ocorrencias(responsave
 CREATE INDEX IF NOT EXISTS idx_ocorrencias_status ON ocorrencias(status) WHERE deleted_at IS NULL;
 CREATE INDEX IF NOT EXISTS idx_ocorrencias_data ON ocorrencias(ocorreu_em DESC);
 CREATE INDEX IF NOT EXISTS idx_ocorrencias_deleted ON ocorrencias(deleted_at) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_ocorrencias_reminder_at ON ocorrencias(reminder_at);
+CREATE INDEX IF NOT EXISTS idx_ocorrencias_reminder_status ON ocorrencias(reminder_status) WHERE reminder_status IS NOT NULL;
 
 CREATE INDEX IF NOT EXISTS idx_atendimentos_cliente ON atendimentos(cliente_id);
 CREATE INDEX IF NOT EXISTS idx_atendimentos_usuario ON atendimentos(usuario_id);

@@ -11,6 +11,8 @@ export interface OcorrenciaCreateInput {
   prioridade?: 'baixa' | 'media' | 'alta' | 'urgente'
   is_sensitive?: boolean
   status?: 'aberta' | 'em_andamento' | 'resolvida' | 'cancelada'
+  reminder_at?: string
+  reminder_status?: 'pendente' | 'feito' | 'cancelado'
 }
 
 export interface OcorrenciaUpdateInput {
@@ -22,6 +24,8 @@ export interface OcorrenciaUpdateInput {
   prioridade?: 'baixa' | 'media' | 'alta' | 'urgente'
   is_sensitive?: boolean
   status?: 'aberta' | 'em_andamento' | 'resolvida' | 'cancelada'
+  reminder_at?: string | null
+  reminder_status?: 'pendente' | 'feito' | 'cancelado' | null
 }
 
 export interface OcorrenciaFilters {
@@ -31,8 +35,43 @@ export interface OcorrenciaFilters {
   responsavel_id?: string
   prioridade?: 'baixa' | 'media' | 'alta' | 'urgente'
   status?: 'aberta' | 'em_andamento' | 'resolvida' | 'cancelada'
+  reminder_status?: 'pendente' | 'feito' | 'cancelado'
   dataInicio?: string
   dataFim?: string
+  reminderInicio?: string
+  reminderFim?: string
+}
+
+export interface OcorrenciaGrupoInput {
+  nome: string
+  descricao?: string
+  is_active?: boolean
+  responsavel_id: string
+}
+
+export interface OcorrenciaTipoInput {
+  grupo_id: string
+  nome: string
+  descricao?: string
+  is_active?: boolean
+  responsavel_id: string
+}
+
+type OcorrenciaGruposQuery =
+  | { responsavelId?: string; includeInactive?: boolean }
+  | string
+  | undefined
+
+type OcorrenciaTiposQuery =
+  | { grupoId?: string; includeInactive?: boolean }
+  | string
+  | undefined
+
+function normalizeReminderDate(value?: string | null) {
+  if (!value) return null
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) return null
+  return parsed.toISOString()
 }
 
 /**
@@ -71,12 +110,24 @@ export async function fetchOcorrencias(filtros?: OcorrenciaFilters): Promise<Oco
       query = query.eq('status', filtros.status)
     }
 
+    if (filtros?.reminder_status) {
+      query = query.eq('reminder_status', filtros.reminder_status)
+    }
+
     if (filtros?.dataInicio) {
       query = query.gte('ocorreu_em', filtros.dataInicio)
     }
 
     if (filtros?.dataFim) {
       query = query.lte('ocorreu_em', filtros.dataFim)
+    }
+
+    if (filtros?.reminderInicio) {
+      query = query.gte('reminder_at', filtros.reminderInicio)
+    }
+
+    if (filtros?.reminderFim) {
+      query = query.lte('reminder_at', filtros.reminderFim)
     }
 
     const { data, error } = await query
@@ -97,6 +148,8 @@ export async function fetchOcorrencias(filtros?: OcorrenciaFilters): Promise<Oco
       prioridade: item.prioridade,
       is_sensitive: item.is_sensitive,
       status: item.status,
+      reminder_at: item.reminder_at || null,
+      reminder_status: item.reminder_status || null,
       created_at: item.created_at,
       created_by: item.created_by || undefined,
       updated_at: item.updated_at,
@@ -140,6 +193,8 @@ export async function fetchOcorrenciaById(id: string): Promise<Ocorrencia | null
       prioridade: data.prioridade,
       is_sensitive: data.is_sensitive,
       status: data.status,
+      reminder_at: data.reminder_at || null,
+      reminder_status: data.reminder_status || null,
       created_at: data.created_at,
       created_by: data.created_by || undefined,
       updated_at: data.updated_at,
@@ -157,6 +212,8 @@ export async function fetchOcorrenciaById(id: string): Promise<Ocorrencia | null
  */
 export async function createOcorrencia(input: OcorrenciaCreateInput): Promise<Ocorrencia> {
   try {
+    const reminderAt = normalizeReminderDate(input.reminder_at)
+    const reminderStatus = reminderAt ? input.reminder_status || 'pendente' : null
     const { data, error } = await supabase
       .from('ocorrencias')
       .insert({
@@ -169,6 +226,8 @@ export async function createOcorrencia(input: OcorrenciaCreateInput): Promise<Oc
         prioridade: input.prioridade || 'media',
         is_sensitive: input.is_sensitive || false,
         status: input.status || 'aberta',
+        reminder_at: reminderAt,
+        reminder_status: reminderStatus,
       })
       .select()
       .single()
@@ -189,6 +248,8 @@ export async function createOcorrencia(input: OcorrenciaCreateInput): Promise<Oc
       prioridade: data.prioridade,
       is_sensitive: data.is_sensitive,
       status: data.status,
+      reminder_at: data.reminder_at || null,
+      reminder_status: data.reminder_status || null,
       created_at: data.created_at,
       created_by: data.created_by || undefined,
       updated_at: data.updated_at,
@@ -216,6 +277,13 @@ export async function updateOcorrencia(id: string, input: OcorrenciaUpdateInput)
     if (input.prioridade !== undefined) updateData.prioridade = input.prioridade
     if (input.is_sensitive !== undefined) updateData.is_sensitive = input.is_sensitive
     if (input.status !== undefined) updateData.status = input.status
+    if (input.reminder_at !== undefined) {
+      const reminderAt = normalizeReminderDate(input.reminder_at)
+      updateData.reminder_at = reminderAt
+      updateData.reminder_status = reminderAt ? input.reminder_status || 'pendente' : null
+    } else if (input.reminder_status !== undefined) {
+      updateData.reminder_status = input.reminder_status
+    }
 
     const { data, error } = await supabase
       .from('ocorrencias')
@@ -241,6 +309,8 @@ export async function updateOcorrencia(id: string, input: OcorrenciaUpdateInput)
       prioridade: data.prioridade,
       is_sensitive: data.is_sensitive,
       status: data.status,
+      reminder_at: data.reminder_at || null,
+      reminder_status: data.reminder_status || null,
       created_at: data.created_at,
       created_by: data.created_by || undefined,
       updated_at: data.updated_at,
@@ -277,16 +347,25 @@ export async function deleteOcorrencia(id: string): Promise<void> {
 /**
  * Buscar grupos de ocorrências
  */
-export async function fetchOcorrenciaGrupos(responsavelId?: string): Promise<OcorrenciaGrupo[]> {
+export async function fetchOcorrenciaGrupos(query?: OcorrenciaGruposQuery): Promise<OcorrenciaGrupo[]> {
   try {
+    const queryArgs = typeof query === 'string' ? { responsavelId: query } : query || {}
+    const resolvedResponsavelId =
+      typeof queryArgs === 'object' ? (queryArgs as { responsavelId?: string }).responsavelId : undefined
+    const includeInactive =
+      typeof queryArgs === 'object' ? (queryArgs as { includeInactive?: boolean }).includeInactive : false
+
     let query = supabase
       .from('ocorrencia_grupos')
       .select('*')
-      .eq('is_active', true)
       .order('nome', { ascending: true })
 
-    if (responsavelId) {
-      query = query.eq('responsavel_id', responsavelId)
+    if (!includeInactive) {
+      query = query.eq('is_active', true)
+    }
+
+    if (resolvedResponsavelId) {
+      query = query.eq('responsavel_id', resolvedResponsavelId)
     }
 
     const { data, error } = await query
@@ -314,16 +393,25 @@ export async function fetchOcorrenciaGrupos(responsavelId?: string): Promise<Oco
 /**
  * Buscar tipos de ocorrências
  */
-export async function fetchOcorrenciaTipos(grupoId?: string): Promise<OcorrenciaTipo[]> {
+export async function fetchOcorrenciaTipos(query?: OcorrenciaTiposQuery): Promise<OcorrenciaTipo[]> {
   try {
+    const queryArgs = typeof query === 'string' ? { grupoId: query } : query || {}
+    const resolvedGrupoId =
+      typeof queryArgs === 'object' ? (queryArgs as { grupoId?: string }).grupoId : undefined
+    const includeInactive =
+      typeof queryArgs === 'object' ? (queryArgs as { includeInactive?: boolean }).includeInactive : false
+
     let query = supabase
       .from('ocorrencia_tipos')
       .select('*')
-      .eq('is_active', true)
       .order('nome', { ascending: true })
 
-    if (grupoId) {
-      query = query.eq('grupo_id', grupoId)
+    if (!includeInactive) {
+      query = query.eq('is_active', true)
+    }
+
+    if (resolvedGrupoId) {
+      query = query.eq('grupo_id', resolvedGrupoId)
     }
 
     const { data, error } = await query
@@ -345,6 +433,178 @@ export async function fetchOcorrenciaTipos(grupoId?: string): Promise<Ocorrencia
     }))
   } catch (error) {
     console.error('Erro em fetchOcorrenciaTipos:', error)
+    throw error
+  }
+}
+
+/**
+ * Criar grupo de ocorrência
+ */
+export async function createOcorrenciaGrupo(input: OcorrenciaGrupoInput): Promise<OcorrenciaGrupo> {
+  const { data, error } = await supabase
+    .from('ocorrencia_grupos')
+    .insert({
+      nome: input.nome,
+      descricao: input.descricao || null,
+      is_active: input.is_active ?? true,
+      responsavel_id: input.responsavel_id,
+    })
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Erro ao criar grupo de ocorrência:', error)
+    throw error
+  }
+
+  return {
+    id: data.id,
+    nome: data.nome,
+    descricao: data.descricao || undefined,
+    is_active: data.is_active,
+    responsavel_id: data.responsavel_id,
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+  }
+}
+
+/**
+ * Atualizar grupo de ocorrência
+ */
+export async function updateOcorrenciaGrupo(
+  id: string,
+  input: Partial<OcorrenciaGrupoInput>
+): Promise<OcorrenciaGrupo> {
+  const updateData: any = {
+    updated_at: new Date().toISOString(),
+  }
+
+  if (input.nome !== undefined) updateData.nome = input.nome
+  if (input.descricao !== undefined) updateData.descricao = input.descricao || null
+  if (input.is_active !== undefined) updateData.is_active = input.is_active
+
+  const { data, error } = await supabase
+    .from('ocorrencia_grupos')
+    .update(updateData)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Erro ao atualizar grupo de ocorrência:', error)
+    throw error
+  }
+
+  return {
+    id: data.id,
+    nome: data.nome,
+    descricao: data.descricao || undefined,
+    is_active: data.is_active,
+    responsavel_id: data.responsavel_id,
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+  }
+}
+
+/**
+ * Inativar grupo de ocorrência
+ */
+export async function deleteOcorrenciaGrupo(id: string): Promise<void> {
+  const { error } = await supabase
+    .from('ocorrencia_grupos')
+    .update({ is_active: false, updated_at: new Date().toISOString() })
+    .eq('id', id)
+
+  if (error) {
+    console.error('Erro ao inativar grupo de ocorrência:', error)
+    throw error
+  }
+}
+
+/**
+ * Criar tipo de ocorrência
+ */
+export async function createOcorrenciaTipo(input: OcorrenciaTipoInput): Promise<OcorrenciaTipo> {
+  const { data, error } = await supabase
+    .from('ocorrencia_tipos')
+    .insert({
+      grupo_id: input.grupo_id,
+      nome: input.nome,
+      descricao: input.descricao || null,
+      is_active: input.is_active ?? true,
+      responsavel_id: input.responsavel_id,
+    })
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Erro ao criar tipo de ocorrência:', error)
+    throw error
+  }
+
+  return {
+    id: data.id,
+    grupo_id: data.grupo_id,
+    nome: data.nome,
+    descricao: data.descricao || undefined,
+    is_active: data.is_active,
+    responsavel_id: data.responsavel_id,
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+  }
+}
+
+/**
+ * Atualizar tipo de ocorrência
+ */
+export async function updateOcorrenciaTipo(
+  id: string,
+  input: Partial<OcorrenciaTipoInput>
+): Promise<OcorrenciaTipo> {
+  const updateData: any = {
+    updated_at: new Date().toISOString(),
+  }
+
+  if (input.grupo_id !== undefined) updateData.grupo_id = input.grupo_id
+  if (input.nome !== undefined) updateData.nome = input.nome
+  if (input.descricao !== undefined) updateData.descricao = input.descricao || null
+  if (input.is_active !== undefined) updateData.is_active = input.is_active
+
+  const { data, error } = await supabase
+    .from('ocorrencia_tipos')
+    .update(updateData)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Erro ao atualizar tipo de ocorrência:', error)
+    throw error
+  }
+
+  return {
+    id: data.id,
+    grupo_id: data.grupo_id,
+    nome: data.nome,
+    descricao: data.descricao || undefined,
+    is_active: data.is_active,
+    responsavel_id: data.responsavel_id,
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+  }
+}
+
+/**
+ * Inativar tipo de ocorrência
+ */
+export async function deleteOcorrenciaTipo(id: string): Promise<void> {
+  const { error } = await supabase
+    .from('ocorrencia_tipos')
+    .update({ is_active: false, updated_at: new Date().toISOString() })
+    .eq('id', id)
+
+  if (error) {
+    console.error('Erro ao inativar tipo de ocorrência:', error)
     throw error
   }
 }

@@ -2,8 +2,8 @@
 PLANO DE AÇÃO - AGÊNCIA F3F
 ================================================================================
 
-Última Atualização: 20/01/2026 11:48:55
-Status: Banco e deploy ok; validações pendentes; Equipe/Perfis em implementação; Atendimento em desenvolvimento
+Última Atualização: 20/01/2026 12:20:42
+Status: Banco e deploy ok; validações pendentes; Equipe/Perfis/Ocorrências em implementação; Atendimento em desenvolvimento
 
 ================================================================================
 INFORMAÇÕES DO PROJETO
@@ -343,6 +343,7 @@ FASE 5: Melhorias e Polimento 🔄 EM ANDAMENTO
 - [ ] Notificações
 - [ ] CRUD de Equipe (membros)
 - [ ] Perfil de usuário + reset de senha no primeiro login
+- [ ] Ocorrências: grupos, tipos e lembretes
 - [x] Deploy no Vercel (✅ concluído - 20/01/2026)
 
 ================================================================================
@@ -367,6 +368,10 @@ VALIDAÇÕES
    - [x] RLS no script consolidado
    - [ ] Testar RLS após aplicar migrations
    - [ ] Validação de permissões
+
+5. Ocorrências (avançado)
+   - [ ] Cadastro de grupos e tipos
+   - [ ] Lembretes configuráveis por ocorrência
 
 4. Performance
    - [x] Índices no script consolidado
