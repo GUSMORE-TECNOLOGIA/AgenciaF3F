@@ -66,3 +66,44 @@ export async function fetchUsuarioById(id: string): Promise<User | null> {
     throw error
   }
 }
+
+/**
+ * Listar responsáveis visíveis (id + name) para o dashboard.
+ * Via RPC; contorna RLS em usuarios.
+ */
+export async function fetchResponsaveisParaDashboard(): Promise<Array<{ id: string; name: string }>> {
+  try {
+    const { data, error } = await supabase.rpc('get_responsaveis_para_dashboard')
+
+    if (error) {
+      console.error('Erro ao buscar responsáveis para dashboard:', error)
+      return []
+    }
+    const rows = Array.isArray(data) ? data : []
+    return rows.map((r: { id: string; name: string }) => ({ id: String(r.id), name: String(r.name || '') }))
+  } catch (error) {
+    console.error('Erro em fetchResponsaveisParaDashboard:', error)
+    return []
+  }
+}
+
+/**
+ * Buscar apenas o nome do responsável por ID (via RPC).
+ * Contorna RLS em usuarios; use para exibir responsável na aba Responsáveis.
+ */
+export async function fetchResponsavelName(id: string): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.rpc('get_responsavel_name', {
+      p_id: id,
+    })
+
+    if (error) {
+      console.error('Erro ao buscar nome do responsável:', error)
+      return null
+    }
+    return typeof data === 'string' ? data : null
+  } catch (error) {
+    console.error('Erro em fetchResponsavelName:', error)
+    return null
+  }
+}

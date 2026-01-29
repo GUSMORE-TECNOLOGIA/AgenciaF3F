@@ -33,7 +33,7 @@ export const clienteUpdateSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(255, 'Nome muito longo').optional(),
   email: z.string().email('Email inválido').optional().or(z.literal('')),
   telefone: z.string().optional(),
-  responsavel_id: z.string().uuid('Responsável inválido').optional(),
+  responsavel_id: z.string().uuid('Responsável inválido').optional().nullable(),
   status: z.enum(['ativo', 'inativo', 'pausado']).optional(),
   logo_url: z.string().url('URL inválida').optional().or(z.literal('')).nullable(),
   links_uteis: linksUteisSchema.optional(),

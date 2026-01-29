@@ -9,6 +9,7 @@ import {
   updateEquipeMembro,
   type EquipeMembroInput,
 } from '@/services/equipe'
+import { createTeamUser } from '@/services/createTeamUser'
 import EquipeMembroForm from './components/EquipeMembroForm'
 import EquipeMembrosTable from './components/EquipeMembrosTable'
 import { useModal } from '@/contexts/ModalContext'
@@ -67,18 +68,29 @@ export default function Equipe() {
       if (editingMembro) {
         await updateEquipeMembro(editingMembro.id, data)
       } else {
-        await createEquipeMembro(data, user.id)
+        const email = (data.email ?? '').trim()
+        if (!email) {
+          await alert({
+            title: 'Email obrigatório',
+            message: 'Informe o email para criar o acesso do membro (senha padrão 123456).',
+            variant: 'warning',
+          })
+          return
+        }
+        const { id: userId } = await createTeamUser({
+          email,
+          name: data.nome_completo,
+          perfil: data.perfil,
+        })
+        await createEquipeMembro({ ...data, user_id: userId }, user.id)
       }
       setShowForm(false)
       setEditingMembro(null)
       await loadMembros()
-    } catch (error) {
-      console.error('Erro ao salvar membro:', error)
-      await alert({
-        title: 'Erro',
-        message: 'Erro ao salvar membro. Tente novamente.',
-        variant: 'danger',
-      })
+    } catch (err: unknown) {
+      console.error('Erro ao salvar membro:', err)
+      const msg = err instanceof Error ? err.message : 'Erro ao salvar membro. Tente novamente.'
+      await alert({ title: 'Erro', message: msg, variant: 'danger' })
     } finally {
       setSaving(false)
     }

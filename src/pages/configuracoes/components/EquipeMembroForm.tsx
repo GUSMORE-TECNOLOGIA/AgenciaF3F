@@ -68,7 +68,13 @@ export default function EquipeMembroForm({ initialData, onSubmit, onCancel, load
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
             placeholder="email@empresa.com"
+            required={!initialData}
           />
+          {!initialData && (
+            <p className="mt-1 text-xs text-gray-500">
+              Será criado usuário de acesso com senha padrão 123456. O membro precisará alterar no primeiro login.
+            </p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>

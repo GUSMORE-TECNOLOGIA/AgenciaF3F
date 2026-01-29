@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, User, Briefcase, DollarSign, AlertCircle, MessageSquare, Link as LinkIcon, Trash2 } from 'lucide-react'
-import { useCliente, useDeleteCliente } from '@/hooks/useCliente'
+import { useCliente, useDeleteCliente, useUpdateCliente } from '@/hooks/useCliente'
 import { useModal } from '@/contexts/ModalContext'
 import IdentificacaoTab from './components/tabs/IdentificacaoTab'
 import LinksUteisTab from './components/tabs/LinksUteisTab'
@@ -11,9 +11,21 @@ import ServicosTab from './components/tabs/ServicosTab'
 export default function ClienteEdit() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { cliente, loading: loadingCliente, refetch } = useCliente(id || null)
+  const { cliente, loading: loadingCliente, error: errorCliente, refetch } = useCliente(id || null)
   const { remove: deleteCliente, loading: deleting } = useDeleteCliente(id || '')
+  const { update: updateCliente } = useUpdateCliente(id || '')
   const { confirm, alert } = useModal()
+
+  const handleDesvincularPrincipal = async () => {
+    if (!id) return
+    try {
+      await updateCliente({ responsavel_id: null })
+      await refetch()
+    } catch (e) {
+      console.error('Erro ao desvincular responsável:', e)
+      await alert({ title: 'Erro', message: 'Não foi possível desvincular. Tente novamente.', variant: 'danger' })
+    }
+  }
 
   const [activeTab, setActiveTab] = useState<
     'identificacao' | 'links' | 'responsaveis' | 'servicos' | 'financeiro' | 'ocorrencias' | 'atendimento'
@@ -42,11 +54,12 @@ export default function ClienteEdit() {
     try {
       await deleteCliente()
       navigate('/clientes')
-    } catch (error) {
-      console.error('Erro ao excluir cliente:', error)
+    } catch (err) {
+      console.error('Erro ao excluir cliente:', err)
+      const msg = err instanceof Error ? err.message : 'Erro ao excluir cliente. Tente novamente.'
       await alert({
-        title: 'Erro',
-        message: 'Erro ao excluir cliente. Tente novamente.',
+        title: 'Erro ao excluir cliente',
+        message: msg,
         variant: 'danger',
       })
     }
@@ -56,6 +69,30 @@ export default function ClienteEdit() {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">Carregando dados do cliente...</p>
+      </div>
+    )
+  }
+
+  if (errorCliente) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600 mb-2">Erro ao carregar cliente</p>
+        <p className="text-gray-600 text-sm mb-4">{errorCliente.message}</p>
+        <div className="flex flex-wrap gap-3 justify-center">
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+          >
+            Tentar novamente
+          </button>
+          <Link
+            to="/clientes"
+            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            Voltar para lista
+          </Link>
+        </div>
       </div>
     )
   }
@@ -127,7 +164,7 @@ export default function ClienteEdit() {
           )}
 
           {activeTab === 'responsaveis' && (
-            <ClienteResponsaveisTab cliente={cliente} refetch={refetch} />
+            <ClienteResponsaveisTab cliente={cliente} onDesvincularPrincipal={handleDesvincularPrincipal} refetch={refetch} />
           )}
 
           {activeTab === 'servicos' && (

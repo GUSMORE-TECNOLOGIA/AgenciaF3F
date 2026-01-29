@@ -23,7 +23,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
     email: cliente.email || '',
     telefone: cliente.telefone || '',
     status: cliente.status,
-    responsavel_id: cliente.responsavel_id,
+    responsavel_id: cliente.responsavel_id ?? '',
   })
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
       email: cliente.email || '',
       telefone: cliente.telefone || '',
       status: cliente.status,
-      responsavel_id: cliente.responsavel_id,
+      responsavel_id: cliente.responsavel_id ?? '',
     })
   }, [cliente.id, cliente.nome, cliente.email, cliente.telefone, cliente.status, cliente.responsavel_id])
 
@@ -46,6 +46,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
         status: formData.status,
       }
       if (formData.responsavel_id) updateData.responsavel_id = formData.responsavel_id
+      else updateData.responsavel_id = null
       await update(updateData)
       if (onSave) onSave()
     } catch (error) {

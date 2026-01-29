@@ -5,13 +5,23 @@ import { useTransacoes, useDeleteTransacao, useBaixarTitulo } from '@/hooks/useF
 import { Transacao } from '@/types'
 import { useClientes } from '@/hooks/useClientes'
 import { useModal } from '@/contexts/ModalContext'
+import DateRangePicker, { type DateRange } from '@/components/DateRangePicker'
+import { subDays, format, startOfDay } from 'date-fns'
+
+const defaultRange = ((): DateRange => {
+  const today = startOfDay(new Date())
+  const from = subDays(today, 29)
+  return { from: format(from, 'yyyy-MM-dd'), to: format(today, 'yyyy-MM-dd') }
+})()
 
 export default function Financeiro() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<'pendente' | 'pago' | 'vencido' | 'cancelado' | 'reembolsado' | ''>('')
   const [clienteFilter, setClienteFilter] = useState<string>('')
-  const [dataInicio, setDataInicio] = useState('')
-  const [dataFim, setDataFim] = useState('')
+  const [dateRange, setDateRange] = useState<DateRange | null>(defaultRange)
+
+  const dataInicio = dateRange?.from
+  const dataFim = dateRange?.to
 
   const { transacoes, loading, refetch } = useTransacoes({
     tipo: 'receita',
@@ -150,52 +160,16 @@ export default function Financeiro() {
         </Link>
       </div>
 
-      {/* Cards de Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Receitas</p>
-              <p className="text-2xl font-bold text-green-600">{formatCurrency(totalReceitas)}</p>
-            </div>
-            <DollarSign className="w-8 h-8 text-green-600" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Atrasados</p>
-              <p className="text-2xl font-bold text-red-600">{formatCurrency(totalAtrasados)}</p>
-            </div>
-            <DollarSign className="w-8 h-8 text-red-600" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Saldo</p>
-              <p className={`text-2xl font-bold ${saldo >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {formatCurrency(saldo)}
-              </p>
-            </div>
-            <DollarSign className={`w-8 h-8 ${saldo >= 0 ? 'text-green-600' : 'text-red-600'}`} />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">A Receber</p>
-              <p className="text-2xl font-bold text-yellow-600">{formatCurrency(receitasPendentes)}</p>
-            </div>
-            <Clock className="w-8 h-8 text-yellow-600" />
-          </div>
-        </div>
-      </div>
-
-      {/* Filtros */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="relative">
+      {/* Filtro por período (layout profissional) */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6">
+        <div className="flex flex-wrap items-center gap-4">
+          <DateRangePicker
+            value={dateRange}
+            onChange={(r) => setDateRange(r)}
+            placeholder="Selecionar período"
+            className="min-w-0"
+          />
+          <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
@@ -230,24 +204,46 @@ export default function Financeiro() {
             ))}
           </select>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Data Início</label>
-            <input
-              type="date"
-              value={dataInicio}
-              onChange={(e) => setDataInicio(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-            />
+      </div>
+
+      {/* Cards de Resumo (do período) */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Receita do período</p>
+              <p className="text-2xl font-bold text-green-600">{formatCurrency(totalReceitas)}</p>
+            </div>
+            <DollarSign className="w-8 h-8 text-green-600" />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Data Fim</label>
-            <input
-              type="date"
-              value={dataFim}
-              onChange={(e) => setDataFim(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-            />
+        </div>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Atrasados no período</p>
+              <p className="text-2xl font-bold text-red-600">{formatCurrency(totalAtrasados)}</p>
+            </div>
+            <DollarSign className="w-8 h-8 text-red-600" />
+          </div>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Saldo do período</p>
+              <p className={`text-2xl font-bold ${saldo >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {formatCurrency(saldo)}
+              </p>
+            </div>
+            <DollarSign className={`w-8 h-8 ${saldo >= 0 ? 'text-green-600' : 'text-red-600'}`} />
+          </div>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">A receber (período)</p>
+              <p className="text-2xl font-bold text-yellow-600">{formatCurrency(receitasPendentes)}</p>
+            </div>
+            <Clock className="w-8 h-8 text-yellow-600" />
           </div>
         </div>
       </div>
