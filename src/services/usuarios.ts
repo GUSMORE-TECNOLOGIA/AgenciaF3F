@@ -42,15 +42,13 @@ export async function fetchUsuarioById(id: string): Promise<User | null> {
       .from('usuarios')
       .select('*')
       .eq('id', id)
-      .single()
+      .maybeSingle()
 
     if (error) {
-      if (error.code === 'PGRST116') {
-        return null
-      }
       console.error('Erro ao buscar usuário:', error)
       throw error
     }
+    if (!data) return null
 
     return {
       id: data.id,
