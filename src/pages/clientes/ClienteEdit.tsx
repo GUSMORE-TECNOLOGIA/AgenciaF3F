@@ -127,7 +127,7 @@ export default function ClienteEdit() {
           )}
 
           {activeTab === 'responsaveis' && (
-            <ClienteResponsaveisTab clienteId={cliente.id} clienteNome={cliente.nome} />
+            <ClienteResponsaveisTab cliente={cliente} refetch={refetch} />
           )}
 
           {activeTab === 'servicos' && (

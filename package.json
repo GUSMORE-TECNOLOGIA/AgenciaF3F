@@ -11,6 +11,7 @@
     "import:clientes": "node scripts/import-clientes.mjs",
     "import:equipe": "node scripts/import-equipe-via-admin.mjs",
     "import:links": "node scripts/import-links.mjs",
+    "import:responsaveis": "node scripts/import-responsaveis.mjs",
     "import:sql": "node scripts/import-generate-sql.mjs",
     "equipe:link-users": "node scripts/equipe-membros-to-users.mjs",
     "equipe:validate": "node scripts/equipe-validate.mjs",

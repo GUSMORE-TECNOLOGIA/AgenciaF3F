@@ -1,22 +1,24 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Plus, User, X } from 'lucide-react'
-import { ClienteResponsavel } from '@/types'
+import { Cliente, ClienteResponsavel } from '@/types'
 import { fetchClienteResponsaveis } from '@/services/mockData'
 import { fetchEquipeMembros } from '@/services/equipe'
+import { fetchUsuarioById } from '@/services/usuarios'
 import { useModal } from '@/contexts/ModalContext'
 
+const VIRTUAL_PRINCIPAL_PREFIX = 'virtual-principal-'
+
 interface ClienteResponsaveisTabProps {
-  clienteId: string
-  clienteNome: string
+  cliente: Cliente
+  /** Refetch do cliente ao abrir a aba (evita dados em cache após import). */
+  refetch?: () => Promise<void>
 }
 
-export default function ClienteResponsaveisTab({
-  clienteId,
-  clienteNome,
-}: ClienteResponsaveisTabProps) {
+export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResponsaveisTabProps) {
   const [responsaveis, setResponsaveis] = useState<ClienteResponsavel[]>([])
   const [membrosDisponiveis, setMembrosDisponiveis] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [responsavelPrincipal, setResponsavelPrincipal] = useState<{ id: string; name: string } | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
   const [selectedMembroId, setSelectedMembroId] = useState('')
   const [selectedRoles, setSelectedRoles] = useState<string[]>(['principal'])
@@ -24,15 +26,33 @@ export default function ClienteResponsaveisTab({
   const { confirm } = useModal()
 
   useEffect(() => {
+    refetch?.()
+  }, [])
+
+  useEffect(() => {
     loadData()
-  }, [clienteId])
+  }, [cliente.id])
+
+  useEffect(() => {
+    if (!cliente.responsavel_id) {
+      setResponsavelPrincipal(null)
+      return
+    }
+    let cancelled = false
+    fetchUsuarioById(cliente.responsavel_id)
+      .then((u) => {
+        if (!cancelled && u) setResponsavelPrincipal({ id: u.id, name: u.name })
+        else if (!cancelled) setResponsavelPrincipal(null)
+      })
+      .catch(() => { if (!cancelled) setResponsavelPrincipal(null) })
+    return () => { cancelled = true }
+  }, [cliente.responsavel_id])
 
   async function loadData() {
     try {
       setLoading(true)
-      // TODO: Substituir por chamadas reais ao Supabase quando configurado
       const [responsaveisData, membrosData] = await Promise.all([
-        fetchClienteResponsaveis(clienteId),
+        fetchClienteResponsaveis(cliente.id),
         fetchEquipeMembros(),
       ])
       setResponsaveis(responsaveisData)
@@ -44,13 +64,33 @@ export default function ClienteResponsaveisTab({
     }
   }
 
+  /** Lista exibida: responsáveis da API + responsável principal (clientes.responsavel_id) se ainda não estiver na lista. */
+  const displayResponsaveis = useMemo(() => {
+    const list = [...responsaveis]
+    const rid = (cliente.responsavel_id || '').trim()
+    if (!rid) return list
+    const jaIncluido = list.some((r) => r.responsavel_id === rid)
+    if (jaIncluido) return list
+    const name = cliente.responsavel?.name || responsavelPrincipal?.name || 'Responsável'
+    const principal: ClienteResponsavel = {
+      id: `${VIRTUAL_PRINCIPAL_PREFIX}${rid}`,
+      cliente_id: cliente.id,
+      responsavel_id: rid,
+      roles: ['principal'],
+      created_at: '',
+      updated_at: '',
+      responsavel: { id: rid, name, email: '' },
+    }
+    return [principal, ...list]
+  }, [cliente.id, cliente.responsavel_id, cliente.responsavel?.name, responsavelPrincipal, responsaveis])
+
   const handleAddResponsavel = async () => {
     if (!selectedMembroId || selectedRoles.length === 0) return
 
     try {
       // TODO: Implementar chamada real ao Supabase
       console.log('Adicionar responsável:', {
-        clienteId,
+        clienteId: cliente.id,
         responsavelId: selectedMembroId,
         roles: selectedRoles,
         observacao,
@@ -113,13 +153,15 @@ export default function ClienteResponsaveisTab({
     return colors[role] || 'bg-gray-100 text-gray-800'
   }
 
-  // Organizar responsáveis por papel
   const responsaveisPorPapel = {
-    principal: responsaveis.filter((r) => r.roles.includes('principal')),
-    comercial: responsaveis.filter((r) => r.roles.includes('comercial')),
-    suporte: responsaveis.filter((r) => r.roles.includes('suporte')),
-    backup: responsaveis.filter((r) => r.roles.includes('backup')),
+    principal: displayResponsaveis.filter((r) => r.roles.includes('principal')),
+    comercial: displayResponsaveis.filter((r) => r.roles.includes('comercial')),
+    suporte: displayResponsaveis.filter((r) => r.roles.includes('suporte')),
+    backup: displayResponsaveis.filter((r) => r.roles.includes('backup')),
   }
+
+  const isVirtualPrincipal = (r: ClienteResponsavel) =>
+    typeof r.id === 'string' && r.id.startsWith(VIRTUAL_PRINCIPAL_PREFIX)
 
   if (loading) {
     return <div className="text-center py-12">Carregando...</div>
@@ -131,7 +173,7 @@ export default function ClienteResponsaveisTab({
         <div>
           <h3 className="text-lg font-semibold text-foreground">Responsáveis</h3>
           <p className="text-sm text-gray-600 mt-1">
-            Gerencie os responsáveis atribuídos a {clienteNome}
+            Gerencie os responsáveis atribuídos a {cliente.nome}
           </p>
         </div>
         <button
@@ -166,7 +208,7 @@ export default function ClienteResponsaveisTab({
                           {responsavel.responsavel?.name || 'Responsável'}
                         </p>
                         <p className="text-sm text-gray-600">
-                          {responsavel.responsavel?.email || 'Sem email'}
+                          {responsavel.responsavel?.email || '—'}
                         </p>
                         {responsavel.observacao && (
                           <p className="text-xs text-gray-500 mt-1">{responsavel.observacao}</p>
@@ -184,13 +226,15 @@ export default function ClienteResponsaveisTab({
                           </span>
                         ))}
                       </div>
-                      <button
-                        onClick={() => handleRemoveResponsavel(responsavel.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Remover responsável"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
+                      {!isVirtualPrincipal(responsavel) && (
+                        <button
+                          onClick={() => handleRemoveResponsavel(responsavel.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Remover responsável"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -199,12 +243,12 @@ export default function ClienteResponsaveisTab({
           )
         })}
 
-        {responsaveis.length === 0 && (
+        {displayResponsaveis.length === 0 && (
           <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
             <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-600">Nenhum responsável atribuído ainda</p>
             <p className="text-sm text-gray-500 mt-2">
-              Adicione responsáveis para gerenciar este cliente
+              O responsável principal pode ser definido na aba Identificação. Use &quot;Adicionar Responsável&quot; para outros papéis.
             </p>
           </div>
         )}
