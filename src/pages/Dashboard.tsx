@@ -1,42 +1,374 @@
 import { useAuth } from '@/contexts/AuthContext'
-import { Users, Briefcase, DollarSign, AlertCircle } from 'lucide-react'
+import { useDashboard } from '@/hooks/useDashboard'
+import {
+  Users,
+  UserCheck,
+  DollarSign,
+  AlertCircle,
+  TrendingUp,
+  Clock,
+  ArrowUpRight,
+  BarChart3,
+  PieChart,
+} from 'lucide-react'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts'
+import { Link } from 'react-router-dom'
+
+const formatCurrency = (v: number) =>
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
+
+const COLORS = ['#5B7CFA', '#22D3EE', '#34D399', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']
 
 export default function Dashboard() {
   const { user } = useAuth()
+  const { stats, loading, error, refetch } = useDashboard()
 
-  const stats = [
-    { label: 'Clientes Ativos', value: '0', icon: Users, color: 'text-blue-600' },
-    { label: 'Serviços Ativos', value: '0', icon: Briefcase, color: 'text-green-600' },
-    { label: 'Receita do Mês', value: 'R$ 0,00', icon: DollarSign, color: 'text-yellow-600' },
-    { label: 'Ocorrências Abertas', value: '0', icon: AlertCircle, color: 'text-red-600' },
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+          <p className="text-gray-500">Carregando indicadores...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl bg-red-50 border border-red-200 p-6 text-center">
+        <p className="text-red-700 font-medium">Erro ao carregar o dashboard</p>
+        <p className="text-red-600 text-sm mt-1">{error.message}</p>
+        <button
+          onClick={refetch}
+          className="mt-4 px-4 py-2 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 transition-colors"
+        >
+          Tentar novamente
+        </button>
+      </div>
+    )
+  }
+
+  if (!stats) return null
+
+  const { clientes, financeiro, ocorrencias } = stats
+  const ocorrenciasAbertasTotal = ocorrencias.abertas + ocorrencias.emAndamento
+
+  const kpis = [
+    {
+      label: 'Total de clientes',
+      value: clientes.total,
+      icon: Users,
+      href: '/clientes',
+      gradient: 'from-blue-500 to-indigo-600',
+      bg: 'bg-gradient-to-br from-blue-500/10 to-indigo-600/10',
+      iconBg: 'bg-blue-500/20',
+      iconColor: 'text-blue-600',
+    },
+    {
+      label: 'Clientes ativos',
+      value: clientes.ativos,
+      icon: UserCheck,
+      href: '/clientes',
+      gradient: 'from-emerald-500 to-teal-600',
+      bg: 'bg-gradient-to-br from-emerald-500/10 to-teal-600/10',
+      iconBg: 'bg-emerald-500/20',
+      iconColor: 'text-emerald-600',
+    },
+    {
+      label: 'Receita do mês',
+      value: formatCurrency(financeiro.receitaMes),
+      icon: DollarSign,
+      href: '/financeiro',
+      gradient: 'from-amber-500 to-orange-600',
+      bg: 'bg-gradient-to-br from-amber-500/10 to-orange-600/10',
+      iconBg: 'bg-amber-500/20',
+      iconColor: 'text-amber-600',
+    },
+    {
+      label: 'Ocorrências abertas',
+      value: ocorrenciasAbertasTotal,
+      icon: AlertCircle,
+      href: '/ocorrencias',
+      gradient: 'from-rose-500 to-pink-600',
+      bg: 'bg-gradient-to-br from-rose-500/10 to-pink-600/10',
+      iconBg: 'bg-rose-500/20',
+      iconColor: 'text-rose-600',
+    },
   ]
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-foreground mb-6">Dashboard</h1>
+    <div className="space-y-8 animate-fade-in">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-primary to-indigo-600 bg-clip-text text-transparent">
+            Olá, {user?.name ?? 'Admin'}!
+          </h1>
+          <p className="text-gray-500 mt-1">
+            Visão geral da agência · dados em tempo real
+          </p>
+        </div>
+        <button
+          onClick={refetch}
+          className="self-start px-4 py-2 rounded-xl border border-gray-200 hover:border-primary/40 hover:bg-primary/5 transition-all text-sm font-medium text-gray-700"
+        >
+          Atualizar
+        </button>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat) => {
-          const Icon = stat.icon
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {kpis.map((k, idx) => {
+          const Icon = k.icon
           return (
-            <div key={stat.label} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between">
+            <Link
+              key={k.label}
+              to={k.href}
+              className={`group relative overflow-hidden rounded-2xl border border-gray-200/80 p-6 ${k.bg} hover:shadow-lg hover:shadow-gray-200/50 hover:border-gray-300 transition-all duration-300 animate-slide-up`}
+              style={{ animationDelay: `${idx * 60}ms`, animationFillMode: 'both' }}
+            >
+              <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
-                  <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                  <p className="text-sm font-medium text-gray-500">{k.label}</p>
+                  <p className="mt-2 text-2xl font-bold text-foreground tabular-nums">
+                    {k.value}
+                  </p>
                 </div>
-                <Icon className={`w-8 h-8 ${stat.color}`} />
+                <div
+                  className={`rounded-xl p-3 ${k.iconBg} ${k.iconColor} group-hover:scale-110 transition-transform`}
+                >
+                  <Icon className="w-6 h-6" />
+                </div>
               </div>
-            </div>
+              <ArrowUpRight className="absolute bottom-4 right-4 w-4 h-4 text-gray-300 group-hover:text-primary transition-colors" />
+            </Link>
           )
         })}
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h2 className="text-xl font-semibold text-foreground mb-4">Bem-vindo ao sistema!</h2>
-        <p className="text-gray-600">
-          Olá, {user?.name}! Este é o sistema de gestão de clientes e serviços da Agência F3F.
-        </p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6">
+            <BarChart3 className="w-5 h-5 text-primary" />
+            <h2 className="text-lg font-semibold text-foreground">
+              Clientes por responsável
+            </h2>
+          </div>
+          {clientes.porResponsavel.length === 0 ? (
+            <p className="text-gray-500 text-center py-8">Nenhum dado ainda</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart
+                data={clientes.porResponsavel}
+                layout="vertical"
+                margin={{ top: 0, right: 24, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis type="number" tickFormatter={(v) => String(v)} />
+                <YAxis
+                  type="category"
+                  dataKey="responsavelNome"
+                  width={100}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip
+                  formatter={(v) => [Number(v) || 0, 'Clientes']}
+                  labelFormatter={(label) => `Responsável: ${label}`}
+                />
+                <Bar dataKey="total" name="Total" radius={[0, 4, 4, 0]} maxBarSize={28}>
+                  {clientes.porResponsavel.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6">
+            <PieChart className="w-5 h-5 text-primary" />
+            <h2 className="text-lg font-semibold text-foreground">
+              Status dos clientes
+            </h2>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <div className="flex items-center gap-3 rounded-xl bg-emerald-50 px-4 py-3 border border-emerald-100">
+              <div className="w-3 h-3 rounded-full bg-emerald-500" />
+              <span className="text-sm text-gray-600">Ativos</span>
+              <span className="font-bold text-emerald-700">{clientes.ativos}</span>
+            </div>
+            <div className="flex items-center gap-3 rounded-xl bg-gray-100 px-4 py-3 border border-gray-200">
+              <div className="w-3 h-3 rounded-full bg-gray-400" />
+              <span className="text-sm text-gray-600">Inativos</span>
+              <span className="font-bold text-gray-700">{clientes.inativos}</span>
+            </div>
+            <div className="flex items-center gap-3 rounded-xl bg-amber-50 px-4 py-3 border border-amber-100">
+              <div className="w-3 h-3 rounded-full bg-amber-500" />
+              <span className="text-sm text-gray-600">Pausados</span>
+              <span className="font-bold text-amber-700">{clientes.pausados}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="flex items-center gap-2 mb-6">
+          <DollarSign className="w-5 h-5 text-primary" />
+          <h2 className="text-lg font-semibold text-foreground">
+            Financeiro · visão geral
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-4">
+            <div className="flex items-center gap-2 text-emerald-700">
+              <TrendingUp className="w-4 h-4" />
+              <span className="text-sm font-medium">Receita do mês</span>
+            </div>
+            <p className="mt-2 text-xl font-bold text-emerald-800 tabular-nums">
+              {formatCurrency(financeiro.receitaMes)}
+            </p>
+          </div>
+          <div className="rounded-xl bg-blue-50 border border-blue-100 p-4">
+            <div className="flex items-center gap-2 text-blue-700">
+              <Clock className="w-4 h-4" />
+              <span className="text-sm font-medium">Em abertos</span>
+            </div>
+            <p className="mt-2 text-xl font-bold text-blue-800 tabular-nums">
+              {formatCurrency(financeiro.totalEmAbertos)}
+            </p>
+            <p className="text-xs text-blue-600 mt-1">
+              {financeiro.percEmAbertos.toFixed(1)}% do total
+            </p>
+          </div>
+          <div className="rounded-xl bg-rose-50 border border-rose-100 p-4">
+            <div className="flex items-center gap-2 text-rose-700">
+              <AlertCircle className="w-4 h-4" />
+              <span className="text-sm font-medium">Atrasados</span>
+            </div>
+            <p className="mt-2 text-xl font-bold text-rose-800 tabular-nums">
+              {formatCurrency(financeiro.totalAtrasados)}
+            </p>
+            <p className="text-xs text-rose-600 mt-1">
+              {financeiro.percAtrasados.toFixed(1)}% do total
+            </p>
+          </div>
+          <div className="rounded-xl bg-violet-50 border border-violet-100 p-4">
+            <div className="flex items-center gap-2 text-violet-700">
+              <ArrowUpRight className="w-4 h-4" />
+              <span className="text-sm font-medium">Provisão faturamento</span>
+            </div>
+            <p className="mt-2 text-xl font-bold text-violet-800 tabular-nums">
+              {formatCurrency(financeiro.provisaoFaturamento)}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-4">
+              Atrasados por responsável
+            </h3>
+            {financeiro.atrasadosPorResponsavel.length === 0 ? (
+              <p className="text-gray-500 text-sm py-4">Nenhum título atrasado</p>
+            ) : (
+              <div className="space-y-2">
+                {financeiro.atrasadosPorResponsavel
+                  .sort((a, b) => b.valor - a.valor)
+                  .map((r) => (
+                    <div
+                      key={r.responsavelId}
+                      className="flex items-center justify-between rounded-lg bg-rose-50/50 px-4 py-3 border border-rose-100"
+                    >
+                      <span className="font-medium text-gray-800">{r.responsavelNome}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-rose-600">{r.qtd} título(s)</span>
+                        <span className="font-bold text-rose-700 tabular-nums">
+                          {formatCurrency(r.valor)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-4">
+              Em abertos por responsável
+            </h3>
+            {financeiro.emAbertosPorResponsavel.length === 0 ? (
+              <p className="text-gray-500 text-sm py-4">Nenhum título em aberto</p>
+            ) : (
+              <div className="space-y-2">
+                {financeiro.emAbertosPorResponsavel
+                  .sort((a, b) => b.valor - a.valor)
+                  .map((r) => (
+                    <div
+                      key={r.responsavelId}
+                      className="flex items-center justify-between rounded-lg bg-blue-50/50 px-4 py-3 border border-blue-100"
+                    >
+                      <span className="font-medium text-gray-800">{r.responsavelNome}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-blue-600">{r.qtd} título(s)</span>
+                        <span className="font-bold text-blue-700 tabular-nums">
+                          {formatCurrency(r.valor)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {financeiro.atrasadosPorResponsavel.length > 0 && (
+          <div className="mt-8">
+            <h3 className="text-sm font-semibold text-gray-700 mb-4">
+              Gráfico · Atrasados por responsável
+            </h3>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart
+                data={[...financeiro.atrasadosPorResponsavel].sort(
+                  (a, b) => b.valor - a.valor
+                )}
+                layout="vertical"
+                margin={{ top: 0, right: 24, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis
+                  type="number"
+                  tickFormatter={(v) => formatCurrency(v)}
+                  fontSize={11}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="responsavelNome"
+                  width={100}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip
+                  formatter={(v) => [formatCurrency(Number(v) || 0), 'Atrasados']}
+                  labelFormatter={(label) => `Responsável: ${label}`}
+                />
+                <Bar dataKey="valor" name="Atrasados" radius={[0, 4, 4, 0]} fill="#f43f5e">
+                  {[...financeiro.atrasadosPorResponsavel]
+                    .sort((a, b) => b.valor - a.valor)
+                    .map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </div>
     </div>
   )
