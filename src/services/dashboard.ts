@@ -1,7 +1,7 @@
 import { fetchClientes } from './clientes'
 import { fetchTransacoes } from './financeiro'
 import { fetchOcorrencias } from './ocorrencias'
-import { fetchUsuarios } from './usuarios'
+import { fetchResponsaveisParaDashboard } from './usuarios'
 import type { Transacao } from '@/types'
 
 const hoje = () => new Date().toISOString().slice(0, 10)
@@ -43,17 +43,17 @@ export interface DashboardStats {
 }
 
 export async function fetchDashboardData(): Promise<DashboardStats> {
-  const [clientesRes, transacoesRes, ocorrencias, usuarios] = await Promise.all([
+  const [clientesRes, transacoesRes, ocorrencias, responsaveis] = await Promise.all([
     fetchClientes({ limit: 5000, offset: 0 }),
     fetchTransacoes({ tipo: 'receita', limit: 10000, offset: 0 }),
     fetchOcorrencias(),
-    fetchUsuarios(),
+    fetchResponsaveisParaDashboard(),
   ])
 
   const clientes = clientesRes.data
   const totalClientes = clientesRes.total
   const transacoes = transacoesRes.transacoes
-  const userMap = new Map(usuarios.map((u) => [u.id, u.name]))
+  const userMap = new Map(responsaveis.map((r) => [r.id, r.name]))
 
   const ativos = clientes.filter((c) => c.status === 'ativo').length
   const inativos = clientes.filter((c) => c.status === 'inativo').length
@@ -61,13 +61,14 @@ export async function fetchDashboardData(): Promise<DashboardStats> {
 
   const porResponsavel = new Map<string, { total: number; ativos: number }>()
   for (const c of clientes) {
-    const r = porResponsavel.get(c.responsavel_id) ?? { total: 0, ativos: 0 }
+    const key = c.responsavel_id ?? ''
+    const r = porResponsavel.get(key) ?? { total: 0, ativos: 0 }
     r.total++
     if (c.status === 'ativo') r.ativos++
-    porResponsavel.set(c.responsavel_id, r)
+    porResponsavel.set(key, r)
   }
 
-  const clienteToResponsavel = new Map(clientes.map((c) => [c.id, c.responsavel_id]))
+  const clienteToResponsavel = new Map(clientes.map((c) => [c.id, c.responsavel_id ?? '']))
 
   const hojeStr = hoje()
   const mesInicio = startOfMonth()

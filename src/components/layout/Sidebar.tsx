@@ -8,6 +8,7 @@ import {
   AlertCircle,
   MessageSquare,
   Settings,
+  Lock,
   LogOut,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -64,7 +65,18 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-gray-200 space-y-2">
+        <Link
+          to="/alterar-senha"
+          className={`flex items-center gap-3 px-4 py-3 w-full rounded-lg transition-colors ${
+            location.pathname === '/alterar-senha'
+              ? 'bg-primary text-white'
+              : 'text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          <Lock className="w-5 h-5" />
+          <span className="font-medium">Alterar senha</span>
+        </Link>
         <button
           onClick={handleSignOut}
           className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"

@@ -7,3 +7,20 @@
     @apply bg-background text-foreground font-sans antialiased;
   }
 }
+
+/* DateRangePicker: estilo do print – azul claro/transparente; primeiro e último dia mais fortes (borda escura) */
+.rdp-date-range-picker-root .rdp-day_range_middle {
+  background-color: rgba(91, 124, 250, 0.12);
+  color: #0F172A;
+}
+.rdp-date-range-picker-root .rdp-day_range_start,
+.rdp-date-range-picker-root .rdp-day_range_end {
+  background-color: rgba(91, 124, 250, 0.2);
+  border: 2px solid #4a6ae8;
+  color: #0F172A;
+}
+.rdp-date-range-picker-root .rdp-day_range_end.rdp-day_range_start {
+  background-color: rgba(91, 124, 250, 0.2);
+  border: 2px solid #4a6ae8;
+  color: #0F172A;
+}

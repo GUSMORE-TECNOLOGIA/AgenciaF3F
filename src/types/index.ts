@@ -17,7 +17,7 @@ export interface Cliente {
   nome: string
   email?: string
   telefone?: string
-  responsavel_id: string
+  responsavel_id: string | null
   status: 'ativo' | 'inativo' | 'pausado'
   logo_url?: string
   created_at: string

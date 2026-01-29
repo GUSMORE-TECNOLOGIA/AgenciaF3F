@@ -27,7 +27,7 @@ export async function fetchClientes(filters?: ClienteFilters): Promise<ClientesR
   try {
     let query = supabase
       .from('clientes')
-      .select('*, usuarios(id, name)', { count: 'exact' })
+      .select('*', { count: 'exact' })
       .is('deleted_at', null)
 
     // Aplicar filtros
@@ -52,32 +52,33 @@ export async function fetchClientes(filters?: ClienteFilters): Promise<ClientesR
     const offset = filters?.offset || 0
     query = query.range(offset, offset + limit - 1)
 
-    const { data, error, count } = await query
+    const promise = query as unknown as Promise<{ data: unknown; error: unknown; count: number }>
+    const result = await withTimeout(
+      promise,
+      FETCH_CLIENTES_TIMEOUT_MS,
+      'Timeout ao carregar clientes. Verifique sua conexão e tente novamente.'
+    )
+    const { data, error, count } = result
 
     if (error) {
       console.error('Erro ao buscar clientes:', error)
       throw error
     }
 
-    const clientes: Cliente[] = (data || []).map((item: any) => {
-      const usu = item.usuarios
-      return {
-        id: item.id,
-        nome: item.nome,
-        email: item.email || undefined,
-        telefone: item.telefone || undefined,
-        responsavel_id: item.responsavel_id,
-        status: item.status,
-        logo_url: item.logo_url || undefined,
-        links_uteis: item.links_uteis || {},
-        drive_url: item.drive_url || undefined,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-        responsavel: usu && (usu.id != null || usu.name != null)
-          ? { id: String(usu.id), name: String(usu.name || '') }
-          : undefined,
-      }
-    })
+    const clientes: Cliente[] = ((data as any) || []).map((item: any) => ({
+      id: item.id,
+      nome: item.nome,
+      email: item.email || undefined,
+      telefone: item.telefone || undefined,
+      responsavel_id: item.responsavel_id ?? null,
+      status: item.status,
+      logo_url: item.logo_url || undefined,
+      links_uteis: item.links_uteis || {},
+      drive_url: item.drive_url || undefined,
+      created_at: item.created_at,
+      updated_at: item.updated_at,
+      responsavel: undefined,
+    }))
 
     return {
       data: clientes,
@@ -91,43 +92,54 @@ export async function fetchClientes(filters?: ClienteFilters): Promise<ClientesR
   }
 }
 
+const FETCH_CLIENTE_TIMEOUT_MS = 12_000
+const FETCH_CLIENTES_TIMEOUT_MS = 15_000
+
+function withTimeout<T>(promise: Promise<T>, ms: number, msg: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error(msg)), ms)),
+  ])
+}
+
 /**
  * Buscar um cliente por ID
  */
 export async function fetchClienteById(id: string): Promise<Cliente | null> {
   try {
-    const { data, error } = await supabase
+    const promise = supabase
       .from('clientes')
-      .select('*, usuarios(id, name)')
+      .select('*')
       .eq('id', id)
       .is('deleted_at', null)
-      .single()
+      .maybeSingle() as unknown as Promise<{ data: unknown; error: unknown }>
+
+    const { data, error } = await withTimeout(
+      promise,
+      FETCH_CLIENTE_TIMEOUT_MS,
+      'Timeout ao carregar cliente. Verifique sua conexão e tente novamente.'
+    )
 
     if (error) {
-      if (error.code === 'PGRST116') {
-        return null
-      }
       console.error('Erro ao buscar cliente:', error)
       throw error
     }
+    if (!data) return null
 
-    const usu = (data as any).usuarios
+    const d = data as Record<string, unknown>
     return {
-      id: data.id,
-      nome: data.nome,
-      email: data.email || undefined,
-      telefone: data.telefone || undefined,
-      responsavel_id: data.responsavel_id,
-      status: data.status,
-      logo_url: data.logo_url || undefined,
-      links_uteis: data.links_uteis || {},
-      drive_url: data.drive_url || undefined,
-      created_at: data.created_at,
-      updated_at: data.updated_at,
-      responsavel:
-        usu && (usu.id != null || usu.name != null)
-          ? { id: String(usu.id), name: String(usu.name || '') }
-          : undefined,
+      id: d.id as string,
+      nome: d.nome as string,
+      email: (d.email as string) || undefined,
+      telefone: (d.telefone as string) || undefined,
+      responsavel_id: (d.responsavel_id as string) ?? null,
+      status: d.status as 'ativo' | 'inativo' | 'pausado',
+      logo_url: (d.logo_url as string) || undefined,
+      links_uteis: (d.links_uteis as Record<string, unknown>) || {},
+      drive_url: (d.drive_url as string) || undefined,
+      created_at: d.created_at as string,
+      updated_at: d.updated_at as string,
+      responsavel: undefined,
     }
   } catch (error) {
     console.error('Erro em fetchClienteById:', error)
@@ -191,7 +203,7 @@ export async function updateCliente(id: string, input: ClienteUpdateInput): Prom
     if (input.nome !== undefined) updateData.nome = input.nome
     if (input.email !== undefined) updateData.email = input.email || null
     if (input.telefone !== undefined) updateData.telefone = input.telefone || null
-    if (input.responsavel_id !== undefined) updateData.responsavel_id = input.responsavel_id
+    if (input.responsavel_id !== undefined) updateData.responsavel_id = input.responsavel_id ?? null
     if (input.status !== undefined) updateData.status = input.status
     // drive_url removido - usar cliente_links com tipo "Google Drive" ao invés
 
@@ -313,16 +325,17 @@ export async function updateClienteStatus(id: string, status: 'ativo' | 'inativo
  */
 export async function deleteCliente(id: string): Promise<void> {
   try {
-    // Usar função RPC para contornar RLS policies
     const { error } = await supabase.rpc('soft_delete_cliente', { cliente_id: id })
-
     if (error) {
       console.error('Erro ao deletar cliente:', error)
-      throw error
+      const err = error as { message?: string; details?: string; hint?: string }
+      const msg = [err.message, err.details, err.hint].filter(Boolean).join(' · ') || 'Erro ao excluir cliente. Tente novamente.'
+      throw new Error(msg)
     }
-  } catch (error) {
-    console.error('Erro em deleteCliente:', error)
-    throw error
+  } catch (e) {
+    if (e instanceof Error) throw e
+    console.error('Erro em deleteCliente:', e)
+    throw new Error('Erro ao excluir cliente. Tente novamente.')
   }
 }
 

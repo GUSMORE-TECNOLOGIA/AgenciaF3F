@@ -5,7 +5,7 @@ import { supabase } from '@/services/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 
 export default function ResetPassword() {
-  const { user, refreshProfile } = useAuth()
+  const { user, mustResetPassword, refreshProfile } = useAuth()
   const navigate = useNavigate()
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -60,9 +60,13 @@ export default function ResetPassword() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-primary mb-2">Atualize sua senha</h1>
+          <h1 className="text-2xl font-bold text-primary mb-2">
+            {mustResetPassword ? 'Atualize sua senha' : 'Alterar senha'}
+          </h1>
           <p className="text-gray-600">
-            Primeiro acesso detectado. Por segurança, defina uma nova senha.
+            {mustResetPassword
+              ? 'Primeiro acesso detectado. Por segurança, defina uma nova senha.'
+              : 'Defina uma nova senha para sua conta.'}
           </p>
         </div>
 

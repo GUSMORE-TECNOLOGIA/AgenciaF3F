@@ -1,24 +1,24 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Plus, User, X } from 'lucide-react'
 import { Cliente, ClienteResponsavel } from '@/types'
-import { fetchClienteResponsaveis } from '@/services/mockData'
+import { fetchClienteResponsaveis, softDeleteClienteResponsavel } from '@/services/cliente-responsaveis'
 import { fetchEquipeMembros } from '@/services/equipe'
-import { fetchUsuarioById } from '@/services/usuarios'
+import { fetchResponsavelName } from '@/services/usuarios'
 import { useModal } from '@/contexts/ModalContext'
 
 const VIRTUAL_PRINCIPAL_PREFIX = 'virtual-principal-'
 
 interface ClienteResponsaveisTabProps {
   cliente: Cliente
-  /** Refetch do cliente ao abrir a aba (evita dados em cache após import). */
+  onDesvincularPrincipal?: () => Promise<void>
   refetch?: () => Promise<void>
 }
 
-export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResponsaveisTabProps) {
+export default function ClienteResponsaveisTab({ cliente, onDesvincularPrincipal, refetch }: ClienteResponsaveisTabProps) {
   const [responsaveis, setResponsaveis] = useState<ClienteResponsavel[]>([])
   const [membrosDisponiveis, setMembrosDisponiveis] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [responsavelPrincipal, setResponsavelPrincipal] = useState<{ id: string; name: string } | null>(null)
+  const [responsavelPrincipalName, setResponsavelPrincipalName] = useState<string | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
   const [selectedMembroId, setSelectedMembroId] = useState('')
   const [selectedRoles, setSelectedRoles] = useState<string[]>(['principal'])
@@ -26,25 +26,20 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
   const { confirm } = useModal()
 
   useEffect(() => {
-    refetch?.()
-  }, [])
-
-  useEffect(() => {
     loadData()
   }, [cliente.id])
 
   useEffect(() => {
-    if (!cliente.responsavel_id) {
-      setResponsavelPrincipal(null)
+    if (!cliente.responsavel_id || !cliente.responsavel_id.trim()) {
+      setResponsavelPrincipalName(null)
       return
     }
     let cancelled = false
-    fetchUsuarioById(cliente.responsavel_id)
-      .then((u) => {
-        if (!cancelled && u) setResponsavelPrincipal({ id: u.id, name: u.name })
-        else if (!cancelled) setResponsavelPrincipal(null)
+    fetchResponsavelName(cliente.responsavel_id)
+      .then((name) => {
+        if (!cancelled) setResponsavelPrincipalName(name ?? null)
       })
-      .catch(() => { if (!cancelled) setResponsavelPrincipal(null) })
+      .catch(() => { if (!cancelled) setResponsavelPrincipalName(null) })
     return () => { cancelled = true }
   }, [cliente.responsavel_id])
 
@@ -67,11 +62,11 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
   /** Lista exibida: responsáveis da API + responsável principal (clientes.responsavel_id) se ainda não estiver na lista. */
   const displayResponsaveis = useMemo(() => {
     const list = [...responsaveis]
-    const rid = (cliente.responsavel_id || '').trim()
+    const rid = (cliente.responsavel_id ?? '').toString().trim()
     if (!rid) return list
     const jaIncluido = list.some((r) => r.responsavel_id === rid)
     if (jaIncluido) return list
-    const name = cliente.responsavel?.name || responsavelPrincipal?.name || 'Responsável'
+    const name = cliente.responsavel?.name || responsavelPrincipalName || 'Responsável'
     const principal: ClienteResponsavel = {
       id: `${VIRTUAL_PRINCIPAL_PREFIX}${rid}`,
       cliente_id: cliente.id,
@@ -82,7 +77,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
       responsavel: { id: rid, name, email: '' },
     }
     return [principal, ...list]
-  }, [cliente.id, cliente.responsavel_id, cliente.responsavel?.name, responsavelPrincipal, responsaveis])
+  }, [cliente.id, cliente.responsavel_id, cliente.responsavel?.name, responsavelPrincipalName, responsaveis])
 
   const handleAddResponsavel = async () => {
     if (!selectedMembroId || selectedRoles.length === 0) return
@@ -107,6 +102,22 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
     }
   }
 
+  const handleDesvincularPrincipal = async () => {
+    const ok = await confirm({
+      title: 'Desvincular responsável principal',
+      message: 'Desvincular o responsável principal deste cliente? Ele poderá ser definido novamente na aba Identificação.',
+      confirmLabel: 'Desvincular',
+      variant: 'danger',
+    })
+    if (!ok) return
+    try {
+      await onDesvincularPrincipal?.()
+      setResponsavelPrincipalName(null)
+    } catch (error) {
+      console.error('Erro ao desvincular:', error)
+    }
+  }
+
   const handleRemoveResponsavel = async (responsavelId: string) => {
     const ok = await confirm({
       title: 'Remover responsável',
@@ -117,9 +128,9 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
     if (!ok) return
 
     try {
-      // TODO: Implementar chamada real ao Supabase
-      console.log('Remover responsável:', responsavelId)
+      await softDeleteClienteResponsavel(responsavelId)
       await loadData()
+      await refetch?.()
     } catch (error) {
       console.error('Erro ao remover responsável:', error)
     }
@@ -226,7 +237,17 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                           </span>
                         ))}
                       </div>
-                      {!isVirtualPrincipal(responsavel) && (
+                      {isVirtualPrincipal(responsavel) ? (
+                        onDesvincularPrincipal && (
+                          <button
+                            onClick={handleDesvincularPrincipal}
+                            className="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200"
+                            title="Desvincular responsável principal"
+                          >
+                            Desvincular
+                          </button>
+                        )
+                      ) : (
                         <button
                           onClick={() => handleRemoveResponsavel(responsavel.id)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"

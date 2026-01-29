@@ -7,6 +7,9 @@ Crie um arquivo chamado ".env" na raiz do projeto com o seguinte conteúdo:
 VITE_SUPABASE_URL=https://rhnkffeyspymjpellmnd.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJobmtmZmV5c3B5bWpwZWxsbW5kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0OTAwNzEsImV4cCI6MjA4NDA2NjA3MX0.eoFacrVkqAodOniBpvE_PHlUH8Ajyz_oWb62k1HXypU
 
+Para importação (equipe, clientes, links) via scripts, veja .context/docs/IMPORT_PLANILHA.md.
+Ex.: IMPORTER_EMAIL, IMPORTER_PASSWORD; para equipe, SUPABASE_SERVICE_ROLE_KEY (Dashboard → API).
+
 ================================================================================
 INSTRUÇÕES
 ================================================================================
