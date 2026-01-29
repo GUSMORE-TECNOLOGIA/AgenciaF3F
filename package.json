@@ -6,15 +6,25 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "import:inspect": "node scripts/import-inspect.mjs",
+    "import:clientes": "node scripts/import-clientes.mjs",
+    "import:equipe": "node scripts/import-equipe-via-admin.mjs",
+    "import:links": "node scripts/import-links.mjs",
+    "import:sql": "node scripts/import-generate-sql.mjs",
+    "equipe:link-users": "node scripts/equipe-membros-to-users.mjs",
+    "equipe:validate": "node scripts/equipe-validate.mjs",
+    "apply:seed-mcp": "node scripts/mcp-apply-args.mjs supabase/migrations/20260129130100_seed_equipe_usuarios_remaining.sql .context/mcp_args_remaining.json && node scripts/mcp-apply-args.mjs supabase/migrations/20260129140000_seed_clientes.sql .context/mcp_args_clientes.json"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.38.4",
+    "date-fns": "^2.30.0",
+    "lucide-react": "^0.294.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.0",
-    "@supabase/supabase-js": "^2.38.4",
-    "lucide-react": "^0.294.0",
-    "date-fns": "^2.30.0",
+    "recharts": "^3.7.0",
+    "xlsx": "^0.18.5",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -24,6 +34,7 @@
     "@typescript-eslint/parser": "^6.13.1",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
+    "dotenv": "^16.4.5",
     "eslint": "^8.54.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
