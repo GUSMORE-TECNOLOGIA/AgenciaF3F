@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Cliente } from '@/types'
 import { useUpdateCliente } from '@/hooks/useCliente'
+import { useUsuarios } from '@/hooks/useUsuarios'
 import { ClienteUpdateInput } from '@/lib/validators/cliente-schema'
 import ClienteLogoUpload from '../ClienteLogoUpload'
 import { Save, Loader2, User2, Image, Settings, Calendar } from 'lucide-react'
@@ -13,15 +14,27 @@ interface IdentificacaoTabProps {
 
 export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabProps) {
   const { update, loading } = useUpdateCliente(cliente.id)
+  const { usuarios } = useUsuarios()
   const [saving, setSaving] = useState(false)
   const { alert } = useModal()
-  
+
   const [formData, setFormData] = useState({
     nome: cliente.nome,
     email: cliente.email || '',
     telefone: cliente.telefone || '',
     status: cliente.status,
+    responsavel_id: cliente.responsavel_id,
   })
+
+  useEffect(() => {
+    setFormData({
+      nome: cliente.nome,
+      email: cliente.email || '',
+      telefone: cliente.telefone || '',
+      status: cliente.status,
+      responsavel_id: cliente.responsavel_id,
+    })
+  }, [cliente.id, cliente.nome, cliente.email, cliente.telefone, cliente.status, cliente.responsavel_id])
 
   const handleSave = async () => {
     try {
@@ -32,6 +45,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
         telefone: formData.telefone || undefined,
         status: formData.status,
       }
+      if (formData.responsavel_id) updateData.responsavel_id = formData.responsavel_id
       await update(updateData)
       if (onSave) onSave()
     } catch (error) {
@@ -129,7 +143,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
                   id="status"
                   value={formData.status}
                   onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, status: e.target.value as any }))
+                    setFormData((prev) => ({ ...prev, status: e.target.value as 'ativo' | 'inativo' | 'pausado' }))
                   }
                   className="w-full h-9 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                   required
@@ -137,6 +151,27 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
                   <option value="ativo">Ativo</option>
                   <option value="pausado">Pausado</option>
                   <option value="inativo">Inativo</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="responsavel_id" className="block text-sm font-medium text-gray-700 mb-2">
+                  Responsável
+                </label>
+                <select
+                  id="responsavel_id"
+                  value={formData.responsavel_id}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, responsavel_id: e.target.value }))
+                  }
+                  className="w-full h-9 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                >
+                  <option value="">Selecione...</option>
+                  {(usuarios || []).map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.name}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>

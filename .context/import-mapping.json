@@ -1,0 +1,37 @@
+{
+  "clientes": {
+    "sheet": "Clientes",
+    "nome": "Nome",
+    "email": "Email",
+    "telefone": "Telefone",
+    "status": "Status",
+    "responsavel": "Responsável",
+    "statusMap": { "Ativo": "ativo", "ativo": "ativo", "Inativo": "inativo", "inativo": "inativo", "Pausado": "pausado", "pausado": "pausado" },
+    "defaultStatus": "ativo",
+    "linkColumns": [
+      "Conta de Anúncio - F3F",
+      "Conta de Anúncio - L.T",
+      "Instagram link",
+      "Business Suite",
+      "Dashboard",
+      "Planilha de Dados",
+      "Planilha de Criativos",
+      "UTMify",
+      "Wordpress",
+      "Página de Vendas - L.T",
+      "Checkout"
+    ]
+  },
+  "equipe": {
+    "sheet": "Equipe",
+    "nome_completo": "Nome completo",
+    "email": "Email",
+    "telefone": "Telefone",
+    "perfil": "Perfil",
+    "status": "Status",
+    "perfilMap": { "Adm": "admin", "admin": "admin", "Admin": "admin", "Gerente": "gerente", "gerente": "gerente", "Agente": "agente", "agente": "agente", "Suporte": "suporte", "suporte": "suporte" },
+    "statusMap": { "Ativo": "ativo", "ativo": "ativo", "Inativo": "inativo", "inativo": "inativo" },
+    "defaultPerfil": "admin",
+    "defaultStatus": "ativo"
+  }
+}

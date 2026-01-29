@@ -27,7 +27,7 @@ export async function fetchClientes(filters?: ClienteFilters): Promise<ClientesR
   try {
     let query = supabase
       .from('clientes')
-      .select('*', { count: 'exact' })
+      .select('*, usuarios(id, name)', { count: 'exact' })
       .is('deleted_at', null)
 
     // Aplicar filtros
@@ -59,11 +59,8 @@ export async function fetchClientes(filters?: ClienteFilters): Promise<ClientesR
       throw error
     }
 
-    // Transformar dados para incluir responsável
     const clientes: Cliente[] = (data || []).map((item: any) => {
-      // Extrair dados do responsável se vier no formato nested (usado no futuro)
-      // const responsavel = item.responsavel || null
-      
+      const usu = item.usuarios
       return {
         id: item.id,
         nome: item.nome,
@@ -76,6 +73,9 @@ export async function fetchClientes(filters?: ClienteFilters): Promise<ClientesR
         drive_url: item.drive_url || undefined,
         created_at: item.created_at,
         updated_at: item.updated_at,
+        responsavel: usu && (usu.id != null || usu.name != null)
+          ? { id: String(usu.id), name: String(usu.name || '') }
+          : undefined,
       }
     })
 
@@ -98,20 +98,20 @@ export async function fetchClienteById(id: string): Promise<Cliente | null> {
   try {
     const { data, error } = await supabase
       .from('clientes')
-      .select('*')
+      .select('*, usuarios(id, name)')
       .eq('id', id)
       .is('deleted_at', null)
       .single()
 
     if (error) {
       if (error.code === 'PGRST116') {
-        // Cliente não encontrado
         return null
       }
       console.error('Erro ao buscar cliente:', error)
       throw error
     }
 
+    const usu = (data as any).usuarios
     return {
       id: data.id,
       nome: data.nome,
@@ -124,6 +124,10 @@ export async function fetchClienteById(id: string): Promise<Cliente | null> {
       drive_url: data.drive_url || undefined,
       created_at: data.created_at,
       updated_at: data.updated_at,
+      responsavel:
+        usu && (usu.id != null || usu.name != null)
+          ? { id: String(usu.id), name: String(usu.name || '') }
+          : undefined,
     }
   } catch (error) {
     console.error('Erro em fetchClienteById:', error)

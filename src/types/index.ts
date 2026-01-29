@@ -25,6 +25,8 @@ export interface Cliente {
   links_uteis?: LinksUteis // Legado - mantido para compatibilidade
   drive_url?: string // DEPRECATED: Use cliente_links com tipo "Google Drive" ao invés
   links?: ClienteLink[] // Novo campo para links dinâmicos
+  /** Dados do responsável (enriquecido via join). */
+  responsavel?: { id: string; name: string }
 }
 
 // Links úteis do cliente (legado - mantido para compatibilidade)
