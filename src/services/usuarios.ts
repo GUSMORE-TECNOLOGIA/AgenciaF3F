@@ -88,6 +88,29 @@ export async function fetchResponsaveisParaDashboard(): Promise<Array<{ id: stri
 }
 
 /**
+ * Principais por cliente (cliente_responsaveis com role 'principal').
+ * Para lista de clientes; uso apenas da aba Responsáveis.
+ */
+export async function fetchPrincipaisParaLista(): Promise<Array<{ cliente_id: string; responsavel_id: string; responsavel_name: string }>> {
+  try {
+    const { data, error } = await supabase.rpc('get_principais_para_lista')
+    if (error) {
+      console.error('Erro ao buscar principais para lista:', error)
+      return []
+    }
+    const rows = Array.isArray(data) ? data : []
+    return rows.map((r: { cliente_id: string; responsavel_id: string; responsavel_name: string }) => ({
+      cliente_id: String(r.cliente_id),
+      responsavel_id: String(r.responsavel_id),
+      responsavel_name: String(r.responsavel_name ?? ''),
+    }))
+  } catch (error) {
+    console.error('Erro em fetchPrincipaisParaLista:', error)
+    return []
+  }
+}
+
+/**
  * Buscar apenas o nome do responsável por ID (via RPC).
  * Contorna RLS em usuarios; use para exibir responsável na aba Responsáveis.
  */

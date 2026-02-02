@@ -1,24 +1,19 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, User, X } from 'lucide-react'
 import { Cliente, ClienteResponsavel } from '@/types'
 import { fetchClienteResponsaveis, softDeleteClienteResponsavel } from '@/services/cliente-responsaveis'
 import { fetchEquipeMembros } from '@/services/equipe'
-import { fetchResponsavelName } from '@/services/usuarios'
 import { useModal } from '@/contexts/ModalContext'
-
-const VIRTUAL_PRINCIPAL_PREFIX = 'virtual-principal-'
 
 interface ClienteResponsaveisTabProps {
   cliente: Cliente
-  onDesvincularPrincipal?: () => Promise<void>
   refetch?: () => Promise<void>
 }
 
-export default function ClienteResponsaveisTab({ cliente, onDesvincularPrincipal, refetch }: ClienteResponsaveisTabProps) {
+export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResponsaveisTabProps) {
   const [responsaveis, setResponsaveis] = useState<ClienteResponsavel[]>([])
   const [membrosDisponiveis, setMembrosDisponiveis] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [responsavelPrincipalName, setResponsavelPrincipalName] = useState<string | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
   const [selectedMembroId, setSelectedMembroId] = useState('')
   const [selectedRoles, setSelectedRoles] = useState<string[]>(['principal'])
@@ -28,20 +23,6 @@ export default function ClienteResponsaveisTab({ cliente, onDesvincularPrincipal
   useEffect(() => {
     loadData()
   }, [cliente.id])
-
-  useEffect(() => {
-    if (!cliente.responsavel_id || !cliente.responsavel_id.trim()) {
-      setResponsavelPrincipalName(null)
-      return
-    }
-    let cancelled = false
-    fetchResponsavelName(cliente.responsavel_id)
-      .then((name) => {
-        if (!cancelled) setResponsavelPrincipalName(name ?? null)
-      })
-      .catch(() => { if (!cancelled) setResponsavelPrincipalName(null) })
-    return () => { cancelled = true }
-  }, [cliente.responsavel_id])
 
   async function loadData() {
     try {
@@ -58,26 +39,6 @@ export default function ClienteResponsaveisTab({ cliente, onDesvincularPrincipal
       setLoading(false)
     }
   }
-
-  /** Lista exibida: responsáveis da API + responsável principal (clientes.responsavel_id) se ainda não estiver na lista. */
-  const displayResponsaveis = useMemo(() => {
-    const list = [...responsaveis]
-    const rid = (cliente.responsavel_id ?? '').toString().trim()
-    if (!rid) return list
-    const jaIncluido = list.some((r) => r.responsavel_id === rid)
-    if (jaIncluido) return list
-    const name = cliente.responsavel?.name || responsavelPrincipalName || 'Responsável'
-    const principal: ClienteResponsavel = {
-      id: `${VIRTUAL_PRINCIPAL_PREFIX}${rid}`,
-      cliente_id: cliente.id,
-      responsavel_id: rid,
-      roles: ['principal'],
-      created_at: '',
-      updated_at: '',
-      responsavel: { id: rid, name, email: '' },
-    }
-    return [principal, ...list]
-  }, [cliente.id, cliente.responsavel_id, cliente.responsavel?.name, responsavelPrincipalName, responsaveis])
 
   const handleAddResponsavel = async () => {
     if (!selectedMembroId || selectedRoles.length === 0) return
@@ -99,22 +60,6 @@ export default function ClienteResponsaveisTab({ cliente, onDesvincularPrincipal
       setObservacao('')
     } catch (error) {
       console.error('Erro ao adicionar responsável:', error)
-    }
-  }
-
-  const handleDesvincularPrincipal = async () => {
-    const ok = await confirm({
-      title: 'Desvincular responsável principal',
-      message: 'Desvincular o responsável principal deste cliente? Ele poderá ser definido novamente na aba Identificação.',
-      confirmLabel: 'Desvincular',
-      variant: 'danger',
-    })
-    if (!ok) return
-    try {
-      await onDesvincularPrincipal?.()
-      setResponsavelPrincipalName(null)
-    } catch (error) {
-      console.error('Erro ao desvincular:', error)
     }
   }
 
@@ -165,14 +110,11 @@ export default function ClienteResponsaveisTab({ cliente, onDesvincularPrincipal
   }
 
   const responsaveisPorPapel = {
-    principal: displayResponsaveis.filter((r) => r.roles.includes('principal')),
-    comercial: displayResponsaveis.filter((r) => r.roles.includes('comercial')),
-    suporte: displayResponsaveis.filter((r) => r.roles.includes('suporte')),
-    backup: displayResponsaveis.filter((r) => r.roles.includes('backup')),
+    principal: responsaveis.filter((r) => r.roles.includes('principal')),
+    comercial: responsaveis.filter((r) => r.roles.includes('comercial')),
+    suporte: responsaveis.filter((r) => r.roles.includes('suporte')),
+    backup: responsaveis.filter((r) => r.roles.includes('backup')),
   }
-
-  const isVirtualPrincipal = (r: ClienteResponsavel) =>
-    typeof r.id === 'string' && r.id.startsWith(VIRTUAL_PRINCIPAL_PREFIX)
 
   if (loading) {
     return <div className="text-center py-12">Carregando...</div>
@@ -237,25 +179,13 @@ export default function ClienteResponsaveisTab({ cliente, onDesvincularPrincipal
                           </span>
                         ))}
                       </div>
-                      {isVirtualPrincipal(responsavel) ? (
-                        onDesvincularPrincipal && (
-                          <button
-                            onClick={handleDesvincularPrincipal}
-                            className="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200"
-                            title="Desvincular responsável principal"
-                          >
-                            Desvincular
-                          </button>
-                        )
-                      ) : (
-                        <button
-                          onClick={() => handleRemoveResponsavel(responsavel.id)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Remover responsável"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      )}
+                      <button
+                        onClick={() => handleRemoveResponsavel(responsavel.id)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Remover responsável"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -264,12 +194,12 @@ export default function ClienteResponsaveisTab({ cliente, onDesvincularPrincipal
           )
         })}
 
-        {displayResponsaveis.length === 0 && (
+        {responsaveis.length === 0 && (
           <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
             <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-600">Nenhum responsável atribuído ainda</p>
             <p className="text-sm text-gray-500 mt-2">
-              O responsável principal pode ser definido na aba Identificação. Use &quot;Adicionar Responsável&quot; para outros papéis.
+              Use &quot;Adicionar Responsável&quot; para vincular responsáveis a este cliente.
             </p>
           </div>
         )}

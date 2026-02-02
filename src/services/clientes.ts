@@ -203,7 +203,6 @@ export async function updateCliente(id: string, input: ClienteUpdateInput): Prom
     if (input.nome !== undefined) updateData.nome = input.nome
     if (input.email !== undefined) updateData.email = input.email || null
     if (input.telefone !== undefined) updateData.telefone = input.telefone || null
-    if (input.responsavel_id !== undefined) updateData.responsavel_id = input.responsavel_id ?? null
     if (input.status !== undefined) updateData.status = input.status
     // drive_url removido - usar cliente_links com tipo "Google Drive" ao invés
 
