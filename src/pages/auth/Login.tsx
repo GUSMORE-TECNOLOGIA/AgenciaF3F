@@ -20,7 +20,15 @@ export default function Login() {
       await signIn(email, password)
       navigate('/dashboard')
     } catch (err: any) {
-      setError(err.message || 'Erro ao fazer login')
+      const msg = err?.message ?? 'Erro ao fazer login'
+      if (msg.toLowerCase().includes('database error querying schema')) {
+        setError(
+          'Problema temporário de conexão com o banco. Tente novamente em instantes. ' +
+            'Se persistir, o administrador deve aplicar as migrations e conferir o schema exposto no Supabase (Dashboard → SQL: NOTIFY pgrst, \'reload schema\';).'
+        )
+      } else {
+        setError(msg)
+      }
     } finally {
       setLoading(false)
     }

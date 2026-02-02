@@ -2,12 +2,17 @@
 
 ## Erro "Database error querying schema" no login
 
-Esse erro **não é de senha errada**. Aparece quando o Auth aceita o login mas a consulta à tabela `public.usuarios` (perfil) falha.
+Esse erro **não é de senha errada**. Aparece quando a API (PostgREST) não consegue consultar o schema ou a tabela `public.usuarios`.
 
 **O que fazer:**
-1. **Aplicar as migrations** no projeto Supabase (Dashboard → SQL Editor ou `supabase db push`), para garantir que a tabela `usuarios` existe e tem RLS correto.
-2. **Schema exposto:** em Settings → API, confirme que o schema `public` está exposto para a API (PostgREST).
-3. Com a alteração no `AuthContext`, se a carga do perfil falhar o app passa a **deixar você entrar com um perfil mínimo** (e redirecionar para alterar senha). Assim você consegue acessar mesmo com o banco/schema com problema, e corrigir depois.
+1. **Aplicar as migrations**, em especial `20260202160000_fix_api_schema_usuarios.sql` (GRANT USAGE/SELECT e NOTIFY pgrst).
+2. **Schema exposto:** em Settings → API, confirme que o schema `public` está exposto.
+3. **Se o erro persistir**, no SQL Editor do Dashboard (como superuser) execute:
+   ```sql
+   ALTER ROLE authenticator RESET pgrst.db_schemas;
+   NOTIFY pgrst, 'reload schema';
+   ```
+4. O app **define perfil mínimo logo após o Auth** e carrega o perfil em background; se a carga falhar, você entra mesmo assim com perfil mínimo.
 
 ---
 
