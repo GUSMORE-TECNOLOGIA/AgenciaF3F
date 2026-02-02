@@ -23,8 +23,7 @@ export default function Login() {
       const msg = err?.message ?? 'Erro ao fazer login'
       if (msg.toLowerCase().includes('database error querying schema')) {
         setError(
-          'Problema temporário de conexão com o banco. Tente novamente em instantes. ' +
-            'Se persistir, o administrador deve aplicar as migrations e conferir o schema exposto no Supabase (Dashboard → SQL: NOTIFY pgrst, \'reload schema\';).'
+          'Problema temporário de conexão. Tente novamente em instantes ou contate o administrador.'
         )
       } else {
         setError(msg)
