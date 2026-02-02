@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Search, Edit } from 'lucide-react'
 import { useClientes } from '@/hooks/useClientes'
+import { fetchPrincipaisParaLista } from '@/services/usuarios'
 
 export default function Clientes() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<'ativo' | 'inativo' | 'pausado' | ''>('')
+  const [principais, setPrincipais] = useState<Array<{ cliente_id: string; responsavel_id: string; responsavel_name: string }>>([])
 
   const { clientes, loading, error, total, refetch, setFilters } = useClientes({
     search: searchTerm,
@@ -14,12 +16,20 @@ export default function Clientes() {
   })
 
   useEffect(() => {
-    // Aplicar filtros quando mudarem
     setFilters({
       search: searchTerm || undefined,
       status: statusFilter || undefined,
     })
   }, [searchTerm, statusFilter, setFilters])
+
+  useEffect(() => {
+    fetchPrincipaisParaLista().then(setPrincipais)
+  }, [])
+
+  const responsavelPorClienteMap = useMemo(
+    () => new Map(principais.map((p) => [p.cliente_id, p.responsavel_name])),
+    [principais]
+  )
 
   if (loading) {
     return <div className="text-center py-12">Carregando...</div>
@@ -128,7 +138,7 @@ export default function Clientes() {
                     {cliente.telefone || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {cliente.responsavel?.name ?? '-'}
+                    {responsavelPorClienteMap.get(cliente.id) ?? '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span

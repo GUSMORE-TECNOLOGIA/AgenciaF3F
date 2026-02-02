@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, User, Briefcase, DollarSign, AlertCircle, MessageSquare, Edit, Link as LinkIcon, Trash2 } from 'lucide-react'
-import { useCliente, useUpdateCliente, useUpdateClienteStatus, useDeleteCliente } from '@/hooks/useCliente'
+import { useCliente, useUpdateClienteStatus, useDeleteCliente } from '@/hooks/useCliente'
 import { useModal } from '@/contexts/ModalContext'
 import ClienteResponsaveisTab from './ClienteResponsaveisTab'
 import IdentificacaoTab from './components/tabs/IdentificacaoTab'
@@ -14,22 +14,10 @@ export default function ClienteDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { cliente, loading, refetch } = useCliente(id || null)
-  const { update: updateCliente } = useUpdateCliente(id || '')
   const { update: updateStatus } = useUpdateClienteStatus(id || '')
   const { remove: deleteCliente, loading: deleting } = useDeleteCliente(id || '')
   const { confirm, alert } = useModal()
 
-  const handleDesvincularPrincipal = async () => {
-    if (!id) return
-    try {
-      await updateCliente({ responsavel_id: null })
-      await refetch()
-    } catch (e) {
-      console.error('Erro ao desvincular responsável:', e)
-      await alert({ title: 'Erro', message: 'Não foi possível desvincular. Tente novamente.', variant: 'danger' })
-    }
-  }
-  
   const [activeTab, setActiveTab] = useState<
     'identificacao' | 'links' | 'responsaveis' | 'servicos' | 'financeiro' | 'ocorrencias' | 'atendimento'
   >('identificacao')
@@ -223,7 +211,7 @@ export default function ClienteDetail() {
               )}
 
           {activeTab === 'responsaveis' && (
-            <ClienteResponsaveisTab cliente={cliente} onDesvincularPrincipal={handleDesvincularPrincipal} refetch={refetch} />
+            <ClienteResponsaveisTab cliente={cliente} refetch={refetch} />
           )}
 
           {activeTab === 'servicos' && (

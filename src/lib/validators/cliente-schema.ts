@@ -29,15 +29,14 @@ export const clienteCreateSchema = z.object({
 })
 
 // Schema para atualização de cliente (todos os campos opcionais exceto id)
+// responsavel_id removido: responsáveis apenas na aba Responsáveis (cliente_responsaveis)
 export const clienteUpdateSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(255, 'Nome muito longo').optional(),
   email: z.string().email('Email inválido').optional().or(z.literal('')),
   telefone: z.string().optional(),
-  responsavel_id: z.string().uuid('Responsável inválido').optional().nullable(),
   status: z.enum(['ativo', 'inativo', 'pausado']).optional(),
   logo_url: z.string().url('URL inválida').optional().or(z.literal('')).nullable(),
   links_uteis: linksUteisSchema.optional(),
-  // drive_url removido - usar cliente_links com tipo "Google Drive" ao invés
 })
 
 // Schema para atualização apenas de links úteis
