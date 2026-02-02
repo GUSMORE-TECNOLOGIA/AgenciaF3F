@@ -132,6 +132,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await loadUserProfile(supabaseUser.id)
   }
 
+  function setMinimalUserFromAuth(authUser: SupabaseUser) {
+    setUser({
+      id: authUser.id,
+      email: authUser.email ?? '',
+      name: authUser.user_metadata?.name ?? authUser.email?.split('@')[0] ?? 'Usuário',
+      role: 'user',
+      perfil: 'agente',
+      must_reset_password: true,
+      created_at: authUser.created_at ?? new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    setMustResetPassword(true)
+  }
+
   async function signIn(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -142,26 +156,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw error
     }
     if (data.user) {
-      try {
-        await loadUserProfile(data.user.id)
-      } catch (profileErr) {
-        // Se a carga do perfil falhar (ex.: "Database error querying schema"),
-        // permitir entrada com perfil mínimo para o usuário poder acessar e alterar senha.
-        console.warn('Perfil não carregado do banco, usando perfil mínimo:', profileErr)
-        const u = data.user
-        setUser({
-          id: u.id,
-          email: u.email ?? '',
-          name: u.user_metadata?.name ?? u.email?.split('@')[0] ?? 'Usuário',
-          role: 'user',
-          perfil: 'agente',
-          must_reset_password: true,
-          created_at: u.created_at ?? new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        setMustResetPassword(true)
-        setLoading(false)
-      }
+      const u = data.user
+      setMinimalUserFromAuth(u)
+      setLoading(false)
+      // Carregar perfil completo em background; se falhar (ex.: "Database error querying schema"),
+      // o usuário já está dentro com perfil mínimo.
+      loadUserProfile(u.id).catch((profileErr) => {
+        console.warn('Perfil não carregado do banco, mantendo perfil mínimo:', profileErr)
+      })
     }
   }
 
