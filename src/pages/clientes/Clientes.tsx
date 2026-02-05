@@ -3,33 +3,80 @@ import { Link } from 'react-router-dom'
 import { Plus, Search, Edit } from 'lucide-react'
 import { useClientes } from '@/hooks/useClientes'
 import { fetchPrincipaisParaLista } from '@/services/usuarios'
+import { fetchClientePlanos } from '@/services/planos'
+import type { ClientePlano } from '@/types'
 
 export default function Clientes() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<'ativo' | 'inativo' | 'pausado' | ''>('')
+  const [responsavelFilter, setResponsavelFilter] = useState<string>('')
   const [principais, setPrincipais] = useState<Array<{ cliente_id: string; responsavel_id: string; responsavel_name: string }>>([])
+  const [planosAtivos, setPlanosAtivos] = useState<Map<string, string>>(new Map())
 
-  const { clientes, loading, error, total, refetch, setFilters } = useClientes({
-    search: searchTerm,
+  // Buscar clientes sem filtro de search (só status)
+  const { clientes: clientesRaw, loading, error, refetch } = useClientes({
     status: statusFilter || undefined,
-    limit: 50,
+    limit: 500, // Buscar todos para filtrar client-side
   })
-
-  useEffect(() => {
-    setFilters({
-      search: searchTerm || undefined,
-      status: statusFilter || undefined,
-    })
-  }, [searchTerm, statusFilter, setFilters])
 
   useEffect(() => {
     fetchPrincipaisParaLista().then(setPrincipais)
   }, [])
 
+  // Buscar planos ativos de todos os clientes
+  useEffect(() => {
+    if (clientesRaw.length === 0) return
+    Promise.all(
+      clientesRaw.map(async (c) => {
+        const planos = await fetchClientePlanos(c.id)
+        const ativo = planos.find((p) => p.status === 'ativo')
+        return { clienteId: c.id, planoNome: ativo?.plano?.nome }
+      })
+    ).then((results) => {
+      const map = new Map<string, string>()
+      results.forEach((r) => {
+        if (r.planoNome) map.set(r.clienteId, r.planoNome)
+      })
+      setPlanosAtivos(map)
+    })
+  }, [clientesRaw])
+
   const responsavelPorClienteMap = useMemo(
     () => new Map(principais.map((p) => [p.cliente_id, p.responsavel_name])),
     [principais]
   )
+  const responsavelIdPorClienteMap = useMemo(
+    () => new Map(principais.map((p) => [p.cliente_id, p.responsavel_id])),
+    [principais]
+  )
+  const responsaveisUnicos = useMemo(() => {
+    const seen = new Set<string>()
+    return principais.filter((p) => {
+      if (!p.responsavel_id || seen.has(p.responsavel_id)) return false
+      seen.add(p.responsavel_id)
+      return true
+    })
+  }, [principais])
+
+  // Filtro client-side: busca + responsável; não causa re-fetch
+  const clientes = useMemo(() => {
+    let list = clientesRaw
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase().trim()
+      list = list.filter(
+        (c) =>
+          c.nome.toLowerCase().includes(term) ||
+          (c.email || '').toLowerCase().includes(term) ||
+          (c.telefone || '').toLowerCase().includes(term)
+      )
+    }
+    if (responsavelFilter) {
+      list = list.filter((c) => responsavelIdPorClienteMap.get(c.id) === responsavelFilter)
+    }
+    return list
+  }, [clientesRaw, searchTerm, responsavelFilter, responsavelIdPorClienteMap])
+
+  const total = clientes.length
 
   if (loading) {
     return <div className="text-center py-12">Carregando...</div>
@@ -84,16 +131,29 @@ export default function Clientes() {
             <option value="pausado">Pausado</option>
             <option value="inativo">Inativo</option>
           </select>
+          <select
+            value={responsavelFilter}
+            onChange={(e) => setResponsavelFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            title="Filtrar por responsável"
+          >
+            <option value="">Todos os responsáveis</option>
+            {responsaveisUnicos.map((r) => (
+              <option key={r.responsavel_id} value={r.responsavel_id}>
+                {r.responsavel_name || '(sem nome)'}
+              </option>
+            ))}
+          </select>
         </div>
-        {total > 0 && (
+        {clientes.length > 0 && (
           <p className="text-sm text-gray-600 mt-2">
-            {total} {total === 1 ? 'cliente encontrado' : 'clientes encontrados'}
+            {clientes.length} {clientes.length === 1 ? 'cliente encontrado' : 'clientes encontrados'}
           </p>
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <table className="w-full">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+        <table className="w-full min-w-[800px]">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -104,6 +164,9 @@ export default function Clientes() {
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Telefone
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Plano Atual
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Responsável
@@ -119,8 +182,8 @@ export default function Clientes() {
           <tbody className="bg-white divide-y divide-gray-200">
             {clientes.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                  {searchTerm || statusFilter
+                <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                  {searchTerm || statusFilter || responsavelFilter
                     ? 'Nenhum cliente encontrado com os filtros aplicados'
                     : 'Nenhum cliente cadastrado ainda'}
                 </td>
@@ -129,13 +192,22 @@ export default function Clientes() {
               clientes.map((cliente) => (
                 <tr key={cliente.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {cliente.nome}
+                    <Link
+                      to={`/clientes/${cliente.id}/editar`}
+                      className="text-primary hover:text-primary/80 hover:underline"
+                      title="Editar cliente"
+                    >
+                      {cliente.nome}
+                    </Link>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {cliente.email || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {cliente.telefone || '-'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {planosAtivos.get(cliente.id) || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {responsavelPorClienteMap.get(cliente.id) ?? '-'}
@@ -156,10 +228,11 @@ export default function Clientes() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <Link
                       to={`/clientes/${cliente.id}/editar`}
-                      className="text-gray-600 hover:text-gray-900 inline-flex items-center"
-                      title="Editar"
+                      className="text-primary hover:text-primary/80 inline-flex items-center gap-1 font-medium"
+                      title="Editar cliente"
                     >
                       <Edit className="w-4 h-4" />
+                      <span>Editar</span>
                     </Link>
                   </td>
                 </tr>

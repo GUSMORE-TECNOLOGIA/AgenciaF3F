@@ -1,3 +1,35 @@
+// Módulos do sistema (chave para permissões)
+export type ModuloSistema =
+  | 'dashboard'
+  | 'clientes'
+  | 'servicos'
+  | 'planos'
+  | 'financeiro'
+  | 'ocorrencias'
+  | 'atendimento'
+  | 'equipe'
+
+// Perfil de acesso (cadastrável pelo admin)
+export interface Perfil {
+  id: string
+  nome: string
+  descricao?: string
+  slug?: string
+  created_at: string
+  updated_at: string
+}
+
+// Permissão por módulo (por perfil)
+export interface PerfilPermissao {
+  perfil_id: string
+  modulo: ModuloSistema
+  pode_visualizar: boolean
+  pode_editar: boolean
+  pode_excluir: boolean
+  created_at?: string
+  updated_at?: string
+}
+
 // Tipos de usuário
 export interface User {
   id: string
@@ -5,6 +37,7 @@ export interface User {
   name: string
   role: 'admin' | 'user'
   perfil: 'admin' | 'gerente' | 'agente' | 'suporte'
+  perfil_id?: string | null
   must_reset_password: boolean
   password_reset_at?: string
   created_at: string
@@ -222,6 +255,7 @@ export interface EquipeMembro {
   email?: string
   telefone?: string
   perfil: 'admin' | 'gerente' | 'agente' | 'suporte'
+  perfil_id?: string | null
   status: 'ativo' | 'inativo'
   user_id?: string
   responsavel_id: string

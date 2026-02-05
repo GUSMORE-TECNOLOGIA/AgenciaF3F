@@ -1,13 +1,21 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode, useMemo } from 'react'
 import { User as SupabaseUser } from '@supabase/supabase-js'
 import { supabase } from '@/services/supabase'
 import { User } from '@/types'
+import type { PerfilPermissao, ModuloSistema } from '@/types'
+import { fetchPermissoesByPerfil, fetchPermissoesUsuario, fetchPerfis } from '@/services/perfis'
+
+type AcaoPermissao = 'visualizar' | 'editar' | 'excluir'
 
 interface AuthContextType {
   user: User | null
   supabaseUser: SupabaseUser | null
   loading: boolean
   mustResetPassword: boolean
+  /** Permissões do perfil do usuário (por módulo). */
+  permissoes: PerfilPermissao[]
+  /** Verifica se o usuário pode executar a ação no módulo. Admin (role='admin') tem tudo. */
+  pode: (modulo: ModuloSistema, acao: AcaoPermissao) => boolean
   refreshProfile: () => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
@@ -20,6 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [mustResetPassword, setMustResetPassword] = useState(false)
+  const [permissoes, setPermissoes] = useState<PerfilPermissao[]>([])
 
   useEffect(() => {
     // Verificar sessão atual
@@ -118,11 +127,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setUser(data)
         setMustResetPassword(!!data.must_reset_password)
+        // Carregar permissões do perfil (perfil_id ou perfil por slug)
+        loadPermissoes(data).catch((err) => {
+          console.warn('Permissões não carregadas:', err)
+          setPermissoes([])
+        })
       }
     } catch (error) {
       console.error('Erro ao carregar perfil:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function loadPermissoes(userData: User) {
+    if (userData.perfil_id) {
+      const perms = await fetchPermissoesUsuario(userData.id)
+      setPermissoes(perms)
+      return
+    }
+    const perfis = await fetchPerfis()
+    const p = perfis.find((x) => x.slug === userData.perfil) ?? perfis.find((x) => x.slug === 'agente')
+    if (p) {
+      const perms = await fetchPermissoesByPerfil(p.id)
+      setPermissoes(perms)
+    } else {
+      setPermissoes([])
     }
   }
 
@@ -173,10 +203,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
     setSupabaseUser(null)
     setMustResetPassword(false)
+    setPermissoes([])
   }
 
+  const pode = useMemo(() => {
+    return (modulo: ModuloSistema, acao: AcaoPermissao): boolean => {
+      if (user?.role === 'admin') return true
+      const p = permissoes.find((x) => x.modulo === modulo)
+      if (!p) return false
+      if (acao === 'visualizar') return p.pode_visualizar
+      if (acao === 'editar') return p.pode_editar
+      return p.pode_excluir
+    }
+  }, [user?.role, permissoes])
+
   return (
-    <AuthContext.Provider value={{ user, supabaseUser, loading, mustResetPassword, refreshProfile, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        supabaseUser,
+        loading,
+        mustResetPassword,
+        permissoes,
+        pode,
+        refreshProfile,
+        signIn,
+        signOut,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )

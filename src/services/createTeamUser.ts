@@ -3,7 +3,10 @@ import { supabase } from './supabase'
 export interface CreateTeamUserInput {
   email: string
   name: string
+  /** Slug legado (admin, gerente, agente, suporte). Usado se perfil_id não for informado. */
   perfil?: 'admin' | 'gerente' | 'agente' | 'suporte'
+  /** ID do perfil em perfis (prioridade sobre perfil). */
+  perfil_id?: string
 }
 
 export interface CreateTeamUserResult {
@@ -24,6 +27,7 @@ export async function createTeamUser(input: CreateTeamUserInput): Promise<Create
         email: input.email.trim().toLowerCase(),
         name: (input.name || input.email.split('@')[0] || 'Usuário').trim(),
         perfil: input.perfil || 'agente',
+        perfil_id: input.perfil_id ?? undefined,
       },
     }
   )

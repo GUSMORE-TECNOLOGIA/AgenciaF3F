@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Plus, Search, Users, Shield } from 'lucide-react'
+import { Plus, Search, Users, Shield, Pencil, Trash2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
-import { EquipeMembro } from '@/types'
+import { EquipeMembro, Perfil } from '@/types'
 import {
   createEquipeMembro,
   deleteEquipeMembro,
@@ -9,9 +9,19 @@ import {
   updateEquipeMembro,
   type EquipeMembroInput,
 } from '@/services/equipe'
+import {
+  createPerfil,
+  deletePerfil,
+  fetchPerfis,
+  fetchPermissoesByPerfil,
+  savePermissoes,
+  updatePerfil,
+} from '@/services/perfis'
 import { createTeamUser } from '@/services/createTeamUser'
+import { updateUsuarioPerfil } from '@/services/usuarios'
 import EquipeMembroForm from './components/EquipeMembroForm'
 import EquipeMembrosTable from './components/EquipeMembrosTable'
+import PerfilPermissoesForm, { type PerfilFormInput } from './components/PerfilPermissoesForm'
 import { useModal } from '@/contexts/ModalContext'
 
 type TabType = 'membros' | 'perfis'
@@ -28,9 +38,34 @@ export default function Equipe() {
   const [editingMembro, setEditingMembro] = useState<EquipeMembro | null>(null)
   const { confirm, alert } = useModal()
 
+  // Aba Perfis
+  const [perfis, setPerfis] = useState<Perfil[]>([])
+  const [perfisLoading, setPerfisLoading] = useState(false)
+  const [perfisSaving, setPerfisSaving] = useState(false)
+  const [showPerfilForm, setShowPerfilForm] = useState(false)
+  const [editingPerfil, setEditingPerfil] = useState<Perfil | null>(null)
+  const [permissoesPerfil, setPermissoesPerfil] = useState<Awaited<ReturnType<typeof fetchPermissoesByPerfil>>>([])
+
   useEffect(() => {
     loadMembros()
+    loadPerfis()
   }, [])
+
+  useEffect(() => {
+    if (activeTab === 'perfis') loadPerfis()
+  }, [activeTab])
+
+  async function loadPerfis() {
+    try {
+      setPerfisLoading(true)
+      const data = await fetchPerfis()
+      setPerfis(data)
+    } catch (error) {
+      console.error('Erro ao carregar perfis:', error)
+    } finally {
+      setPerfisLoading(false)
+    }
+  }
 
   async function loadMembros() {
     try {
@@ -67,6 +102,9 @@ export default function Equipe() {
       setSaving(true)
       if (editingMembro) {
         await updateEquipeMembro(editingMembro.id, data)
+        if (editingMembro.user_id && data.perfil_id) {
+          await updateUsuarioPerfil(editingMembro.user_id, data.perfil_id)
+        }
       } else {
         const email = (data.email ?? '').trim()
         if (!email) {
@@ -81,6 +119,7 @@ export default function Equipe() {
           email,
           name: data.nome_completo,
           perfil: data.perfil,
+          perfil_id: data.perfil_id ?? undefined,
         })
         await createEquipeMembro({ ...data, user_id: userId }, user.id)
       }
@@ -118,6 +157,67 @@ export default function Equipe() {
       })
     } finally {
       setDeletingId(null)
+    }
+  }
+
+  const handlePerfilSubmit = async (data: PerfilFormInput) => {
+    try {
+      setPerfisSaving(true)
+      if (editingPerfil) {
+        await updatePerfil(editingPerfil.id, { nome: data.nome, descricao: data.descricao })
+        await savePermissoes(
+          editingPerfil.id,
+          data.permissoes.map((p) => ({ ...p, perfil_id: editingPerfil.id }))
+        )
+      } else {
+        const novo = await createPerfil({ nome: data.nome, descricao: data.descricao })
+        await savePermissoes(
+          novo.id,
+          data.permissoes.map((p) => ({ ...p, perfil_id: novo.id }))
+        )
+      }
+      setShowPerfilForm(false)
+      setEditingPerfil(null)
+      setPermissoesPerfil([])
+      await loadPerfis()
+    } catch (err: unknown) {
+      console.error('Erro ao salvar perfil:', err)
+      const msg = err instanceof Error ? err.message : 'Erro ao salvar perfil. Tente novamente.'
+      await alert({ title: 'Erro', message: msg, variant: 'danger' })
+    } finally {
+      setPerfisSaving(false)
+    }
+  }
+
+  const handleEditPerfil = async (perfil: Perfil) => {
+    const perms = await fetchPermissoesByPerfil(perfil.id)
+    setPermissoesPerfil(perms)
+    setEditingPerfil(perfil)
+    setShowPerfilForm(true)
+  }
+
+  const handleDeletePerfil = async (perfil: Perfil) => {
+    if (perfil.slug) {
+      await alert({
+        title: 'Perfil padrão',
+        message: 'Perfis padrão (Administrador, Gerente, Agente, Suporte) não podem ser excluídos.',
+        variant: 'warning',
+      })
+      return
+    }
+    const ok = await confirm({
+      title: 'Excluir perfil',
+      message: `Excluir o perfil "${perfil.nome}"? Usuários com este perfil ficarão sem perfil definido.`,
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    })
+    if (!ok) return
+    try {
+      await deletePerfil(perfil.id)
+      await loadPerfis()
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erro ao excluir perfil.'
+      await alert({ title: 'Erro', message: msg, variant: 'danger' })
     }
   }
 
@@ -202,6 +302,7 @@ export default function Equipe() {
           {(showForm || editingMembro) && (
             <EquipeMembroForm
               initialData={editingMembro}
+              perfis={perfis}
               onSubmit={handleSubmit}
               onCancel={() => {
                 setShowForm(false)
@@ -230,11 +331,83 @@ export default function Equipe() {
       )}
 
       {activeTab === 'perfis' && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-foreground mb-4">Perfis e Permissões</h2>
-          <p className="text-gray-600">
-            Configure perfis e permissões da equipe. (Em desenvolvimento)
-          </p>
+        <div className="space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <p className="text-gray-600">
+              Cadastre perfis e defina o que cada um pode visualizar, editar e excluir em cada módulo.
+            </p>
+            <button
+              onClick={() => {
+                setEditingPerfil(null)
+                setPermissoesPerfil([])
+                setShowPerfilForm(true)
+              }}
+              className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              Novo Perfil
+            </button>
+          </div>
+
+          {(showPerfilForm || editingPerfil) && (
+            <PerfilPermissoesForm
+              initialPerfil={editingPerfil}
+              initialPermissoes={permissoesPerfil}
+              onSubmit={handlePerfilSubmit}
+              onCancel={() => {
+                setShowPerfilForm(false)
+                setEditingPerfil(null)
+                setPermissoesPerfil([])
+              }}
+              loading={perfisSaving}
+            />
+          )}
+
+          {perfisLoading ? (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-600">
+              Carregando perfis...
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Nome</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Descrição</th>
+                    <th className="text-right py-3 px-4 font-medium text-gray-700">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {perfis.map((p) => (
+                    <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50/50">
+                      <td className="py-3 px-4 font-medium text-foreground">{p.nome}</td>
+                      <td className="py-3 px-4 text-gray-600">{p.descricao ?? '—'}</td>
+                      <td className="py-3 px-4 text-right">
+                        <button
+                          type="button"
+                          onClick={() => handleEditPerfil(p)}
+                          className="p-2 text-gray-600 hover:text-primary hover:bg-primary/10 rounded-lg"
+                          title="Editar"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        {!p.slug && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeletePerfil(p)}
+                            className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                            title="Excluir"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
     </div>

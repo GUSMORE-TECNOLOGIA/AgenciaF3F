@@ -12,21 +12,24 @@ import {
   LogOut,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import type { ModuloSistema } from '@/types'
 
-const menuItems = [
-  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/clientes', label: 'Clientes', icon: Users },
-  { path: '/servicos', label: 'Serviços', icon: Briefcase },
-  { path: '/planos', label: 'Planos', icon: Package },
-  { path: '/financeiro', label: 'Financeiro', icon: DollarSign },
-  { path: '/ocorrencias', label: 'Ocorrências', icon: AlertCircle },
-  { path: '/atendimento', label: 'Atendimento', icon: MessageSquare },
-  { path: '/configuracoes/equipe', label: 'Equipe', icon: Settings },
+const menuItems: { path: string; label: string; modulo: ModuloSistema; icon: typeof LayoutDashboard }[] = [
+  { path: '/dashboard', label: 'Dashboard', modulo: 'dashboard', icon: LayoutDashboard },
+  { path: '/clientes', label: 'Clientes', modulo: 'clientes', icon: Users },
+  { path: '/servicos', label: 'Serviços', modulo: 'servicos', icon: Briefcase },
+  { path: '/planos', label: 'Planos', modulo: 'planos', icon: Package },
+  { path: '/financeiro', label: 'Financeiro', modulo: 'financeiro', icon: DollarSign },
+  { path: '/ocorrencias', label: 'Ocorrências', modulo: 'ocorrencias', icon: AlertCircle },
+  { path: '/atendimento', label: 'Atendimento', modulo: 'atendimento', icon: MessageSquare },
+  { path: '/configuracoes/equipe', label: 'Equipe', modulo: 'equipe', icon: Settings },
 ]
 
 export default function Sidebar() {
   const location = useLocation()
-  const { signOut } = useAuth()
+  const { signOut, pode } = useAuth()
+
+  const itensVisiveis = menuItems.filter((item) => pode(item.modulo, 'visualizar'))
 
   const handleSignOut = async () => {
     try {
@@ -44,7 +47,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex-1 p-4 space-y-2">
-        {menuItems.map((item) => {
+        {itensVisiveis.map((item) => {
           const Icon = item.icon
           const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/')
           
