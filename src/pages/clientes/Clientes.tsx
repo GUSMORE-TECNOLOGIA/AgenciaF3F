@@ -4,7 +4,6 @@ import { Plus, Search, Edit } from 'lucide-react'
 import { useClientes } from '@/hooks/useClientes'
 import { fetchPrincipaisParaLista } from '@/services/usuarios'
 import { fetchClientePlanos } from '@/services/planos'
-import type { ClientePlano } from '@/types'
 
 export default function Clientes() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -75,8 +74,6 @@ export default function Clientes() {
     }
     return list
   }, [clientesRaw, searchTerm, responsavelFilter, responsavelIdPorClienteMap])
-
-  const total = clientes.length
 
   if (loading) {
     return <div className="text-center py-12">Carregando...</div>

@@ -38,7 +38,11 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
-    const slug = perfis.length > 0 ? (perfis.find((p) => p.id === perfilId)?.slug ?? 'agente') : perfil
+    const slugRaw = perfis.length > 0 ? (perfis.find((p) => p.id === perfilId)?.slug ?? 'agente') : perfil
+    const slug: EquipeMembro['perfil'] =
+      slugRaw === 'admin' || slugRaw === 'gerente' || slugRaw === 'agente' || slugRaw === 'suporte'
+        ? slugRaw
+        : 'agente'
     await onSubmit({
       nome_completo: nome.trim(),
       email: email.trim() || undefined,
