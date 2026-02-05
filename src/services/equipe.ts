@@ -6,6 +6,8 @@ export interface EquipeMembroInput {
   email?: string
   telefone?: string
   perfil: EquipeMembro['perfil']
+  /** ID do perfil (prioridade para vincular ao usuário). */
+  perfil_id?: string | null
   status: EquipeMembro['status']
   user_id?: string | null
 }

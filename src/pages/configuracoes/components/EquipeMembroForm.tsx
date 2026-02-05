@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react'
-import { EquipeMembro } from '@/types'
+import { EquipeMembro, Perfil } from '@/types'
 import type { EquipeMembroInput } from '@/services/equipe'
 
 interface EquipeMembroFormProps {
   initialData?: EquipeMembro | null
+  /** Lista de perfis para o dropdown (quando definida, substitui o select por slug). */
+  perfis?: Perfil[]
   onSubmit: (data: EquipeMembroInput) => Promise<void>
   onCancel?: () => void
   loading?: boolean
 }
 
-export default function EquipeMembroForm({ initialData, onSubmit, onCancel, loading }: EquipeMembroFormProps) {
+export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, onCancel, loading }: EquipeMembroFormProps) {
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [telefone, setTelefone] = useState('')
   const [perfil, setPerfil] = useState<EquipeMembro['perfil']>('agente')
+  const [perfilId, setPerfilId] = useState<string>('')
   const [status, setStatus] = useState<EquipeMembro['status']>('ativo')
 
   useEffect(() => {
@@ -23,15 +26,25 @@ export default function EquipeMembroForm({ initialData, onSubmit, onCancel, load
     setTelefone(initialData.telefone || '')
     setPerfil(initialData.perfil)
     setStatus(initialData.status)
-  }, [initialData])
+    if (perfis.length > 0) {
+      const p = perfis.find((x) => x.slug === initialData.perfil)
+      setPerfilId(p?.id ?? '')
+    }
+  }, [initialData, perfis])
+
+  useEffect(() => {
+    if (perfis.length > 0 && !perfilId && perfis[0]) setPerfilId(perfis[0].id)
+  }, [perfis, perfilId])
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
+    const slug = perfis.length > 0 ? (perfis.find((p) => p.id === perfilId)?.slug ?? 'agente') : perfil
     await onSubmit({
       nome_completo: nome.trim(),
       email: email.trim() || undefined,
       telefone: telefone.trim() || undefined,
-      perfil,
+      perfil: slug,
+      perfil_id: perfis.length > 0 ? perfilId || null : undefined,
       status,
     })
   }
@@ -87,16 +100,31 @@ export default function EquipeMembroForm({ initialData, onSubmit, onCancel, load
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Perfil</label>
-          <select
-            value={perfil}
-            onChange={(e) => setPerfil(e.target.value as EquipeMembro['perfil'])}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          >
-            <option value="admin">Admin</option>
-            <option value="gerente">Gerente</option>
-            <option value="agente">Agente</option>
-            <option value="suporte">Suporte</option>
-          </select>
+          {perfis.length > 0 ? (
+            <select
+              value={perfilId}
+              onChange={(e) => setPerfilId(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              required
+            >
+              {perfis.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.nome}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <select
+              value={perfil}
+              onChange={(e) => setPerfil(e.target.value as EquipeMembro['perfil'])}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            >
+              <option value="admin">Admin</option>
+              <option value="gerente">Gerente</option>
+              <option value="agente">Agente</option>
+              <option value="suporte">Suporte</option>
+            </select>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>

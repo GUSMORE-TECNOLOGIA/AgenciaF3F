@@ -36,10 +36,15 @@ Deno.serve(async (req) => {
       return json({ error: 'Apenas administradores podem criar usuários' }, 403, cors())
     }
 
-    const body = await req.json().catch(() => ({})) as { email?: string; name?: string; perfil?: string }
+    const body = await req.json().catch(() => ({})) as { email?: string; name?: string; perfil?: string; perfil_id?: string }
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
     const name = typeof body.name === 'string' ? body.name.trim() : email.split('@')[0] || 'Usuário'
-    const perfil = ['admin', 'gerente', 'agente', 'suporte'].includes(body.perfil) ? body.perfil : 'agente'
+    let perfil = ['admin', 'gerente', 'agente', 'suporte'].includes(body.perfil) ? body.perfil : 'agente'
+    const perfilId = typeof body.perfil_id === 'string' && /^[0-9a-f-]{36}$/i.test(body.perfil_id) ? body.perfil_id : null
+    if (perfilId) {
+      const { data: perfilRow } = await admin.from('perfis').select('slug').eq('id', perfilId).maybeSingle()
+      if (perfilRow?.slug) perfil = perfilRow.slug
+    }
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return json({ error: 'Email inválido' }, 400, cors())
@@ -65,6 +70,7 @@ Deno.serve(async (req) => {
               name,
               role: 'user',
               perfil,
+              perfil_id: perfilId ?? undefined,
               must_reset_password: true,
               updated_at: new Date().toISOString(),
             },
@@ -86,6 +92,7 @@ Deno.serve(async (req) => {
       name,
       role: 'user',
       perfil,
+      perfil_id: perfilId ?? undefined,
       must_reset_password: true,
     })
 
