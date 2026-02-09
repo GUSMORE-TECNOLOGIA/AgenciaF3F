@@ -3,6 +3,7 @@ import { Plus, User, X } from 'lucide-react'
 import { Cliente, ClienteResponsavel } from '@/types'
 import { fetchClienteResponsaveis, softDeleteClienteResponsavel, createClienteResponsavel } from '@/services/cliente-responsaveis'
 import { fetchEquipeMembros } from '@/services/equipe'
+import { fetchUsuarios } from '@/services/usuarios'
 import { useModal } from '@/contexts/ModalContext'
 
 interface ClienteResponsaveisTabProps {
@@ -13,12 +14,13 @@ interface ClienteResponsaveisTabProps {
 export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResponsaveisTabProps) {
   const [responsaveis, setResponsaveis] = useState<ClienteResponsavel[]>([])
   const [membrosDisponiveis, setMembrosDisponiveis] = useState<any[]>([])
+  const [usuarioIds, setUsuarioIds] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
   const [selectedMembroId, setSelectedMembroId] = useState('')
   const [selectedRoles, setSelectedRoles] = useState<string[]>(['principal'])
   const [observacao, setObservacao] = useState('')
-  const { confirm } = useModal()
+  const { confirm, alert: alertModal } = useModal()
 
   useEffect(() => {
     loadData()
@@ -27,12 +29,14 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
   async function loadData() {
     try {
       setLoading(true)
-      const [responsaveisData, membrosData] = await Promise.all([
+      const [responsaveisData, membrosData, usuariosList] = await Promise.all([
         fetchClienteResponsaveis(cliente.id),
         fetchEquipeMembros(),
+        fetchUsuarios(),
       ])
       setResponsaveis(responsaveisData)
       setMembrosDisponiveis(membrosData)
+      setUsuarioIds(new Set((usuariosList || []).map((u) => u.id)))
     } catch (error) {
       console.error('Erro ao carregar responsáveis:', error)
     } finally {
@@ -58,6 +62,8 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
       setObservacao('')
     } catch (error) {
       console.error('Erro ao adicionar responsável:', error)
+      const msg = error instanceof Error ? error.message : 'Erro ao adicionar responsável. Verifique se o membro possui usuário vinculado no sistema.'
+      await alertModal({ title: 'Erro ao adicionar responsável', message: msg, variant: 'danger' })
     }
   }
 
@@ -223,13 +229,19 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                 >
                   <option value="">Selecione um membro...</option>
                   {membrosDisponiveis
-                    .filter((m) => m.status === 'ativo' && m.user_id)
+                    .filter((m) => m.status === 'ativo' && m.user_id && usuarioIds.has(m.user_id))
                     .map((membro) => (
                       <option key={membro.id} value={membro.user_id}>
                         {membro.nome_completo} ({membro.perfil})
                       </option>
                     ))}
                 </select>
+                {membrosDisponiveis.filter((m) => m.status === 'ativo' && m.user_id).length > 0 &&
+                  membrosDisponiveis.filter((m) => m.status === 'ativo' && m.user_id && usuarioIds.has(m.user_id)).length === 0 && (
+                    <p className="text-amber-600 text-sm mt-1">
+                      Nenhum membro com usuário vinculado no sistema. Vincule o membro a um usuário em Configurações → Equipe.
+                    </p>
+                  )}
               </div>
 
               <div>
