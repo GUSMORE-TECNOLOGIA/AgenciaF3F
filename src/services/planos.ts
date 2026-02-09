@@ -647,10 +647,29 @@ export async function fetchClientePlanos(clienteId: string): Promise<ClientePlan
 }
 
 /**
- * Criar contrato de cliente com plano
+ * Criar contrato de cliente com plano.
+ * Se status for 'ativo', qualquer plano ativo existente do cliente é finalizado (troca de plano em um passo).
  */
 export async function createClientePlano(input: ClientePlanoCreateInput): Promise<ClientePlano> {
   try {
+    const status = input.status || 'ativo'
+    if (status === 'ativo') {
+      const { data: ativos } = await supabase
+        .from('cliente_planos')
+        .select('id')
+        .eq('cliente_id', input.cliente_id)
+        .eq('status', 'ativo')
+        .is('deleted_at', null)
+      if (ativos && ativos.length > 0) {
+        await supabase
+          .from('cliente_planos')
+          .update({ status: 'finalizado', updated_at: new Date().toISOString() })
+          .eq('cliente_id', input.cliente_id)
+          .eq('status', 'ativo')
+          .is('deleted_at', null)
+      }
+    }
+
     const { data, error } = await supabase
       .from('cliente_planos')
       .insert({
@@ -658,7 +677,7 @@ export async function createClientePlano(input: ClientePlanoCreateInput): Promis
         plano_id: input.plano_id,
         valor: input.valor,
         moeda: input.moeda || 'BRL',
-        status: input.status || 'ativo',
+        status,
         data_inicio: input.data_inicio || null,
         data_fim: input.data_fim || null,
         observacoes: input.observacoes || null,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Plus, User, X } from 'lucide-react'
 import { Cliente, ClienteResponsavel } from '@/types'
-import { fetchClienteResponsaveis, softDeleteClienteResponsavel } from '@/services/cliente-responsaveis'
+import { fetchClienteResponsaveis, softDeleteClienteResponsavel, createClienteResponsavel } from '@/services/cliente-responsaveis'
 import { fetchEquipeMembros } from '@/services/equipe'
 import { useModal } from '@/contexts/ModalContext'
 
@@ -44,16 +44,14 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
     if (!selectedMembroId || selectedRoles.length === 0) return
 
     try {
-      // TODO: Implementar chamada real ao Supabase
-      console.log('Adicionar responsável:', {
-        clienteId: cliente.id,
-        responsavelId: selectedMembroId,
+      await createClienteResponsavel({
+        cliente_id: cliente.id,
+        responsavel_id: selectedMembroId,
         roles: selectedRoles,
-        observacao,
+        observacao: observacao.trim() || undefined,
       })
-      
-      // Recarregar lista
       await loadData()
+      await refetch?.()
       setShowAddModal(false)
       setSelectedMembroId('')
       setSelectedRoles(['principal'])
@@ -225,9 +223,9 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                 >
                   <option value="">Selecione um membro...</option>
                   {membrosDisponiveis
-                    .filter((m) => m.status === 'ativo')
+                    .filter((m) => m.status === 'ativo' && m.user_id)
                     .map((membro) => (
-                      <option key={membro.id} value={membro.id}>
+                      <option key={membro.id} value={membro.user_id}>
                         {membro.nome_completo} ({membro.perfil})
                       </option>
                     ))}

@@ -16,6 +16,8 @@ interface AuthContextType {
   permissoes: PerfilPermissao[]
   /** Verifica se o usuário pode executar a ação no módulo. Admin (role='admin') tem tudo. */
   pode: (modulo: ModuloSistema, acao: AcaoPermissao) => boolean
+  /** True se o usuário pode editar valor e datas em planos/serviços (admin ou perfil financeiro). */
+  canSuperEditPlanos: boolean
   refreshProfile: () => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
@@ -89,11 +91,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function loadUserProfile(userId: string) {
     try {
-      const { data, error } = await supabase
+      const { data: raw, error } = await supabase
         .from('usuarios')
-        .select('*')
+        .select('id, email, name, role, perfil, perfil_id, must_reset_password, password_reset_at, created_at, updated_at, perfis(slug)')
         .eq('id', userId)
         .single()
+      const data = raw as any
+      const perfilSlug = data?.perfis?.slug ?? data?.perfil
 
       if (error) {
         // Se a tabela não existe ou usuário não tem perfil, criar um básico
@@ -125,10 +129,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           throw error
         }
       } else {
-        setUser(data)
+        const userData: User = {
+          id: data.id,
+          email: data.email,
+          name: data.name,
+          role: data.role,
+          perfil: (perfilSlug ?? data.perfil ?? 'agente') as User['perfil'],
+          perfil_id: data.perfil_id ?? undefined,
+          must_reset_password: !!data.must_reset_password,
+          password_reset_at: data.password_reset_at || undefined,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+        }
+        setUser(userData)
         setMustResetPassword(!!data.must_reset_password)
         // Carregar permissões do perfil (perfil_id ou perfil por slug)
-        loadPermissoes(data).catch((err) => {
+        loadPermissoes(userData).catch((err) => {
           console.warn('Permissões não carregadas:', err)
           setPermissoes([])
         })
@@ -217,6 +233,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user?.role, permissoes])
 
+  const canSuperEditPlanos = Boolean(
+    user && (user.role === 'admin' || user.perfil === 'financeiro')
+  )
+
   return (
     <AuthContext.Provider
       value={{
@@ -226,6 +246,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         mustResetPassword,
         permissoes,
         pode,
+        canSuperEditPlanos,
         refreshProfile,
         signIn,
         signOut,
