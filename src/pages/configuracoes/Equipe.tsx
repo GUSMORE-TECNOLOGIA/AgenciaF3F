@@ -307,6 +307,7 @@ export default function Equipe() {
 
           {(showForm || editingMembro) && (
             <EquipeMembroForm
+              key={editingMembro?.id ?? 'new'}
               initialData={editingMembro}
               perfis={perfis}
               onSubmit={handleSubmit}

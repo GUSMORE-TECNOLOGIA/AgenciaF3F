@@ -13,6 +13,10 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 
 **Comandos e playbooks:** pasta [Commands/](../../Commands/) na raiz do repositório (Git, migrações, segurança).
 
+## Requisitos (processos de negócio)
+- [Fluxo Perfil → Usuário → Responsável](./requisitos/fluxo-perfil-usuario-responsavel.md) – Cadeia interconectada: criar perfil, vincular ao usuário na Equipe, usar como responsável no cliente, exibir nome correto no dashboard e filtros.
+- [Status do fluxo Perfil → Usuário → Responsável](./requisitos/status-fluxo-perfil-usuario-responsavel.md) – Conferência requisitos vs implementação; o que já está OK e o que validar.
+
 ## Core Guides
 - [Fluxo e ciclo de vida do cliente](./fluxo-ciclo-vida-cliente.md) – Verdade do Negócio (processos 1.1–1.5; validar com Arthur).
 - [Skills Map (Quando usar cada skill)](./skills-map.md)
@@ -43,6 +47,7 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 ## Document Map
 | Guide | File | Primary Inputs |
 | --- | --- | --- |
+| Fluxo Perfil → Usuário → Responsável | [requisitos/fluxo-perfil-usuario-responsavel.md](./requisitos/fluxo-perfil-usuario-responsavel.md) | Perfil, Equipe, Responsável, Dashboard, Filtros (cadeia única) |
 | Fluxo ciclo de vida cliente | [fluxo-ciclo-vida-cliente.md](./fluxo-ciclo-vida-cliente.md) | Processos 1.1–1.5; validar com Arthur |
 | Skills Map | [skills-map.md](./skills-map.md) | Quando usar cada skill F3F |
 | Plano de varredura | [plano-varredura-atualizacao-projeto.md](./plano-varredura-atualizacao-projeto.md) | Ordem das skills para varredura |
