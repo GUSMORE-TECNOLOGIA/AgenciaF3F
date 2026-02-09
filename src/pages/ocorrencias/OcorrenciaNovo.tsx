@@ -5,7 +5,7 @@ import { useCreateOcorrencia } from '@/hooks/useOcorrencias'
 import { useOcorrenciaGrupos, useOcorrenciaTipos } from '@/hooks/useOcorrencias'
 import { ocorrenciaCreateSchema, type OcorrenciaCreateInput } from '@/lib/validators/ocorrencia-schema'
 import { useClientes } from '@/hooks/useClientes'
-import { useUsuarios } from '@/hooks/useUsuarios'
+import { useUsuariosParaSelecaoResponsavel } from '@/hooks/useUsuarios'
 import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/contexts/ModalContext'
 
@@ -14,7 +14,7 @@ export default function OcorrenciaNovo() {
   const [searchParams] = useSearchParams()
   const { create, loading } = useCreateOcorrencia()
   const { clientes } = useClientes({ autoFetch: true, limit: 1000 })
-  const { usuarios } = useUsuarios()
+  const { usuarios } = useUsuariosParaSelecaoResponsavel()
   const { user } = useAuth()
   const { grupos } = useOcorrenciaGrupos()
   const { alert } = useModal()

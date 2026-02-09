@@ -18,7 +18,7 @@ import {
   updatePerfil,
 } from '@/services/perfis'
 import { createTeamUser } from '@/services/createTeamUser'
-import { updateUsuarioPerfil } from '@/services/usuarios'
+import { updateUsuarioNameAndPerfil } from '@/services/usuarios'
 import EquipeMembroForm from './components/EquipeMembroForm'
 import EquipeMembrosTable from './components/EquipeMembrosTable'
 import PerfilPermissoesForm, { type PerfilFormInput } from './components/PerfilPermissoesForm'
@@ -102,8 +102,11 @@ export default function Equipe() {
       setSaving(true)
       if (editingMembro) {
         await updateEquipeMembro(editingMembro.id, data)
-        if (editingMembro.user_id && data.perfil_id) {
-          await updateUsuarioPerfil(editingMembro.user_id, data.perfil_id)
+        if (editingMembro.user_id) {
+          await updateUsuarioNameAndPerfil(editingMembro.user_id, {
+            name: data.nome_completo,
+            perfil_id: data.perfil_id ?? null,
+          })
         }
       } else {
         const email = (data.email ?? '').trim()
@@ -128,7 +131,10 @@ export default function Equipe() {
       await loadMembros()
     } catch (err: unknown) {
       console.error('Erro ao salvar membro:', err)
-      const msg = err instanceof Error ? err.message : 'Erro ao salvar membro. Tente novamente.'
+      const msg =
+        err instanceof Error
+          ? err.message
+          : (err as { message?: string })?.message ?? 'Erro ao salvar membro. Tente novamente.'
       await alert({ title: 'Erro', message: msg, variant: 'danger' })
     } finally {
       setSaving(false)

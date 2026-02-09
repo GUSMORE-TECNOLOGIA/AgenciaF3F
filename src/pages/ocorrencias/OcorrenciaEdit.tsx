@@ -4,7 +4,7 @@ import { ArrowLeft, Save, Loader2, AlertCircle } from 'lucide-react'
 import { useOcorrencia, useUpdateOcorrencia } from '@/hooks/useOcorrencias'
 import { useOcorrenciaGrupos, useOcorrenciaTipos } from '@/hooks/useOcorrencias'
 import { ocorrenciaUpdateSchema, type OcorrenciaUpdateInput } from '@/lib/validators/ocorrencia-schema'
-import { useUsuarios } from '@/hooks/useUsuarios'
+import { useUsuariosParaSelecaoResponsavel } from '@/hooks/useUsuarios'
 import { useModal } from '@/contexts/ModalContext'
 
 export default function OcorrenciaEdit() {
@@ -12,7 +12,7 @@ export default function OcorrenciaEdit() {
   const navigate = useNavigate()
   const { ocorrencia, loading: loadingOcorrencia, refetch } = useOcorrencia(id || null)
   const { update, loading: updating } = useUpdateOcorrencia(id || '')
-  const { usuarios } = useUsuarios()
+  const { usuarios } = useUsuariosParaSelecaoResponsavel()
   const { grupos } = useOcorrenciaGrupos()
   const { alert } = useModal()
   const [selectedGrupoId, setSelectedGrupoId] = useState<string>('')
