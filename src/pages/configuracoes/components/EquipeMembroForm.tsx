@@ -29,12 +29,14 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
     if (perfis.length > 0) {
       const p = perfis.find((x) => x.slug === initialData.perfil)
       setPerfilId(p?.id ?? '')
+    } else {
+      setPerfilId('')
     }
   }, [initialData, perfis])
 
   useEffect(() => {
-    if (perfis.length > 0 && !perfilId && perfis[0]) setPerfilId(perfis[0].id)
-  }, [perfis, perfilId])
+    if (perfis.length > 0 && !perfilId && !initialData && perfis[0]) setPerfilId(perfis[0].id)
+  }, [perfis, perfilId, initialData])
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
