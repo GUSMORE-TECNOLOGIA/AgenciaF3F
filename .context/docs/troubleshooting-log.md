@@ -4,6 +4,58 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 
 ---
 
+## 2026-02-09 – Perfil custom (ex.: “Teste”) não salvava nem aparecia na lista de membros
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-02-09 |
+| **Descrição do erro** | Ao criar um perfil custom (ex.: “Teste”), vincular a um usuário e salvar, o perfil não aparecia na coluna PERFIL da lista de membros; todos continuavam como “agente”. |
+| **Arquivo(s)/módulo** | `EquipeMembroForm.tsx` (slug forçado para enum), `equipe.ts` (fetch sem perfil_id do usuário), `EquipeMembrosTable.tsx` (exibia só equipe_membros.perfil). |
+| **Causa raiz** | (1) Perfis custom não têm slug; o form convertia para um dos slugs fixos (admin, gerente, agente, …) e gravava `equipe_membros.perfil = 'agente'`. (2) O vínculo correto era salvo em `usuarios.perfil_id`, mas a lista lia só `equipe_membros.perfil`. (3) Na edição, o perfil selecionado vinha de `initialData.perfil` (slug), não de `usuarios.perfil_id`, então “Teste” não ficava selecionado. |
+| **Solução aplicada** | (1) `fetchEquipeMembros` passa a buscar `usuarios.perfil_id` por `user_id` e preencher `EquipeMembro.perfil_id`. (2) `EquipeMembrosTable` exibe `perfis.find(p => p.id === membro.perfil_id)?.nome ?? membro.perfil`. (3) `EquipeMembroForm` na edição usa `initialData.perfil_id` (quando existir) para definir o perfil selecionado em vez de só o slug. |
+| **Lição aprendida** | Quando o perfil do usuário pode ser custom (tabela perfis), a lista deve mostrar o nome do perfil a partir de `usuarios.perfil_id` + `perfis.nome`; não depender só de `equipe_membros.perfil` (slug). No formulário de edição, inicializar o select por `perfil_id`, não por slug. |
+
+---
+
+## 2026-02-09 – Atualizar perfil do membro para "Teste" não refletia (user_id null)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-02-09 |
+| **Descrição do erro** | Ao editar um membro e selecionar perfil "Teste", ao salvar o perfil não atualizava na lista (continuava "agente"). |
+| **Arquivo(s)/módulo** | Equipe.tsx handleSubmit; equipe_membros.user_id; usuarios.perfil_id. |
+| **Causa raiz** | O membro editado tinha **user_id = null** em equipe_membros. O código só chama updateUsuarioNameAndPerfil quando editingMembro.user_id existe; com user_id null o perfil_id nunca era gravado em usuarios. A lista exibe perfil a partir de usuarios.perfil_id (via fetchEquipeMembros), então sem vínculo o perfil não aparecia. |
+| **Solução aplicada** | Ao editar membro com user_id null: buscar usuário por email (fetchUsuarioIdByEmail); se existir, atualizar equipe_membros com user_id e chamar updateUsuarioNameAndPerfil com esse id. Assim o vínculo é criado e o perfil gravado em usuarios; no próximo loadMembros o perfil aparece. |
+| **Lição aprendida** | Membros com user_id null (não vinculados ao login) não tinham perfil persistido em usuarios. Sempre que for atualizar perfil em edição, resolver user_id por email quando null e persistir o vínculo antes de atualizar usuarios.perfil_id. |
+
+---
+
+## 2026-02-09 – Remover responsável do cliente falhava (RLS UPDATE cliente_responsaveis)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-02-09 |
+| **Descrição do erro** | Ao clicar em remover responsável na aba Responsáveis do cliente, a ação falhava com "new row violates row-level security policy for table cliente_responsaveis". |
+| **Arquivo(s)/módulo** | RLS em cliente_responsaveis (política UPDATE). softDeleteClienteResponsavel faz UPDATE SET deleted_at = NOW(). |
+| **Causa raiz** | A política UPDATE não tinha WITH CHECK explícito; no Postgres o WITH CHECK default é igual ao USING. O USING exigia cliente_responsaveis.deleted_at IS NULL. Após o UPDATE a nova linha tinha deleted_at preenchido, então falhava no WITH CHECK implícito. |
+| **Solução aplicada** | Migration 20260209230000_cliente_responsaveis_update_allow_soft_delete.sql: recriar a política UPDATE com WITH CHECK explícito que só verifica permissão (responsável do cliente ou is_admin()), sem exigir deleted_at IS NULL, permitindo soft-delete. |
+| **Lição aprendida** | Para tabelas com soft-delete, a política UPDATE deve ter WITH CHECK que não exija deleted_at IS NULL (só permissão), senão o UPDATE que seta deleted_at é rejeitado. |
+
+---
+
+## 2026-02-09 – Debug módulo responsáveis/perfil (análise de logs)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-02-09 |
+| **Descrição do erro** | Teste de reprodução do módulo (perfil, membro, dashboard, responsáveis). Usuário reportou "issue reproduced". |
+| **Arquivo(s)/módulo** | Log: `.cursor/debug.log`. Fluxos: perfis, equipe, dashboard, ClienteResponsaveisTab, cliente-responsaveis, usuarios. |
+| **Causa raiz** | Nos logs desta execução **não houve erro de backend**: H1–H4 e H6–H9 REJECTED (todos com errorMessage:null, dados retornando). H5 (soft-delete responsável) INCONCLUSIVE (não foi chamado no teste). |
+| **Solução aplicada** | Nenhuma alteração de código nesta análise. Se o sintoma persistir (ex.: nome errado na UI, lista não atualiza), descrever o sintoma exato e qual tela/ação para instrumentação mais focada ou correção de UI/estado. |
+| **Lição aprendida** | Logs de debug permitem descartar falhas no backend quando errorMessage é null e rowCount/hasData estão corretos; nesse caso investigar frontend (estado, re-render, campo exibido). |
+
+---
+
 ## Formato das entradas
 
 | Campo | Descrição |

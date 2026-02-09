@@ -12,7 +12,7 @@ export interface EquipeMembroInput {
   user_id?: string | null
 }
 
-function mapEquipeMembro(data: any): EquipeMembro {
+function mapEquipeMembro(data: any, perfilId?: string | null): EquipeMembro {
   return {
     id: data.id,
     nome_completo: data.nome_completo,
@@ -25,6 +25,7 @@ function mapEquipeMembro(data: any): EquipeMembro {
     created_at: data.created_at,
     updated_at: data.updated_at,
     deleted_at: data.deleted_at || undefined,
+    perfil_id: perfilId ?? data.perfil_id ?? undefined,
   }
 }
 
@@ -40,7 +41,22 @@ export async function fetchEquipeMembros(): Promise<EquipeMembro[]> {
     throw error
   }
 
-  return (data || []).map(mapEquipeMembro)
+  const rows = data || []
+  const userIds = rows.map((r: { user_id?: string | null }) => r.user_id).filter(Boolean) as string[]
+  const userPerfilMap = new Map<string, string | null>()
+  if (userIds.length > 0) {
+    const { data: users } = await supabase
+      .from('usuarios')
+      .select('id, perfil_id')
+      .in('id', userIds)
+    if (users) {
+      for (const u of users as { id: string; perfil_id: string | null }[]) {
+        userPerfilMap.set(u.id, u.perfil_id)
+      }
+    }
+  }
+
+  return rows.map((r: any) => mapEquipeMembro(r, r.user_id ? userPerfilMap.get(r.user_id) ?? undefined : undefined))
 }
 
 export async function createEquipeMembro(

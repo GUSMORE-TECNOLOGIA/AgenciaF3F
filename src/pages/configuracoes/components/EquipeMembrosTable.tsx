@@ -1,14 +1,15 @@
 import { Edit, Trash2 } from 'lucide-react'
-import { EquipeMembro } from '@/types'
+import { EquipeMembro, Perfil } from '@/types'
 
 interface EquipeMembrosTableProps {
   membros: EquipeMembro[]
+  perfis: Perfil[]
   onEdit: (membro: EquipeMembro) => void
   onDelete: (membro: EquipeMembro) => void
   deletingId?: string | null
 }
 
-export default function EquipeMembrosTable({ membros, onEdit, onDelete, deletingId }: EquipeMembrosTableProps) {
+export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, deletingId }: EquipeMembrosTableProps) {
   if (membros.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-600">
@@ -36,7 +37,7 @@ export default function EquipeMembrosTable({ membros, onEdit, onDelete, deleting
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{membro.email || '-'}</td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                  {membro.perfil}
+                  {(membro.perfil_id ? perfis.find((p) => p.id === membro.perfil_id)?.nome : null) ?? membro.perfil}
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
