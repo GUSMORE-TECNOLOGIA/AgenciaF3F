@@ -4,6 +4,7 @@ import { ClientePlano } from '@/types'
 import { useUpdateClientePlano } from '@/hooks/usePlanos'
 import { clientePlanoUpdateSchema, type ClientePlanoUpdateInput } from '@/lib/validators/plano-schema'
 import { useModal } from '@/contexts/ModalContext'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface EditClientePlanoModalProps {
   contrato: ClientePlano
@@ -20,10 +21,13 @@ export default function EditClientePlanoModal({
 }: EditClientePlanoModalProps) {
   const { update, loading } = useUpdateClientePlano(contrato.id)
   const { alert } = useModal()
+  const { canSuperEditPlanos } = useAuth()
   const [formData, setFormData] = useState<ClientePlanoUpdateInput>({
     valor: contrato.valor,
     moeda: contrato.moeda,
     status: contrato.status,
+    data_inicio: contrato.data_inicio ?? undefined,
+    data_fim: contrato.data_fim ?? undefined,
     observacoes: contrato.observacoes || '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -34,6 +38,8 @@ export default function EditClientePlanoModal({
         valor: contrato.valor,
         moeda: contrato.moeda,
         status: contrato.status,
+        data_inicio: contrato.data_inicio ?? undefined,
+        data_fim: contrato.data_fim ?? undefined,
         observacoes: contrato.observacoes || '',
       })
       setErrors({})
@@ -45,7 +51,10 @@ export default function EditClientePlanoModal({
     setErrors({})
 
     try {
-      const validated = clientePlanoUpdateSchema.parse(formData)
+      const payload: ClientePlanoUpdateInput = canSuperEditPlanos
+        ? formData
+        : { status: formData.status, observacoes: formData.observacoes }
+      const validated = clientePlanoUpdateSchema.parse(payload)
       await update(validated)
       onSuccess()
       onClose()
@@ -100,10 +109,13 @@ export default function EditClientePlanoModal({
               )}
             </div>
 
-            {/* Valor */}
+            {/* Valor (apenas Super Edit: admin ou financeiro) */}
             <div>
               <label htmlFor="valor" className="block text-sm font-medium text-gray-700 mb-2">
                 Valor do Contrato (R$) <span className="text-red-500">*</span>
+                {!canSuperEditPlanos && (
+                  <span className="ml-2 text-xs text-gray-500">(apenas troca de status)</span>
+                )}
               </label>
               <input
                 id="valor"
@@ -114,9 +126,10 @@ export default function EditClientePlanoModal({
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, valor: Number(e.target.value) }))
                 }
+                readOnly={!canSuperEditPlanos}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.valor ? 'border-red-500' : 'border-gray-300'
-                }`}
+                } ${!canSuperEditPlanos ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                 required
               />
               {errors.valor && <p className="mt-1 text-sm text-red-600">{errors.valor}</p>}
@@ -131,12 +144,57 @@ export default function EditClientePlanoModal({
                 id="moeda"
                 value={formData.moeda}
                 onChange={(e) => setFormData((prev) => ({ ...prev, moeda: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                disabled={!canSuperEditPlanos}
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                  !canSuperEditPlanos ? 'bg-gray-100 cursor-not-allowed' : ''
+                }`}
               >
                 <option value="BRL">BRL - Real Brasileiro</option>
                 <option value="USD">USD - Dólar Americano</option>
                 <option value="EUR">EUR - Euro</option>
               </select>
+            </div>
+
+            {/* Data Início / Data Fim (apenas Super Edit) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="data_inicio" className="block text-sm font-medium text-gray-700 mb-2">
+                  Data de Início
+                </label>
+                <input
+                  id="data_inicio"
+                  type="date"
+                  value={formData.data_inicio ?? ''}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, data_inicio: e.target.value || undefined }))
+                  }
+                  readOnly={!canSuperEditPlanos}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                    errors.data_inicio ? 'border-red-500' : 'border-gray-300'
+                  } ${!canSuperEditPlanos ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                />
+                {errors.data_inicio && (
+                  <p className="mt-1 text-sm text-red-600">{errors.data_inicio}</p>
+                )}
+              </div>
+              <div>
+                <label htmlFor="data_fim" className="block text-sm font-medium text-gray-700 mb-2">
+                  Data de Fim
+                </label>
+                <input
+                  id="data_fim"
+                  type="date"
+                  value={formData.data_fim ?? ''}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, data_fim: e.target.value || undefined }))
+                  }
+                  readOnly={!canSuperEditPlanos}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                    errors.data_fim ? 'border-red-500' : 'border-gray-300'
+                  } ${!canSuperEditPlanos ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                />
+                {errors.data_fim && <p className="mt-1 text-sm text-red-600">{errors.data_fim}</p>}
+              </div>
             </div>
 
             {/* Status */}

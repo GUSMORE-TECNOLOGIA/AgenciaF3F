@@ -207,11 +207,24 @@ export async function fetchOcorrenciaById(id: string): Promise<Ocorrencia | null
   }
 }
 
+/** Nome do tipo de ocorrência que exige motivo/causa obrigatório (notas). */
+const TIPO_CANCELAMENTO = 'cancelamento'
+
 /**
  * Criar nova ocorrência
  */
 export async function createOcorrencia(input: OcorrenciaCreateInput): Promise<Ocorrencia> {
   try {
+    const { data: tipoRow } = await supabase
+      .from('ocorrencia_tipos')
+      .select('nome')
+      .eq('id', input.tipo_id)
+      .single()
+    const tipoNome = (tipoRow?.nome ?? '').trim().toLowerCase()
+    if (tipoNome === TIPO_CANCELAMENTO && !(input.notas ?? '').trim()) {
+      throw new Error('Motivo/Causa é obrigatório para ocorrências do tipo Cancelamento.')
+    }
+
     const reminderAt = normalizeReminderDate(input.reminder_at)
     const reminderStatus = reminderAt ? input.reminder_status || 'pendente' : null
     const { data, error } = await supabase
@@ -267,6 +280,35 @@ export async function createOcorrencia(input: OcorrenciaCreateInput): Promise<Oc
  */
 export async function updateOcorrencia(id: string, input: OcorrenciaUpdateInput): Promise<Ocorrencia> {
   try {
+    const tipoId = input.tipo_id
+    const notas = input.notas
+    if (tipoId !== undefined || notas !== undefined) {
+      let effectiveTipoId = tipoId
+      let effectiveNotas = notas
+      if (effectiveTipoId === undefined || effectiveNotas === undefined) {
+        const { data: current } = await supabase
+          .from('ocorrencias')
+          .select('tipo_id, notas')
+          .eq('id', id)
+          .single()
+        if (current) {
+          if (effectiveTipoId === undefined) effectiveTipoId = current.tipo_id
+          if (effectiveNotas === undefined) effectiveNotas = current.notas
+        }
+      }
+      if (effectiveTipoId) {
+        const { data: tipoRow } = await supabase
+          .from('ocorrencia_tipos')
+          .select('nome')
+          .eq('id', effectiveTipoId)
+          .single()
+        const tipoNome = (tipoRow?.nome ?? '').trim().toLowerCase()
+        if (tipoNome === TIPO_CANCELAMENTO && !(effectiveNotas ?? '').trim()) {
+          throw new Error('Motivo/Causa é obrigatório para ocorrências do tipo Cancelamento.')
+        }
+      }
+    }
+
     const updateData: any = {}
 
     if (input.grupo_id !== undefined) updateData.grupo_id = input.grupo_id

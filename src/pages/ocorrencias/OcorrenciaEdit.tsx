@@ -60,9 +60,17 @@ export default function OcorrenciaEdit() {
     }
   }, [selectedGrupoId])
 
+  const selectedTipoNome = tipos.find((t) => t.id === formData.tipo_id)?.nome?.trim().toLowerCase()
+  const isCancelamento = selectedTipoNome === 'cancelamento'
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrors({})
+
+    if (isCancelamento && !(formData.notas ?? '').trim()) {
+      setErrors({ notas: 'Motivo/Causa é obrigatório para tipo Cancelamento.' })
+      return
+    }
 
     try {
       const validated = ocorrenciaUpdateSchema.parse(formData)
@@ -204,7 +212,7 @@ export default function OcorrenciaEdit() {
             {/* Notas */}
             <div>
               <label htmlFor="notas" className="block text-sm font-medium text-gray-700 mb-2">
-                Notas <span className="text-red-500">*</span>
+                {isCancelamento ? 'Motivo/Causa (obrigatório)' : 'Notas'} <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="notas"

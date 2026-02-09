@@ -40,7 +40,7 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
     event.preventDefault()
     const slugRaw = perfis.length > 0 ? (perfis.find((p) => p.id === perfilId)?.slug ?? 'agente') : perfil
     const slug: EquipeMembro['perfil'] =
-      slugRaw === 'admin' || slugRaw === 'gerente' || slugRaw === 'agente' || slugRaw === 'suporte'
+      slugRaw === 'admin' || slugRaw === 'gerente' || slugRaw === 'agente' || slugRaw === 'suporte' || slugRaw === 'financeiro'
         ? slugRaw
         : 'agente'
     await onSubmit({
