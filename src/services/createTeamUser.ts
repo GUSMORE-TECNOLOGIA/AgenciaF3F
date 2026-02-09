@@ -3,8 +3,8 @@ import { supabase } from './supabase'
 export interface CreateTeamUserInput {
   email: string
   name: string
-  /** Slug legado (admin, gerente, agente, suporte). Usado se perfil_id não for informado. */
-  perfil?: 'admin' | 'gerente' | 'agente' | 'suporte'
+  /** Slug do perfil (admin, gerente, agente, suporte, financeiro). Usado se perfil_id não for informado. */
+  perfil?: 'admin' | 'gerente' | 'agente' | 'suporte' | 'financeiro'
   /** ID do perfil em perfis (prioridade sobre perfil). */
   perfil_id?: string
 }
