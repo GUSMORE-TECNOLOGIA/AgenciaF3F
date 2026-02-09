@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react'
 import { Plus, User, X } from 'lucide-react'
 import { Cliente, ClienteResponsavel } from '@/types'
 import { fetchClienteResponsaveis, softDeleteClienteResponsavel, createClienteResponsavel } from '@/services/cliente-responsaveis'
-import { fetchEquipeMembros } from '@/services/equipe'
-import { fetchUsuarios } from '@/services/usuarios'
+import { fetchUsuariosParaSelecaoResponsavel } from '@/services/usuarios'
 import { useModal } from '@/contexts/ModalContext'
 
 interface ClienteResponsaveisTabProps {
@@ -13,11 +12,10 @@ interface ClienteResponsaveisTabProps {
 
 export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResponsaveisTabProps) {
   const [responsaveis, setResponsaveis] = useState<ClienteResponsavel[]>([])
-  const [membrosDisponiveis, setMembrosDisponiveis] = useState<any[]>([])
-  const [usuarioIds, setUsuarioIds] = useState<Set<string>>(new Set())
+  const [responsaveisDisponiveis, setResponsaveisDisponiveis] = useState<Array<{ id: string; name: string; email: string }>>([])
   const [loading, setLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
-  const [selectedMembroId, setSelectedMembroId] = useState('')
+  const [selectedResponsavelId, setSelectedResponsavelId] = useState('')
   const [selectedRoles, setSelectedRoles] = useState<string[]>(['principal'])
   const [observacao, setObservacao] = useState('')
   const { confirm, alert: alertModal } = useModal()
@@ -29,14 +27,12 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
   async function loadData() {
     try {
       setLoading(true)
-      const [responsaveisData, membrosData, usuariosList] = await Promise.all([
+      const [responsaveisData, listaResponsaveis] = await Promise.all([
         fetchClienteResponsaveis(cliente.id),
-        fetchEquipeMembros(),
-        fetchUsuarios(),
+        fetchUsuariosParaSelecaoResponsavel(),
       ])
       setResponsaveis(responsaveisData)
-      setMembrosDisponiveis(membrosData)
-      setUsuarioIds(new Set((usuariosList || []).map((u) => u.id)))
+      setResponsaveisDisponiveis(listaResponsaveis || [])
     } catch (error) {
       console.error('Erro ao carregar responsáveis:', error)
     } finally {
@@ -45,24 +41,24 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
   }
 
   const handleAddResponsavel = async () => {
-    if (!selectedMembroId || selectedRoles.length === 0) return
+    if (!selectedResponsavelId || selectedRoles.length === 0) return
 
     try {
       await createClienteResponsavel({
         cliente_id: cliente.id,
-        responsavel_id: selectedMembroId,
+        responsavel_id: selectedResponsavelId,
         roles: selectedRoles,
         observacao: observacao.trim() || undefined,
       })
       await loadData()
       await refetch?.()
       setShowAddModal(false)
-      setSelectedMembroId('')
+      setSelectedResponsavelId('')
       setSelectedRoles(['principal'])
       setObservacao('')
     } catch (error) {
       console.error('Erro ao adicionar responsável:', error)
-      const msg = error instanceof Error ? error.message : 'Erro ao adicionar responsável. Verifique se o membro possui usuário vinculado no sistema.'
+      const msg = error instanceof Error ? error.message : 'Erro ao adicionar responsável. Tente novamente ou verifique permissões.'
       await alertModal({ title: 'Erro ao adicionar responsável', message: msg, variant: 'danger' })
     }
   }
@@ -220,28 +216,27 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Membro da Equipe
+                  Responsável
                 </label>
                 <select
-                  value={selectedMembroId}
-                  onChange={(e) => setSelectedMembroId(e.target.value)}
+                  value={selectedResponsavelId}
+                  onChange={(e) => setSelectedResponsavelId(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
-                  <option value="">Selecione um membro...</option>
-                  {membrosDisponiveis
-                    .filter((m) => m.status === 'ativo' && m.user_id && usuarioIds.has(m.user_id))
-                    .map((membro) => (
-                      <option key={membro.id} value={membro.user_id}>
-                        {membro.nome_completo} ({membro.perfil})
+                  <option value="">Selecione um responsável...</option>
+                  {responsaveisDisponiveis
+                    .filter((r) => !responsaveis.some((vr) => vr.responsavel_id === r.id))
+                    .map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.name || r.email || r.id}
                       </option>
                     ))}
                 </select>
-                {membrosDisponiveis.filter((m) => m.status === 'ativo' && m.user_id).length > 0 &&
-                  membrosDisponiveis.filter((m) => m.status === 'ativo' && m.user_id && usuarioIds.has(m.user_id)).length === 0 && (
-                    <p className="text-amber-600 text-sm mt-1">
-                      Nenhum membro com usuário vinculado no sistema. Vincule o membro a um usuário em Configurações → Equipe.
-                    </p>
-                  )}
+                {responsaveisDisponiveis.length === 0 && (
+                  <p className="text-amber-600 text-sm mt-1">
+                    Nenhum responsável disponível para seleção. Verifique Configurações → Equipe e usuários.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -284,7 +279,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
               <button
                 onClick={() => {
                   setShowAddModal(false)
-                  setSelectedMembroId('')
+                  setSelectedResponsavelId('')
                   setSelectedRoles(['principal'])
                   setObservacao('')
                 }}
@@ -294,7 +289,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
               </button>
               <button
                 onClick={handleAddResponsavel}
-                disabled={!selectedMembroId || selectedRoles.length === 0}
+                disabled={!selectedResponsavelId || selectedRoles.length === 0}
                 className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Adicionar
