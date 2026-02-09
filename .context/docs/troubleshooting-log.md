@@ -79,3 +79,16 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 | **Causa raiz** | **equipe_membros.user_id estava NULL para todos os membros.** As RPCs usam COALESCE(equipe_membros.nome_completo, usuarios.name); como não havia vínculo (user_id NULL), o nome vinha sempre de usuarios.name (ex.: “Administrador”, “Gui Careca”). Lista para vincular responsável ao cliente dependia de membros com user_id em usuarios: como nenhum tinha user_id, a lista ficava vazia ou inconsistente. RLS em equipe_membros usava apenas u.role = 'admin', não is_admin(). |
 | **Solução aplicada** | Migration backfill_equipe_user_id_e_rls_is_admin: (1) UPDATE em equipe_membros setando user_id = usuarios.id onde email coincide (case-insensitive); (2) RLS de equipe_membros (SELECT/INSERT/UPDATE) passando a usar is_admin(). Após o backfill, as RPCs passam a retornar equipe_membros.nome_completo (Guilherme Brito, Paulo Schomoeller, etc.) e o combo de responsáveis passa a listar todos os usuários com nome correto. |
 | **Lição aprendida** | Garantir vínculo equipe_membros.user_id ↔ usuarios (por email ou processo de “vincular usuário” na tela). Sem esse vínculo, nome_completo da equipe nunca é usado e o módulo fica quebrado. Em novos ambientes ou seeds, popular user_id ao criar membros ou rodar backfill por email. |
+
+---
+
+## 2026-02-09 – Perfil Financeiro não salvava; lista "agente"; ao reabrir "Administrador"
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-02-09 |
+| **Descrição do erro** | Ao escolher perfil "Financeiro" e salvar na tela Equipe, a lista continuava "agente". Ao editar de novo, o dropdown aparecia "Administrador". |
+| **Arquivo(s)/módulo** | Constraint equipe_membros_perfil_check; Equipe.tsx (form sem key). |
+| **Causa raiz** | (1) Constraint em equipe_membros.perfil permitia só admin, gerente, agente, suporte. UPDATE com perfil = 'financeiro' falhava; lista lia equipe_membros.perfil e continuava "agente". (2) Form sem key: ao reabrir, estado (perfilId) podia ser o default (primeiro perfil = Administrador). |
+| **Solução aplicada** | Migration equipe_membros_perfil_allow_financeiro: incluir 'financeiro' no CHECK. Equipe.tsx: key={editingMembro?.id ?? 'new'} no EquipeMembroForm para remount e estado correto ao editar. |
+| **Lição aprendida** | Alinhar CHECK no banco aos valores do front. Usar key no form de edição quando initialData muda para evitar estado residual. |
