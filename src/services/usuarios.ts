@@ -57,6 +57,21 @@ export async function fetchUsuarios(): Promise<User[]> {
 }
 
 /**
+ * Buscar ID do usuário por email (para vincular equipe_membros quando user_id está null).
+ */
+export async function fetchUsuarioIdByEmail(email: string): Promise<string | null> {
+  const trimmed = email?.trim().toLowerCase()
+  if (!trimmed) return null
+  const { data, error } = await supabase
+    .from('usuarios')
+    .select('id')
+    .ilike('email', trimmed)
+    .maybeSingle()
+  if (error || !data) return null
+  return data.id
+}
+
+/**
  * Buscar um usuário por ID
  */
 export async function fetchUsuarioById(id: string): Promise<User | null> {

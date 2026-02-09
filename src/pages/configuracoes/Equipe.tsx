@@ -9,6 +9,7 @@ import {
   updateEquipeMembro,
   type EquipeMembroInput,
 } from '@/services/equipe'
+import { fetchUsuarioIdByEmail, updateUsuarioNameAndPerfil } from '@/services/usuarios'
 import {
   createPerfil,
   deletePerfil,
@@ -18,7 +19,6 @@ import {
   updatePerfil,
 } from '@/services/perfis'
 import { createTeamUser } from '@/services/createTeamUser'
-import { updateUsuarioNameAndPerfil } from '@/services/usuarios'
 import EquipeMembroForm from './components/EquipeMembroForm'
 import EquipeMembrosTable from './components/EquipeMembrosTable'
 import PerfilPermissoesForm, { type PerfilFormInput } from './components/PerfilPermissoesForm'
@@ -101,9 +101,25 @@ export default function Equipe() {
     try {
       setSaving(true)
       if (editingMembro) {
-        await updateEquipeMembro(editingMembro.id, data)
-        if (editingMembro.user_id) {
-          await updateUsuarioNameAndPerfil(editingMembro.user_id, {
+        let userIdToUpdate = editingMembro.user_id ?? null
+        if (!userIdToUpdate) {
+          const email = (data.email ?? editingMembro.email ?? '').trim()
+          if (email) {
+            const resolvedId = await fetchUsuarioIdByEmail(email)
+            if (resolvedId) {
+              userIdToUpdate = resolvedId
+              await updateEquipeMembro(editingMembro.id, { ...data, user_id: resolvedId })
+            } else {
+              await updateEquipeMembro(editingMembro.id, data)
+            }
+          } else {
+            await updateEquipeMembro(editingMembro.id, data)
+          }
+        } else {
+          await updateEquipeMembro(editingMembro.id, data)
+        }
+        if (userIdToUpdate) {
+          await updateUsuarioNameAndPerfil(userIdToUpdate, {
             name: data.nome_completo,
             perfil_id: data.perfil_id ?? null,
           })
@@ -326,6 +342,7 @@ export default function Equipe() {
           ) : (
             <EquipeMembrosTable
               membros={filteredMembros}
+              perfis={perfis}
               onEdit={(membro) => {
                 setEditingMembro(membro)
                 setShowForm(true)

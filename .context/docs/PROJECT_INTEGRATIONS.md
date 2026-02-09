@@ -2,8 +2,12 @@
 
 > **DOCUMENTO CRÍTICO**: Este documento define todas as integrações do projeto.
 > Consulte SEMPRE este documento antes de qualquer operação de banco de dados.
+>
+> **Uso como template:** Se este repositório for usado para **outro** projeto ou cliente, substitua aqui e em `.env` todos os refs (Supabase, GitHub, Vercel, domínio e chaves) pelos do novo projeto; caso contrário ferramentas e MCP podem apontar para o projeto errado.
 
 ## Supabase
+
+> **Um único Supabase:** O projeto Agência F3F utiliza **apenas este** projeto Supabase (F3F). Não existe outro Supabase para produção; desenvolvimento e produção usam o mesmo projeto. Não pergunte se há outro Supabase.
 
 ### Projeto Principal (F3F)
 
