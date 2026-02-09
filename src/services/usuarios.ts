@@ -2,6 +2,28 @@ import { supabase } from './supabase'
 import { User } from '@/types'
 
 /**
+ * Lista de usuários para dropdown "Responsável" (ocorrências, etc.) com nome completo (equipe).
+ */
+export async function fetchUsuariosParaSelecaoResponsavel(): Promise<Array<{ id: string; email: string; name: string }>> {
+  try {
+    const { data, error } = await supabase.rpc('get_usuarios_para_selecao_responsavel')
+    if (error) {
+      console.error('Erro ao buscar usuários para seleção:', error)
+      throw error
+    }
+    const rows = Array.isArray(data) ? data : []
+    return rows.map((r: { id: string; email: string | null; nome_completo: string | null }) => ({
+      id: String(r.id),
+      email: r.email ?? '',
+      name: r.nome_completo ?? '',
+    }))
+  } catch (error) {
+    console.error('Erro em fetchUsuariosParaSelecaoResponsavel:', error)
+    throw error
+  }
+}
+
+/**
  * Buscar lista de usuários
  */
 export async function fetchUsuarios(): Promise<User[]> {
@@ -123,6 +145,25 @@ export async function updateUsuarioPerfil(userId: string, perfilId: string | nul
 
   if (error) {
     console.error('Erro ao atualizar perfil do usuário:', error)
+    throw error
+  }
+}
+
+/**
+ * Atualiza nome e/ou perfil do usuário (uso em Configurações > Equipe). Apenas admin.
+ */
+export async function updateUsuarioNameAndPerfil(
+  userId: string,
+  payload: { name?: string; perfil_id?: string | null }
+): Promise<void> {
+  const updates: Record<string, unknown> = { updated_at: new Date().toISOString() }
+  if (payload.name !== undefined) updates.name = payload.name
+  if (payload.perfil_id !== undefined) updates.perfil_id = payload.perfil_id
+
+  const { error } = await supabase.from('usuarios').update(updates).eq('id', userId)
+
+  if (error) {
+    console.error('Erro ao atualizar nome/perfil do usuário:', error)
     throw error
   }
 }
