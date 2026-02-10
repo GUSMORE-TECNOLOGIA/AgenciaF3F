@@ -4,6 +4,20 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 
 ---
 
+## 2026-02-10 – Alteração de perfil: "Administrador" aparecia como "agente" na lista (RESOLVIDO)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-02-10 |
+| **Descrição do erro** | Ao alterar perfil do membro para "Administrador", a coluna PERFIL na lista continuava "agente". Ao abrir a edição, "Administrador" aparecia corretamente. Perfis como "Suporte" e "Financeiro" funcionavam. |
+| **Arquivo(s)/módulo** | `perfis.ts` (updatePerfil), tabela `perfis` (Supabase), `EquipeMembrosTable.tsx` (PerfilCell). |
+| **Causa raiz** | **Todos os slugs de `perfis` estavam NULL no banco.** Causa: `updatePerfil` (perfis.ts) recebia `{ nome, descricao }` sem `slug`; o código fazia `slug: input.slug ?? null`, gravando `slug = NULL` a cada edição de perfil. Sem slugs: (1) `is_admin()` (que verifica `perfis.slug = 'admin'`) falhava por perfil; (2) o fallback por slug na lista (`perfis.find(p => p.slug === membro.perfil)`) retornava null; (3) a lista caía no texto cru `membro.perfil` ("agente"). |
+| **Por que funcionava em edição?** | O formulário usava `perfil_id` do membro (UUID) para inicializar o select; como `perfil_id` estava correto em `usuarios`, o form mostrava "Administrador" pela busca por id na lista de perfis. |
+| **Solução aplicada** | (1) **Banco:** restaurar slugs dos 5 perfis base (admin, gerente, agente, suporte, financeiro). (2) **Trigger:** `protect_perfil_slug()` impede que slug existente seja sobrescrito com NULL/vazio. (3) **Frontend:** `updatePerfil` em perfis.ts: só incluir `slug` no UPDATE quando explicitamente enviado (não gravar null). (4) **PerfilCell:** fallback: tentar nome por `perfil_id`, depois por `slug`, depois texto cru. |
+| **Lição aprendida** | Ao fazer UPDATE em tabela com campo opcional (slug), nunca gravar `campo: input.campo ?? null` se o campo não for enviado — isso apaga dados existentes. Usar condicional: só incluir no UPDATE se enviado. Para campos críticos do sistema (slug de perfis base), adicionar trigger de proteção no banco. |
+
+---
+
 ## 2026-02-09 – Perfil custom (ex.: “Teste”) não salvava nem aparecia na lista de membros
 
 | Campo | Conteúdo |

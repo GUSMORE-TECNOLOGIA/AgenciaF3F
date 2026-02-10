@@ -1,5 +1,32 @@
 import { Edit, Trash2 } from 'lucide-react'
 import { EquipeMembro, Perfil } from '@/types'
+import { perfilUpdateLog } from '@/utils/debugLog'
+
+function PerfilCell({ membro, perfis }: { membro: EquipeMembro; perfis: Perfil[] }) {
+  const perfilIdNorm = membro.perfil_id?.toString().trim()
+  const foundById = perfilIdNorm
+    ? perfis.find((p) => p.id && perfilIdNorm && p.id.toString().toLowerCase() === perfilIdNorm.toLowerCase())
+    : null
+  const foundBySlug = membro.perfil
+    ? perfis.find((p) => p.slug && p.slug === membro.perfil)
+    : null
+  const display =
+    foundById?.nome ?? foundBySlug?.nome ?? membro.perfil
+  if (perfilIdNorm && !foundById) {
+    perfilUpdateLog('table_perfil_fallback', {
+      membro_id: membro.id,
+      membro_nome: membro.nome_completo,
+      perfil_id: membro.perfil_id,
+      perfil_slug: membro.perfil,
+      perfisIds: perfis.map((p) => p.id),
+      perfisCount: perfis.length,
+      usedSlug: !!foundBySlug,
+    })
+  }
+  return (
+    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">{display}</span>
+  )
+}
 
 interface EquipeMembrosTableProps {
   membros: EquipeMembro[]
@@ -36,9 +63,7 @@ export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, 
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{membro.nome_completo}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{membro.email || '-'}</td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                  {(membro.perfil_id ? perfis.find((p) => p.id === membro.perfil_id)?.nome : null) ?? membro.perfil}
-                </span>
+                <PerfilCell membro={membro} perfis={perfis} />
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span
