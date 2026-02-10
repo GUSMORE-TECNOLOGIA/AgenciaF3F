@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import { X, Save, Loader2 } from 'lucide-react'
 import { ClienteServico } from '@/types'
 import { useUpdateClienteServico } from '@/hooks/usePlanos'
-import { clienteServicoUpdateSchema, type ClienteServicoUpdateInput } from '@/lib/validators/plano-schema'
+import { clienteServicoUpdateSchema, type ClienteServicoUpdateInput, DATE_MIN, DATE_MAX } from '@/lib/validators/plano-schema'
 import { useModal } from '@/contexts/ModalContext'
 import { useAuth } from '@/contexts/AuthContext'
+import InputMoeda from '@/components/ui/InputMoeda'
 
 interface EditClienteServicoModalProps {
   contrato: ClienteServico
@@ -26,8 +27,11 @@ export default function EditClienteServicoModal({
     valor: contrato.valor,
     moeda: contrato.moeda,
     status: contrato.status,
+    contrato_assinado: contrato.contrato_assinado ?? 'nao_assinado',
     data_inicio: contrato.data_inicio ?? undefined,
     data_fim: contrato.data_fim ?? undefined,
+    data_assinatura: contrato.data_assinatura ?? undefined,
+    data_cancelamento: contrato.data_cancelamento ?? undefined,
     observacoes: contrato.observacoes || '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -38,8 +42,11 @@ export default function EditClienteServicoModal({
         valor: contrato.valor,
         moeda: contrato.moeda,
         status: contrato.status,
+        contrato_assinado: contrato.contrato_assinado ?? 'nao_assinado',
         data_inicio: contrato.data_inicio ?? undefined,
         data_fim: contrato.data_fim ?? undefined,
+        data_assinatura: contrato.data_assinatura ?? undefined,
+        data_cancelamento: contrato.data_cancelamento ?? undefined,
         observacoes: contrato.observacoes || '',
       })
       setErrors({})
@@ -53,7 +60,7 @@ export default function EditClienteServicoModal({
     try {
       const payload: ClienteServicoUpdateInput = canSuperEditPlanos
         ? formData
-        : { status: formData.status, observacoes: formData.observacoes }
+        : { status: formData.status, contrato_assinado: formData.contrato_assinado, observacoes: formData.observacoes }
       const validated = clienteServicoUpdateSchema.parse(payload)
       await update(validated)
       onSuccess()
@@ -117,22 +124,18 @@ export default function EditClienteServicoModal({
                   <span className="ml-2 text-xs text-gray-500">(apenas troca de status)</span>
                 )}
               </label>
-              <input
+              <InputMoeda
                 id="valor"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.valor}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, valor: Number(e.target.value) }))
-                }
+                value={formData.valor ?? ''}
+                onValueChange={(v) => setFormData((prev) => ({ ...prev, valor: v ?? 0 }))}
                 readOnly={!canSuperEditPlanos}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.valor ? 'border-red-500' : 'border-gray-300'
                 } ${!canSuperEditPlanos ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                required
+                aria-invalid={!!errors.valor}
+                aria-describedby={errors.valor ? 'valor-error-serv' : undefined}
               />
-              {errors.valor && <p className="mt-1 text-sm text-red-600">{errors.valor}</p>}
+              {errors.valor && <p id="valor-error-serv" className="mt-1 text-sm text-red-600">{errors.valor}</p>}
             </div>
 
             {/* Moeda (apenas Super Edit) */}
@@ -168,6 +171,8 @@ export default function EditClienteServicoModal({
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, data_inicio: e.target.value || undefined }))
                   }
+                  min={DATE_MIN}
+                  max={DATE_MAX}
                   readOnly={!canSuperEditPlanos}
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                     errors.data_inicio ? 'border-red-500' : 'border-gray-300'
@@ -188,6 +193,8 @@ export default function EditClienteServicoModal({
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, data_fim: e.target.value || undefined }))
                   }
+                  min={formData.data_inicio ?? DATE_MIN}
+                  max={DATE_MAX}
                   readOnly={!canSuperEditPlanos}
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                     errors.data_fim ? 'border-red-500' : 'border-gray-300'
@@ -196,6 +203,49 @@ export default function EditClienteServicoModal({
                 {errors.data_fim && <p className="mt-1 text-sm text-red-600">{errors.data_fim}</p>}
               </div>
             </div>
+
+            {canSuperEditPlanos && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="data_assinatura_serv" className="block text-sm font-medium text-gray-700 mb-2">
+                    Data de Assinatura
+                  </label>
+                  <input
+                    id="data_assinatura_serv"
+                    type="date"
+                    value={formData.data_assinatura ?? ''}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, data_assinatura: e.target.value || undefined }))
+                    }
+                    min={DATE_MIN}
+                    max={DATE_MAX}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                      errors.data_assinatura ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {errors.data_assinatura && <p className="mt-1 text-sm text-red-600">{errors.data_assinatura}</p>}
+                </div>
+                <div>
+                  <label htmlFor="data_cancelamento_serv" className="block text-sm font-medium text-gray-700 mb-2">
+                    Data de Cancelamento
+                  </label>
+                  <input
+                    id="data_cancelamento_serv"
+                    type="date"
+                    value={formData.data_cancelamento ?? ''}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, data_cancelamento: e.target.value || undefined }))
+                    }
+                    min={DATE_MIN}
+                    max={DATE_MAX}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                      errors.data_cancelamento ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {errors.data_cancelamento && <p className="mt-1 text-sm text-red-600">{errors.data_cancelamento}</p>}
+                </div>
+              </div>
+            )}
 
             {/* Status */}
             <div>

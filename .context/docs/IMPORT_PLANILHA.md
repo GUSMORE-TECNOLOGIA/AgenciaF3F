@@ -1,5 +1,7 @@
 # Importação da planilha AgenciaF3F.xlsx
 
+> **Template:** Em uso para outro projeto, substitua refs em [PROJECT_INTEGRATIONS.md](PROJECT_INTEGRATIONS.md) e `.env` pelos do novo projeto.
+
 ## O que foi implementado
 
 - **Fase 0:** Script `npm run import:inspect` — lê `Estrutura/AgenciaF3F.xlsx`, grava estrutura em `.context/import-estrutura.json`.

@@ -1,5 +1,7 @@
 # Guia de Integração do Supabase
 
+> **Template:** Em uso para outro projeto, substitua refs em [.context/docs/PROJECT_INTEGRATIONS.md](.context/docs/PROJECT_INTEGRATIONS.md) e `.env` pelos do novo projeto.
+
 ## Informações Necessárias
 
 Para integrar o Supabase ao projeto, você precisa fornecer **2 informações**:

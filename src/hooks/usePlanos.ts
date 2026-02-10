@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Servico, Plano, PlanoServico, ClientePlano, ClienteServico } from '@/types'
+import { Servico, Plano, PlanoServico, ClientePlano, ClienteServico, ClienteContrato } from '@/types'
 import {
   fetchServicos,
   fetchServicoById,
@@ -14,7 +14,10 @@ import {
   fetchPlanoServicos,
   addServicoToPlano,
   removeServicoFromPlano,
-  // updatePlanoServicosOrdem, // Função reservada para uso futuro
+  fetchClienteContratos,
+  createClienteContrato,
+  updateClienteContrato,
+  deleteClienteContrato,
   fetchClientePlanos,
   createClientePlano,
   updateClientePlano,
@@ -28,6 +31,8 @@ import {
   PlanoCreateInput,
   PlanoUpdateInput,
   PlanoServicoCreateInput,
+  ClienteContratoCreateInput,
+  ClienteContratoUpdateInput,
   ClientePlanoCreateInput,
   ClientePlanoUpdateInput,
   ClienteServicoCreateInput,
@@ -350,6 +355,105 @@ export function useRemoveServicoFromPlano() {
       setLoading(true)
       setError(null)
       await removeServicoFromPlano(planoId, servicoId)
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Erro desconhecido')
+      setError(error)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  return { remove, loading, error }
+}
+
+// ============================================================================
+// HOOKS PARA CONTRATOS (entidade cliente_contratos)
+// ============================================================================
+
+export function useClienteContratos(clienteId: string | null) {
+  const [clienteContratos, setClienteContratos] = useState<ClienteContrato[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+
+  const loadClienteContratos = useCallback(async () => {
+    if (!clienteId) {
+      setClienteContratos([])
+      setLoading(false)
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError(null)
+      const data = await fetchClienteContratos(clienteId)
+      setClienteContratos(data)
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Erro desconhecido'))
+      console.error('Erro ao carregar contratos:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [clienteId])
+
+  useEffect(() => {
+    loadClienteContratos()
+  }, [loadClienteContratos])
+
+  return { clienteContratos, loading, error, refetch: loadClienteContratos }
+}
+
+export function useCreateClienteContrato() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  const create = useCallback(async (input: ClienteContratoCreateInput): Promise<ClienteContrato> => {
+    try {
+      setLoading(true)
+      setError(null)
+      return await createClienteContrato(input)
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Erro desconhecido')
+      setError(error)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  return { create, loading, error }
+}
+
+export function useUpdateClienteContrato(id: string) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  const update = useCallback(async (input: ClienteContratoUpdateInput): Promise<ClienteContrato> => {
+    try {
+      setLoading(true)
+      setError(null)
+      return await updateClienteContrato(id, input)
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Erro desconhecido')
+      setError(error)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }, [id])
+
+  return { update, loading, error }
+}
+
+export function useDeleteClienteContrato() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  const remove = useCallback(async (id: string): Promise<void> => {
+    try {
+      setLoading(true)
+      setError(null)
+      await deleteClienteContrato(id)
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Erro desconhecido')
       setError(error)

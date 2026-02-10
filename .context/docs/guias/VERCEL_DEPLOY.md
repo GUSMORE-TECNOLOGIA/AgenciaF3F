@@ -1,5 +1,7 @@
 # Guia de Deploy na Vercel - AgenciaF3F
 
+> **Template:** Em uso para outro projeto, substitua refs em [.context/docs/PROJECT_INTEGRATIONS.md](.context/docs/PROJECT_INTEGRATIONS.md) e `.env` pelos do novo projeto.
+
 ## ✅ Arquivos de Configuração Criados
 
 - `vercel.json` - Configuração do projeto Vercel

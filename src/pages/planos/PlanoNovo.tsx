@@ -4,6 +4,7 @@ import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { useCreatePlano } from '@/hooks/usePlanos'
 import { planoCreateSchema, type PlanoCreateInput } from '@/lib/validators/plano-schema'
 import { useModal } from '@/contexts/ModalContext'
+import InputMoeda from '@/components/ui/InputMoeda'
 
 export default function PlanoNovo() {
   const navigate = useNavigate()
@@ -16,6 +17,7 @@ export default function PlanoNovo() {
     valor: 0,
     moeda: 'BRL',
     ativo: true,
+    recorrencia_meses: 12,
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -100,60 +102,81 @@ export default function PlanoNovo() {
               />
             </div>
 
-            {/* Valor */}
-            <div>
-              <label htmlFor="valor" className="block text-sm font-medium text-gray-700 mb-2">
-                Valor do Plano (R$) <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="valor"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.valor}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, valor: Number(e.target.value) }))
-                }
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.valor ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="0.00"
-                required
-              />
-              {errors.valor && <p className="mt-1 text-sm text-red-600">{errors.valor}</p>}
-            </div>
-
-            {/* Moeda */}
-            <div>
-              <label htmlFor="moeda" className="block text-sm font-medium text-gray-700 mb-2">
-                Moeda
-              </label>
-              <select
-                id="moeda"
-                value={formData.moeda}
-                onChange={(e) => setFormData((prev) => ({ ...prev, moeda: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-              >
-                <option value="BRL">BRL - Real Brasileiro</option>
-                <option value="USD">USD - Dólar Americano</option>
-                <option value="EUR">EUR - Euro</option>
-              </select>
-            </div>
-
-            {/* Status Ativo */}
-            <div>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.ativo}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, ativo: e.target.checked }))}
-                  className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary/20"
+            {/* Valor | Moeda */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="valor" className="block text-sm font-medium text-gray-700 mb-2">
+                  Valor do Plano (R$) <span className="text-red-500">*</span>
+                </label>
+                <InputMoeda
+                  id="valor"
+                  value={formData.valor}
+                  onValueChange={(v) => setFormData((prev) => ({ ...prev, valor: v ?? 0 }))}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                    errors.valor ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="0,00"
+                  aria-invalid={!!errors.valor}
+                  aria-describedby={errors.valor ? 'valor-error' : undefined}
                 />
-                <span className="text-sm font-medium text-gray-700">Plano ativo</span>
-              </label>
-              <p className="mt-1 text-xs text-gray-500 ml-8">
-                Planos inativos não aparecerão nas opções de seleção
-              </p>
+                {errors.valor && <p id="valor-error" className="mt-1 text-sm text-red-600">{errors.valor}</p>}
+              </div>
+              <div>
+                <label htmlFor="moeda" className="block text-sm font-medium text-gray-700 mb-2">
+                  Moeda
+                </label>
+                <select
+                  id="moeda"
+                  value={formData.moeda}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, moeda: e.target.value }))}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                >
+                  <option value="BRL">BRL - Real Brasileiro</option>
+                  <option value="USD">USD - Dólar Americano</option>
+                  <option value="EUR">EUR - Euro</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Recorrência (meses) | Plano ativo */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="recorrencia_meses" className="block text-sm font-medium text-gray-700 mb-2">
+                  Recorrência (meses) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="recorrencia_meses"
+                  type="number"
+                  min={1}
+                  max={99}
+                  value={formData.recorrencia_meses}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, recorrencia_meses: Number(e.target.value) || 12 }))
+                  }
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                    errors.recorrencia_meses ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="12"
+                />
+                {errors.recorrencia_meses && (
+                  <p className="mt-1 text-sm text-red-600">{errors.recorrencia_meses}</p>
+                )}
+                <p className="mt-1 text-xs text-gray-500">De 1 a 99 meses</p>
+              </div>
+              <div className="flex flex-col justify-end">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.ativo}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, ativo: e.target.checked }))}
+                    className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary/20"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Plano ativo</span>
+                </label>
+                <p className="mt-1 text-xs text-gray-500">
+                  Planos inativos não aparecerão nas opções de seleção
+                </p>
+              </div>
             </div>
           </div>
 
