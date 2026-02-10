@@ -83,14 +83,18 @@ export async function updatePerfil(
   id: string,
   input: { nome: string; descricao?: string; slug?: string }
 ): Promise<Perfil> {
+  const updates: Record<string, unknown> = {
+    nome: input.nome,
+    descricao: input.descricao ?? null,
+    updated_at: new Date().toISOString(),
+  }
+  // Só sobrescrever slug se foi explicitamente enviado; nunca gravar null para não apagar slug existente
+  if (input.slug !== undefined && input.slug !== null && input.slug !== '') {
+    updates.slug = input.slug
+  }
   const { data, error } = await supabase
     .from('perfis')
-    .update({
-      nome: input.nome,
-      descricao: input.descricao ?? null,
-      slug: input.slug ?? null,
-      updated_at: new Date().toISOString(),
-    })
+    .update(updates)
     .eq('id', id)
     .select()
     .single()
