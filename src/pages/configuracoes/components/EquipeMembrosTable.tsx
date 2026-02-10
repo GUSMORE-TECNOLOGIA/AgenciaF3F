@@ -1,6 +1,5 @@
 import { Edit, Trash2 } from 'lucide-react'
 import { EquipeMembro, Perfil } from '@/types'
-import { perfilUpdateLog } from '@/utils/debugLog'
 
 function PerfilCell({ membro, perfis }: { membro: EquipeMembro; perfis: Perfil[] }) {
   const perfilIdNorm = membro.perfil_id?.toString().trim()
@@ -12,17 +11,6 @@ function PerfilCell({ membro, perfis }: { membro: EquipeMembro; perfis: Perfil[]
     : null
   const display =
     foundById?.nome ?? foundBySlug?.nome ?? membro.perfil
-  if (perfilIdNorm && !foundById) {
-    perfilUpdateLog('table_perfil_fallback', {
-      membro_id: membro.id,
-      membro_nome: membro.nome_completo,
-      perfil_id: membro.perfil_id,
-      perfil_slug: membro.perfil,
-      perfisIds: perfis.map((p) => p.id),
-      perfisCount: perfis.length,
-      usedSlug: !!foundBySlug,
-    })
-  }
   return (
     <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">{display}</span>
   )
