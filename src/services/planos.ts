@@ -1,11 +1,13 @@
 import { supabase } from './supabase'
-import { Servico, Plano, PlanoServico, ClientePlano, ClienteServico, Cliente } from '@/types'
+import { Servico, Plano, PlanoServico, ClientePlano, ClienteServico, Cliente, ClienteContrato } from '@/types'
 import type {
   ServicoCreateInput,
   ServicoUpdateInput,
   PlanoCreateInput,
   PlanoUpdateInput,
   PlanoServicoCreateInput,
+  ClienteContratoCreateInput,
+  ClienteContratoUpdateInput,
   ClientePlanoCreateInput,
   ClientePlanoUpdateInput,
   ClienteServicoCreateInput,
@@ -19,6 +21,8 @@ export type {
   PlanoCreateInput,
   PlanoUpdateInput,
   PlanoServicoCreateInput,
+  ClienteContratoCreateInput,
+  ClienteContratoUpdateInput,
   ClientePlanoCreateInput,
   ClientePlanoUpdateInput,
   ClienteServicoCreateInput,
@@ -231,6 +235,7 @@ export async function fetchPlanos(ativo?: boolean): Promise<Plano[]> {
       valor: Number(item.valor),
       moeda: item.moeda,
       ativo: item.ativo,
+      recorrencia_meses: Number(item.recorrencia_meses ?? 12),
       created_at: item.created_at,
       updated_at: item.updated_at,
       deleted_at: item.deleted_at || undefined,
@@ -289,6 +294,7 @@ export async function fetchPlanoById(id: string): Promise<Plano | null> {
       valor: Number(data.valor),
       moeda: data.moeda,
       ativo: data.ativo,
+      recorrencia_meses: Number(data.recorrencia_meses ?? 12),
       created_at: data.created_at,
       updated_at: data.updated_at,
       deleted_at: data.deleted_at || undefined,
@@ -313,6 +319,7 @@ export async function createPlano(input: PlanoCreateInput): Promise<Plano> {
         valor: input.valor,
         moeda: input.moeda || 'BRL',
         ativo: input.ativo ?? true,
+        recorrencia_meses: input.recorrencia_meses ?? 12,
       })
       .select()
       .single()
@@ -329,6 +336,7 @@ export async function createPlano(input: PlanoCreateInput): Promise<Plano> {
       valor: Number(data.valor),
       moeda: data.moeda,
       ativo: data.ativo,
+      recorrencia_meses: Number(data.recorrencia_meses ?? 12),
       created_at: data.created_at,
       updated_at: data.updated_at,
       deleted_at: data.deleted_at || undefined,
@@ -351,6 +359,7 @@ export async function updatePlano(id: string, input: PlanoUpdateInput): Promise<
     if (input.valor !== undefined) updateData.valor = input.valor
     if (input.moeda !== undefined) updateData.moeda = input.moeda
     if (input.ativo !== undefined) updateData.ativo = input.ativo
+    if (input.recorrencia_meses !== undefined) updateData.recorrencia_meses = input.recorrencia_meses
 
     const { data, error } = await supabase
       .from('planos')
@@ -372,6 +381,7 @@ export async function updatePlano(id: string, input: PlanoUpdateInput): Promise<
       valor: Number(data.valor),
       moeda: data.moeda,
       ativo: data.ativo,
+      recorrencia_meses: Number(data.recorrencia_meses ?? 12),
       created_at: data.created_at,
       updated_at: data.updated_at,
       deleted_at: data.deleted_at || undefined,
@@ -439,6 +449,7 @@ export async function fetchPlanoServicos(planoId: string): Promise<PlanoServico[
             valor: Number(item.plano.valor),
             moeda: item.plano.moeda,
             ativo: item.plano.ativo,
+            recorrencia_meses: Number(item.plano.recorrencia_meses ?? 12),
             created_at: item.plano.created_at,
             updated_at: item.plano.updated_at,
             deleted_at: item.plano.deleted_at || undefined,
@@ -503,6 +514,7 @@ export async function addServicoToPlano(input: PlanoServicoCreateInput): Promise
             valor: Number(data.plano.valor),
             moeda: data.plano.moeda,
             ativo: data.plano.ativo,
+            recorrencia_meses: Number(data.plano.recorrencia_meses ?? 12),
             created_at: data.plano.created_at,
             updated_at: data.plano.updated_at,
             deleted_at: data.plano.deleted_at || undefined,
@@ -581,6 +593,196 @@ export async function updatePlanoServicosOrdem(
 }
 
 // ============================================================================
+// CONTRATOS (entidade cliente_contratos)
+// ============================================================================
+
+const mapContratoAssinado = (v: string): 'assinado' | 'nao_assinado' | 'cancelado' =>
+  v === 'assinado' || v === 'cancelado' ? v : 'nao_assinado'
+
+/**
+ * Buscar contratos do cliente (entidade que agrupa planos/serviços)
+ */
+export async function fetchClienteContratos(clienteId: string): Promise<ClienteContrato[]> {
+  try {
+    const { data, error } = await supabase
+      .from('cliente_contratos')
+      .select('*')
+      .eq('cliente_id', clienteId)
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Erro ao buscar contratos do cliente:', error)
+      throw error
+    }
+
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      cliente_id: item.cliente_id,
+      nome: item.nome || undefined,
+      status: item.status,
+      contrato_assinado: mapContratoAssinado(item.contrato_assinado),
+      data_inicio: item.data_inicio || undefined,
+      data_fim: item.data_fim || undefined,
+      data_assinatura: item.data_assinatura || undefined,
+      data_cancelamento: item.data_cancelamento || undefined,
+      observacoes: item.observacoes || undefined,
+      created_at: item.created_at,
+      updated_at: item.updated_at,
+      deleted_at: item.deleted_at || undefined,
+    }))
+  } catch (error) {
+    console.error('Erro em fetchClienteContratos:', error)
+    throw error
+  }
+}
+
+/**
+ * Criar contrato do cliente
+ */
+export async function createClienteContrato(input: ClienteContratoCreateInput): Promise<ClienteContrato> {
+  try {
+    const { data, error } = await supabase
+      .from('cliente_contratos')
+      .insert({
+        cliente_id: input.cliente_id,
+        nome: input.nome || null,
+        status: input.status || 'ativo',
+        contrato_assinado: input.contrato_assinado || 'nao_assinado',
+        data_inicio: input.data_inicio || null,
+        data_fim: input.data_fim || null,
+        data_assinatura: input.data_assinatura || null,
+        data_cancelamento: input.data_cancelamento || null,
+        observacoes: input.observacoes || null,
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Erro ao criar contrato:', error)
+      throw error
+    }
+
+    return {
+      id: data.id,
+      cliente_id: data.cliente_id,
+      nome: data.nome || undefined,
+      status: data.status,
+      contrato_assinado: mapContratoAssinado(data.contrato_assinado),
+      data_inicio: data.data_inicio || undefined,
+      data_fim: data.data_fim || undefined,
+      data_assinatura: data.data_assinatura || undefined,
+      data_cancelamento: data.data_cancelamento || undefined,
+      observacoes: data.observacoes || undefined,
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+      deleted_at: data.deleted_at || undefined,
+    }
+  } catch (error) {
+    console.error('Erro em createClienteContrato:', error)
+    throw error
+  }
+}
+
+/**
+ * Atualizar contrato do cliente
+ */
+export async function updateClienteContrato(id: string, input: ClienteContratoUpdateInput): Promise<ClienteContrato> {
+  try {
+    const updateData: Record<string, unknown> = {}
+    if (input.nome !== undefined) updateData.nome = input.nome || null
+    if (input.status !== undefined) updateData.status = input.status
+    if (input.contrato_assinado !== undefined) updateData.contrato_assinado = input.contrato_assinado
+    if (input.data_inicio !== undefined) updateData.data_inicio = input.data_inicio || null
+    if (input.data_fim !== undefined) updateData.data_fim = input.data_fim || null
+    if (input.data_assinatura !== undefined) updateData.data_assinatura = input.data_assinatura || null
+    if (input.data_cancelamento !== undefined) updateData.data_cancelamento = input.data_cancelamento || null
+    if (input.observacoes !== undefined) updateData.observacoes = input.observacoes || null
+
+    const newStatus = input.status
+    const newContratoAssinado = input.contrato_assinado
+    const isCancelado =
+      newStatus === 'cancelado' || newContratoAssinado === 'cancelado'
+    const dataCancelamentoHoje = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+
+    if (isCancelado && !(input.data_cancelamento && input.data_cancelamento.trim())) {
+      updateData.data_cancelamento = dataCancelamentoHoje
+    }
+
+    const { data, error } = await supabase
+      .from('cliente_contratos')
+      .update(updateData)
+      .eq('id', id)
+      .is('deleted_at', null)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Erro ao atualizar contrato:', error)
+      throw error
+    }
+
+    if (isCancelado) {
+      const cascadeData = {
+        status: 'cancelado' as const,
+        contrato_assinado: 'cancelado' as const,
+        data_cancelamento: dataCancelamentoHoje,
+      }
+      await supabase
+        .from('cliente_planos')
+        .update(cascadeData)
+        .eq('contrato_id', id)
+        .is('deleted_at', null)
+      await supabase
+        .from('cliente_servicos')
+        .update(cascadeData)
+        .eq('contrato_id', id)
+        .is('deleted_at', null)
+    }
+
+    return {
+      id: data.id,
+      cliente_id: data.cliente_id,
+      nome: data.nome || undefined,
+      status: data.status,
+      contrato_assinado: mapContratoAssinado(data.contrato_assinado),
+      data_inicio: data.data_inicio || undefined,
+      data_fim: data.data_fim || undefined,
+      data_assinatura: data.data_assinatura || undefined,
+      data_cancelamento: data.data_cancelamento || undefined,
+      observacoes: data.observacoes || undefined,
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+      deleted_at: data.deleted_at || undefined,
+    }
+  } catch (error) {
+    console.error('Erro em updateClienteContrato:', error)
+    throw error
+  }
+}
+
+/**
+ * Soft delete do contrato do cliente
+ */
+export async function deleteClienteContrato(id: string): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('cliente_contratos')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', id)
+      .is('deleted_at', null)
+
+    if (error) {
+      console.error('Erro ao excluir contrato:', error)
+      throw error
+    }
+  } catch (error) {
+    console.error('Erro em deleteClienteContrato:', error)
+    throw error
+  }
+}
+
+// ============================================================================
 // CONTRATOS CLIENTE-PLANOS
 // ============================================================================
 
@@ -595,7 +797,8 @@ export async function fetchClientePlanos(clienteId: string): Promise<ClientePlan
         `
         *,
         cliente:clientes(id, nome),
-        plano:planos(*)
+        plano:planos(*),
+        contrato:cliente_contratos(id, nome, status, contrato_assinado)
       `
       )
       .eq('cliente_id', clienteId)
@@ -611,11 +814,15 @@ export async function fetchClientePlanos(clienteId: string): Promise<ClientePlan
       id: item.id,
       cliente_id: item.cliente_id,
       plano_id: item.plano_id,
+      contrato_id: item.contrato_id || undefined,
       valor: Number(item.valor),
       moeda: item.moeda,
       status: item.status,
+      contrato_assinado: mapContratoAssinado(item.contrato_assinado ?? 'nao_assinado'),
       data_inicio: item.data_inicio || undefined,
       data_fim: item.data_fim || undefined,
+      data_assinatura: item.data_assinatura || undefined,
+      data_cancelamento: item.data_cancelamento || undefined,
       observacoes: item.observacoes || undefined,
       created_at: item.created_at,
       updated_at: item.updated_at,
@@ -634,10 +841,19 @@ export async function fetchClientePlanos(clienteId: string): Promise<ClientePlan
             valor: Number(item.plano.valor),
             moeda: item.plano.moeda,
             ativo: item.plano.ativo,
+            recorrencia_meses: Number(item.plano.recorrencia_meses ?? 12),
             created_at: item.plano.created_at,
             updated_at: item.plano.updated_at,
             deleted_at: item.plano.deleted_at || undefined,
           }
+        : undefined,
+      contrato: item.contrato
+        ? ({
+            id: item.contrato.id,
+            nome: item.contrato.nome,
+            status: item.contrato.status,
+            contrato_assinado: mapContratoAssinado(item.contrato.contrato_assinado),
+          } as ClienteContrato)
         : undefined,
     }))
   } catch (error) {
@@ -670,16 +886,21 @@ export async function createClientePlano(input: ClientePlanoCreateInput): Promis
       }
     }
 
+    const contratoAssinado = input.contrato_assinado ?? 'nao_assinado'
     const { data, error } = await supabase
       .from('cliente_planos')
       .insert({
         cliente_id: input.cliente_id,
         plano_id: input.plano_id,
+        contrato_id: input.contrato_id || null,
         valor: input.valor,
         moeda: input.moeda || 'BRL',
         status,
+        contrato_assinado: contratoAssinado,
         data_inicio: input.data_inicio || null,
         data_fim: input.data_fim || null,
+        data_assinatura: input.data_assinatura || null,
+        data_cancelamento: input.data_cancelamento || null,
         observacoes: input.observacoes || null,
       })
       .select(
@@ -700,11 +921,15 @@ export async function createClientePlano(input: ClientePlanoCreateInput): Promis
       id: data.id,
       cliente_id: data.cliente_id,
       plano_id: data.plano_id,
+      contrato_id: data.contrato_id || undefined,
       valor: Number(data.valor),
       moeda: data.moeda,
       status: data.status,
+      contrato_assinado: mapContratoAssinado(data.contrato_assinado ?? 'nao_assinado'),
       data_inicio: data.data_inicio || undefined,
       data_fim: data.data_fim || undefined,
+      data_assinatura: data.data_assinatura || undefined,
+      data_cancelamento: data.data_cancelamento || undefined,
       observacoes: data.observacoes || undefined,
       created_at: data.created_at,
       updated_at: data.updated_at,
@@ -723,6 +948,7 @@ export async function createClientePlano(input: ClientePlanoCreateInput): Promis
             valor: Number(data.plano.valor),
             moeda: data.plano.moeda,
             ativo: data.plano.ativo,
+            recorrencia_meses: Number(data.plano.recorrencia_meses ?? 12),
             created_at: data.plano.created_at,
             updated_at: data.plano.updated_at,
             deleted_at: data.plano.deleted_at || undefined,
@@ -765,11 +991,15 @@ export async function updateClientePlano(
 
     const updateData: any = {}
 
+    if (input.contrato_id !== undefined) updateData.contrato_id = input.contrato_id || null
     if (input.valor !== undefined) updateData.valor = input.valor
     if (input.moeda !== undefined) updateData.moeda = input.moeda
     if (input.status !== undefined) updateData.status = input.status
+    if (input.contrato_assinado !== undefined) updateData.contrato_assinado = input.contrato_assinado
     if (input.data_inicio !== undefined) updateData.data_inicio = input.data_inicio || null
     if (input.data_fim !== undefined) updateData.data_fim = input.data_fim || null
+    if (input.data_assinatura !== undefined) updateData.data_assinatura = input.data_assinatura || null
+    if (input.data_cancelamento !== undefined) updateData.data_cancelamento = input.data_cancelamento || null
     if (input.observacoes !== undefined) updateData.observacoes = input.observacoes || null
 
     const { data, error } = await supabase
@@ -795,11 +1025,15 @@ export async function updateClientePlano(
       id: data.id,
       cliente_id: data.cliente_id,
       plano_id: data.plano_id,
+      contrato_id: data.contrato_id || undefined,
       valor: Number(data.valor),
       moeda: data.moeda,
       status: data.status,
+      contrato_assinado: mapContratoAssinado(data.contrato_assinado ?? 'nao_assinado'),
       data_inicio: data.data_inicio || undefined,
       data_fim: data.data_fim || undefined,
+      data_assinatura: data.data_assinatura || undefined,
+      data_cancelamento: data.data_cancelamento || undefined,
       observacoes: data.observacoes || undefined,
       created_at: data.created_at,
       updated_at: data.updated_at,
@@ -818,6 +1052,7 @@ export async function updateClientePlano(
             valor: Number(data.plano.valor),
             moeda: data.plano.moeda,
             ativo: data.plano.ativo,
+            recorrencia_meses: Number(data.plano.recorrencia_meses ?? 12),
             created_at: data.plano.created_at,
             updated_at: data.plano.updated_at,
             deleted_at: data.plano.deleted_at || undefined,
@@ -875,7 +1110,8 @@ export async function fetchClienteServicos(clienteId: string): Promise<ClienteSe
         `
         *,
         cliente:clientes(id, nome),
-        servico:servicos(*)
+        servico:servicos(*),
+        contrato:cliente_contratos(id, nome, status, contrato_assinado)
       `
       )
       .eq('cliente_id', clienteId)
@@ -891,11 +1127,15 @@ export async function fetchClienteServicos(clienteId: string): Promise<ClienteSe
       id: item.id,
       cliente_id: item.cliente_id,
       servico_id: item.servico_id,
+      contrato_id: item.contrato_id || undefined,
       valor: Number(item.valor),
       moeda: item.moeda,
       status: item.status,
+      contrato_assinado: mapContratoAssinado(item.contrato_assinado ?? 'nao_assinado'),
       data_inicio: item.data_inicio || undefined,
       data_fim: item.data_fim || undefined,
+      data_assinatura: item.data_assinatura || undefined,
+      data_cancelamento: item.data_cancelamento || undefined,
       observacoes: item.observacoes || undefined,
       created_at: item.created_at,
       updated_at: item.updated_at,
@@ -918,6 +1158,14 @@ export async function fetchClienteServicos(clienteId: string): Promise<ClienteSe
             deleted_at: item.servico.deleted_at || undefined,
           }
         : undefined,
+      contrato: item.contrato
+        ? ({
+            id: item.contrato.id,
+            nome: item.contrato.nome,
+            status: item.contrato.status,
+            contrato_assinado: mapContratoAssinado(item.contrato.contrato_assinado),
+          } as ClienteContrato)
+        : undefined,
     }))
   } catch (error) {
     console.error('Erro em fetchClienteServicos:', error)
@@ -930,16 +1178,21 @@ export async function fetchClienteServicos(clienteId: string): Promise<ClienteSe
  */
 export async function createClienteServico(input: ClienteServicoCreateInput): Promise<ClienteServico> {
   try {
+    const contratoAssinadoServ = input.contrato_assinado ?? 'nao_assinado'
     const { data, error } = await supabase
       .from('cliente_servicos')
       .insert({
         cliente_id: input.cliente_id,
         servico_id: input.servico_id,
+        contrato_id: input.contrato_id || null,
         valor: input.valor,
         moeda: input.moeda || 'BRL',
         status: input.status || 'ativo',
+        contrato_assinado: contratoAssinadoServ,
         data_inicio: input.data_inicio || null,
         data_fim: input.data_fim || null,
+        data_assinatura: input.data_assinatura || null,
+        data_cancelamento: input.data_cancelamento || null,
         observacoes: input.observacoes || null,
       })
       .select(
@@ -960,11 +1213,15 @@ export async function createClienteServico(input: ClienteServicoCreateInput): Pr
       id: data.id,
       cliente_id: data.cliente_id,
       servico_id: data.servico_id,
+      contrato_id: data.contrato_id || undefined,
       valor: Number(data.valor),
       moeda: data.moeda,
       status: data.status,
+      contrato_assinado: mapContratoAssinado(data.contrato_assinado ?? 'nao_assinado'),
       data_inicio: data.data_inicio || undefined,
       data_fim: data.data_fim || undefined,
+      data_assinatura: data.data_assinatura || undefined,
+      data_cancelamento: data.data_cancelamento || undefined,
       observacoes: data.observacoes || undefined,
       created_at: data.created_at,
       updated_at: data.updated_at,
@@ -1024,11 +1281,15 @@ export async function updateClienteServico(
 
     const updateData: any = {}
 
+    if (input.contrato_id !== undefined) updateData.contrato_id = input.contrato_id || null
     if (input.valor !== undefined) updateData.valor = input.valor
     if (input.moeda !== undefined) updateData.moeda = input.moeda
     if (input.status !== undefined) updateData.status = input.status
+    if (input.contrato_assinado !== undefined) updateData.contrato_assinado = input.contrato_assinado
     if (input.data_inicio !== undefined) updateData.data_inicio = input.data_inicio || null
     if (input.data_fim !== undefined) updateData.data_fim = input.data_fim || null
+    if (input.data_assinatura !== undefined) updateData.data_assinatura = input.data_assinatura || null
+    if (input.data_cancelamento !== undefined) updateData.data_cancelamento = input.data_cancelamento || null
     if (input.observacoes !== undefined) updateData.observacoes = input.observacoes || null
 
     const { data, error } = await supabase
@@ -1054,11 +1315,15 @@ export async function updateClienteServico(
       id: data.id,
       cliente_id: data.cliente_id,
       servico_id: data.servico_id,
+      contrato_id: data.contrato_id || undefined,
       valor: Number(data.valor),
       moeda: data.moeda,
       status: data.status,
+      contrato_assinado: mapContratoAssinado(data.contrato_assinado ?? 'nao_assinado'),
       data_inicio: data.data_inicio || undefined,
       data_fim: data.data_fim || undefined,
+      data_assinatura: data.data_assinatura || undefined,
+      data_cancelamento: data.data_cancelamento || undefined,
       observacoes: data.observacoes || undefined,
       created_at: data.created_at,
       updated_at: data.updated_at,

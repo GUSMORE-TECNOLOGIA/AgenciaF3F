@@ -1,5 +1,7 @@
 # ⚠️ AÇÃO NECESSÁRIA: Criar Usuário Admin
 
+> **Template:** Em uso para outro projeto, substitua refs em [.context/docs/PROJECT_INTEGRATIONS.md](.context/docs/PROJECT_INTEGRATIONS.md) e `.env` pelos do novo projeto.
+
 A migration foi criada, mas o usuário precisa ser criado primeiro no **Authentication Dashboard**.
 
 ## Passo a Passo Rápido

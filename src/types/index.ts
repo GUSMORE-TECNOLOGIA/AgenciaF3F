@@ -113,6 +113,8 @@ export interface Plano {
   valor: number // Valor fixo do plano
   moeda: string // Default: 'BRL'
   ativo: boolean
+  /** Recorrência do plano em meses (1 a 99). */
+  recorrencia_meses: number
   created_at: string
   updated_at: string
   deleted_at?: string
@@ -132,16 +134,37 @@ export interface PlanoServico {
   servico?: Servico
 }
 
+// Contrato (entidade: agrupa planos/serviços do cliente)
+export interface ClienteContrato {
+  id: string
+  cliente_id: string
+  nome?: string
+  status: 'ativo' | 'pausado' | 'cancelado' | 'finalizado'
+  contrato_assinado: 'assinado' | 'nao_assinado' | 'cancelado'
+  data_inicio?: string
+  data_fim?: string
+  data_assinatura?: string
+  data_cancelamento?: string
+  observacoes?: string
+  created_at: string
+  updated_at: string
+  deleted_at?: string
+}
+
 // Contrato de cliente com plano
 export interface ClientePlano {
   id: string
   cliente_id: string
   plano_id: string
+  contrato_id?: string | null // Contrato ao qual este plano está vinculado
   valor: number // Valor do contrato (pode ser diferente do plano)
   moeda: string // Default: 'BRL'
   status: 'ativo' | 'pausado' | 'cancelado' | 'finalizado'
+  contrato_assinado: 'assinado' | 'nao_assinado' | 'cancelado'
   data_inicio?: string // DATE - Data de início do contrato
   data_fim?: string // DATE - Data de fim do contrato (opcional)
+  data_assinatura?: string
+  data_cancelamento?: string
   observacoes?: string
   created_at: string
   updated_at: string
@@ -149,6 +172,7 @@ export interface ClientePlano {
   // Dados enriquecidos
   cliente?: Cliente
   plano?: Plano
+  contrato?: ClienteContrato
 }
 
 // Contrato de cliente com serviço avulso
@@ -156,11 +180,15 @@ export interface ClienteServico {
   id: string
   cliente_id: string
   servico_id: string
+  contrato_id?: string | null // Contrato ao qual este serviço está vinculado
   valor: number // Valor do contrato (pode ser diferente do serviço)
   moeda: string // Default: 'BRL'
   status: 'ativo' | 'pausado' | 'cancelado' | 'finalizado'
+  contrato_assinado: 'assinado' | 'nao_assinado' | 'cancelado'
   data_inicio?: string // DATE - Data de início do contrato
   data_fim?: string // DATE - Data de fim do contrato (opcional)
+  data_assinatura?: string
+  data_cancelamento?: string
   observacoes?: string
   created_at: string
   updated_at: string
@@ -168,6 +196,7 @@ export interface ClienteServico {
   // Dados enriquecidos
   cliente?: Cliente
   servico?: Servico
+  contrato?: ClienteContrato
 }
 
 // Tipos financeiros (baseado em Organizacao10x)

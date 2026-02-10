@@ -1,5 +1,7 @@
 # 🛡️ Setup de Segurança - PortalUploaders
 
+> **Template:** Em uso para outro projeto, substitua refs em [.context/docs/PROJECT_INTEGRATIONS.md](../.context/docs/PROJECT_INTEGRATIONS.md) e `.env` pelos do novo projeto.
+
 Este guia ajuda a configurar as proteções contra erros críticos com múltiplos repositórios.
 
 ## ✅ O que foi criado

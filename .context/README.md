@@ -1,5 +1,7 @@
 # Contexto do Projeto - Agência F3F
 
+> **Template:** Em uso para outro projeto, substitua refs em [PROJECT_INTEGRATIONS.md](docs/PROJECT_INTEGRATIONS.md) e `.env` pelos do novo projeto.
+
 Esta pasta contém documentação e scripts de contexto para o projeto Agência F3F.
 
 ## Estrutura

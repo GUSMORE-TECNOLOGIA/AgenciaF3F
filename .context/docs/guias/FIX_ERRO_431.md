@@ -1,5 +1,7 @@
 # Fix: Erro 431 - Request Header Fields Too Large
 
+> **Template:** Em uso para outro projeto, substitua refs em [.context/docs/PROJECT_INTEGRATIONS.md](.context/docs/PROJECT_INTEGRATIONS.md) e `.env` pelos do novo projeto.
+
 ## Problema
 O servidor Vite está retornando erro 431 (Request Header Fields Too Large). Isso geralmente acontece quando:
 - Tokens JWT do Supabase Auth são muito grandes

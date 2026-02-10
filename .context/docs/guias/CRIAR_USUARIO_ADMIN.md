@@ -1,5 +1,7 @@
 # Criar Usuário Admin
 
+> **Template:** Em uso para outro projeto, substitua refs em [.context/docs/PROJECT_INTEGRATIONS.md](.context/docs/PROJECT_INTEGRATIONS.md) e `.env` pelos do novo projeto.
+
 ## Passo a Passo
 
 ### 1. Criar Usuário no Supabase Auth
