@@ -425,16 +425,14 @@ export default function Equipe() {
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
-                        {!p.slug && (
-                          <button
-                            type="button"
-                            onClick={() => handleDeletePerfil(p)}
-                            className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg"
-                            title="Excluir"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleDeletePerfil(p)}
+                          className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </td>
                     </tr>
                   ))}
