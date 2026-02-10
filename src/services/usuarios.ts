@@ -58,17 +58,14 @@ export async function fetchUsuarios(): Promise<User[]> {
 
 /**
  * Buscar ID do usuário por email (para vincular equipe_membros quando user_id está null).
+ * Usa RPC get_usuario_id_by_email (SECURITY DEFINER) para funcionar em produção com RLS.
  */
 export async function fetchUsuarioIdByEmail(email: string): Promise<string | null> {
-  const trimmed = email?.trim().toLowerCase()
+  const trimmed = email?.trim()
   if (!trimmed) return null
-  const { data, error } = await supabase
-    .from('usuarios')
-    .select('id')
-    .ilike('email', trimmed)
-    .maybeSingle()
-  if (error || !data) return null
-  return data.id
+  const { data, error } = await supabase.rpc('get_usuario_id_by_email', { p_email: trimmed })
+  if (error || data == null) return null
+  return typeof data === 'string' ? data : null
 }
 
 /**
