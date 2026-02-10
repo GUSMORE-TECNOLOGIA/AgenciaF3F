@@ -51,12 +51,17 @@ export async function fetchEquipeMembros(): Promise<EquipeMembro[]> {
       .in('id', userIds)
     if (users) {
       for (const u of users as { id: string; perfil_id: string | null }[]) {
-        userPerfilMap.set(u.id, u.perfil_id)
+        const key = (u.id ?? '').toString().toLowerCase()
+        if (key) userPerfilMap.set(key, u.perfil_id)
       }
     }
   }
 
-  return rows.map((r: any) => mapEquipeMembro(r, r.user_id ? userPerfilMap.get(r.user_id) ?? undefined : undefined))
+  return rows.map((r: any) => {
+    const lookupKey = r.user_id ? (r.user_id ?? '').toString().toLowerCase() : null
+    const perfilIdFromUsuarios = lookupKey ? userPerfilMap.get(lookupKey) ?? undefined : undefined
+    return mapEquipeMembro(r, perfilIdFromUsuarios)
+  })
 }
 
 export async function createEquipeMembro(

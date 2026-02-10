@@ -27,9 +27,11 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
     setPerfil(initialData.perfil)
     setStatus(initialData.status)
     if (perfis.length > 0) {
-      const byId = initialData.perfil_id && perfis.some((x) => x.id === initialData.perfil_id)
-        ? perfis.find((x) => x.id === initialData.perfil_id)?.id ?? ''
-        : perfis.find((x) => x.slug === initialData.perfil)?.id ?? ''
+      const pid = (initialData.perfil_id || '').toString().toLowerCase()
+      const byId =
+        pid && perfis.some((x) => x.id?.toLowerCase() === pid)
+          ? perfis.find((x) => x.id?.toLowerCase() === pid)?.id ?? ''
+          : perfis.find((x) => x.slug === initialData.perfil)?.id ?? ''
       setPerfilId(byId)
     } else {
       setPerfilId('')
