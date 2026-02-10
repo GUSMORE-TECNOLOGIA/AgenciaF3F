@@ -220,14 +220,6 @@ export default function Equipe() {
   }
 
   const handleDeletePerfil = async (perfil: Perfil) => {
-    if (perfil.slug) {
-      await alert({
-        title: 'Perfil padrão',
-        message: 'Perfis padrão (Administrador, Gerente, Agente, Suporte) não podem ser excluídos.',
-        variant: 'warning',
-      })
-      return
-    }
     const emUso = await perfilEmUso(perfil.id)
     if (emUso) {
       await alert({
