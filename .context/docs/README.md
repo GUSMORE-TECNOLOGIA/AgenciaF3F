@@ -17,6 +17,9 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 - [Fluxo Perfil → Usuário → Responsável](./requisitos/fluxo-perfil-usuario-responsavel.md) – Cadeia interconectada: criar perfil, vincular ao usuário na Equipe, usar como responsável no cliente, exibir nome correto no dashboard e filtros.
 - [Status do fluxo Perfil → Usuário → Responsável](./requisitos/status-fluxo-perfil-usuario-responsavel.md) – Conferência requisitos vs implementação; o que já está OK e o que validar.
 
+## Lições aprendidas (evitar repetir)
+- [Lições aprendidas](./licoes-aprendidas.md) – erros de codificação e regras para não repetir (ex.: não gravar null em campo opcional quando o cliente não envia).
+
 ## Core Guides
 - [Fluxo e ciclo de vida do cliente](./fluxo-ciclo-vida-cliente.md) – Verdade do Negócio (processos 1.1–1.5; validar com Arthur).
 - [Skills Map (Quando usar cada skill)](./skills-map.md)
@@ -63,3 +66,4 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 | Auditoria segurança/performance | [auditoria-seguranca-performance.md](./auditoria-seguranca-performance.md) | RLS, client-side, N+1 |
 | ADR evolução services | [adr-evolucao-services.md](./adr-evolucao-services.md) | Planejamento backend |
 | Changelog varredura | [changelog-varredura.md](./changelog-varredura.md) | Resumo das fases aplicadas |
+| Lições aprendidas | [licoes-aprendidas.md](./licoes-aprendidas.md) | Regras de codificação para não repetir erros (ex.: UPDATE sem apagar campo opcional) |
