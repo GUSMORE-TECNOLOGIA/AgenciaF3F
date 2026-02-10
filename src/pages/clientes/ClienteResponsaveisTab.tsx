@@ -76,8 +76,11 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
       await softDeleteClienteResponsavel(responsavelId)
       await loadData()
       await refetch?.()
+      await alertModal({ title: 'Removido', message: 'Responsável desvinculado do cliente.', variant: 'success' })
     } catch (error) {
       console.error('Erro ao remover responsável:', error)
+      const msg = error instanceof Error ? error.message : 'Erro ao remover responsável. Verifique permissões.'
+      await alertModal({ title: 'Erro ao remover responsável', message: msg, variant: 'danger' })
     }
   }
 
