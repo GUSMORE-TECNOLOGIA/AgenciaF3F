@@ -67,8 +67,9 @@ export interface CreateClienteResponsavelInput {
 }
 
 /**
- * Inserir novo responsável no cliente (cliente_responsaveis).
- * Respeita unique_principal_per_cliente; roles devem ser principal, comercial, suporte e/ou backup.
+ * Inserir ou restaurar responsável no cliente (cliente_responsaveis).
+ * Se já existir linha (cliente_id, responsavel_id) — inclusive soft-deleted — faz UPDATE (restaura).
+ * Caso contrário faz INSERT. Respeita unique_principal_per_cliente.
  */
 export async function createClienteResponsavel(input: CreateClienteResponsavelInput): Promise<ClienteResponsavel> {
   const roles = input.roles.filter((r) => ROLES_VALIDOS.includes(r as (typeof ROLES_VALIDOS)[number]))
@@ -76,14 +77,22 @@ export async function createClienteResponsavel(input: CreateClienteResponsavelIn
     throw new Error('Selecione pelo menos um papel válido: principal, comercial, suporte ou backup.')
   }
 
+  const now = new Date().toISOString()
+  const row = {
+    cliente_id: input.cliente_id,
+    responsavel_id: input.responsavel_id,
+    roles,
+    observacao: input.observacao?.trim() || null,
+    deleted_at: null,
+    updated_at: now,
+  }
+
   try {
     const { data, error } = await supabase
       .from('cliente_responsaveis')
-      .insert({
-        cliente_id: input.cliente_id,
-        responsavel_id: input.responsavel_id,
-        roles,
-        observacao: input.observacao?.trim() || null,
+      .upsert(row, {
+        onConflict: 'cliente_id,responsavel_id',
+        ignoreDuplicates: false,
       })
       .select('id, cliente_id, responsavel_id, roles, observacao, created_at, updated_at')
       .single()

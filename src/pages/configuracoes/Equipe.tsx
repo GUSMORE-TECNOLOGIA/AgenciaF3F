@@ -15,6 +15,7 @@ import {
   deletePerfil,
   fetchPerfis,
   fetchPermissoesByPerfil,
+  perfilEmUso,
   savePermissoes,
   updatePerfil,
 } from '@/services/perfis'
@@ -227,9 +228,18 @@ export default function Equipe() {
       })
       return
     }
+    const emUso = await perfilEmUso(perfil.id)
+    if (emUso) {
+      await alert({
+        title: 'Perfil em uso',
+        message: 'Não é possível excluir: existem usuários vinculados a este perfil. Desvincule-os antes de excluir.',
+        variant: 'warning',
+      })
+      return
+    }
     const ok = await confirm({
       title: 'Excluir perfil',
-      message: `Excluir o perfil "${perfil.nome}"? Usuários com este perfil ficarão sem perfil definido.`,
+      message: `Excluir o perfil "${perfil.nome}"?`,
       confirmLabel: 'Excluir',
       variant: 'danger',
     })

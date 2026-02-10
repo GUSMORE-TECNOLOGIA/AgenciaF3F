@@ -106,6 +106,19 @@ export async function updatePerfil(
   return mapPerfil(data)
 }
 
+/** Retorna true se algum usuário está vinculado a este perfil (perfil_id = id). */
+export async function perfilEmUso(perfilId: string): Promise<boolean> {
+  const { count, error } = await supabase
+    .from('usuarios')
+    .select('id', { count: 'exact', head: true })
+    .eq('perfil_id', perfilId)
+  if (error) {
+    console.error('Erro ao verificar perfil em uso:', error)
+    return true
+  }
+  return (count ?? 0) > 0
+}
+
 export async function deletePerfil(id: string): Promise<void> {
   const { error } = await supabase.from('perfis').delete().eq('id', id)
   if (error) {
