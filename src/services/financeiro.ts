@@ -3,6 +3,28 @@ import { Transacao, ClientePlano, ClienteServico } from '@/types'
 import { createTransacao } from './transacoes'
 
 /**
+ * Conta lançamentos financeiros em aberto (pendente/vencido) vinculados a um contrato de plano ou serviço.
+ */
+export async function countTransacoesAbertoByContrato(
+  contratoId: string,
+  contratoTipo: 'plano' | 'servico'
+): Promise<number> {
+  const { count, error } = await supabase
+    .from('transacoes')
+    .select('*', { count: 'exact', head: true })
+    .eq('metadata->>contrato_id', contratoId)
+    .eq('metadata->>contrato_tipo', contratoTipo)
+    .in('status', ['pendente', 'vencido'])
+    .is('deleted_at', null)
+
+  if (error) {
+    console.error('Erro ao contar transações:', error)
+    return 0
+  }
+  return count ?? 0
+}
+
+/**
  * Calcular quantas transações mensais serão geradas baseado no contrato
  */
 export function calcularTransacoesMensais(

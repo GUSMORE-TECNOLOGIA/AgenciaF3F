@@ -19,7 +19,7 @@ import EditClienteContratoModal from './modals/EditClienteContratoModal'
 import EditClientePlanoModal from './modals/EditClientePlanoModal'
 import EditClienteServicoModal from './modals/EditClienteServicoModal'
 import HistoricoStatusModal from './HistoricoStatusModal'
-import { gerarTransacoesContratoPlano, gerarTransacoesContratoServico } from '@/services/financeiro'
+import { gerarTransacoesContratoPlano, gerarTransacoesContratoServico, countTransacoesAbertoByContrato } from '@/services/financeiro'
 import { updateClienteContrato } from '@/services/planos'
 import { useModal } from '@/contexts/ModalContext'
 import { DATE_MIN, DATE_MAX } from '@/lib/validators/plano-schema'
@@ -106,19 +106,54 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
   }, [selectedPlanoId, contratoIdPlano, clienteContratos, planos])
 
   const handleCancelContrato = async (c: ClienteContrato) => {
-    const ok = await confirm({
-      title: 'Cancelar contrato',
-      message: `Deseja cancelar o contrato "${c.nome || 'Sem nome'}"?\n\nA data de cancelamento será preenchida com a data de hoje.`,
-      confirmLabel: 'Cancelar contrato',
-      variant: 'danger',
-    })
-    if (!ok) return
+    const planosVinculados = clientePlanos.filter((p) => p.contrato_id === c.id)
+    const servicosVinculados = clienteServicos.filter((s) => s.contrato_id === c.id)
+    let totalLancamentos = 0
+    for (const p of planosVinculados) {
+      totalLancamentos += await countTransacoesAbertoByContrato(p.id, 'plano')
+    }
+    for (const s of servicosVinculados) {
+      totalLancamentos += await countTransacoesAbertoByContrato(s.id, 'servico')
+    }
+    const temVinculados = planosVinculados.length > 0 || servicosVinculados.length > 0
+    let cascata = false
+    if (temVinculados) {
+      const partes: string[] = []
+      if (planosVinculados.length > 0) partes.push(`${planosVinculados.length} plano(s)`)
+      if (servicosVinculados.length > 0) partes.push(`${servicosVinculados.length} serviço(s)`)
+      if (totalLancamentos > 0) partes.push(`${totalLancamentos} lançamento(s) em aberto`)
+      cascata = await confirm({
+        title: 'Cancelar contrato',
+        message: `O contrato "${c.nome || 'Sem nome'}" possui: ${partes.join(', ')}.\n\nDeseja cancelar também os planos, serviços e lançamentos em cascata?`,
+        confirmLabel: 'Sim, cancelar tudo em cascata',
+        cancelLabel: 'Não, apenas o contrato',
+        variant: 'danger',
+      })
+    } else {
+      const ok = await confirm({
+        title: 'Cancelar contrato',
+        message: `Deseja cancelar o contrato "${c.nome || 'Sem nome'}"?\n\nA data de cancelamento será preenchida com a data de hoje.`,
+        confirmLabel: 'Cancelar contrato',
+        variant: 'danger',
+      })
+      if (!ok) return
+    }
     try {
       setCancellingContrato(true)
       await updateClienteContrato(c.id, {
         contrato_assinado: 'cancelado',
         data_cancelamento: getTodayISO(),
       })
+      if (cascata) {
+        for (const p of planosVinculados) {
+          await deleteClientePlano(p.id, true)
+        }
+        for (const s of servicosVinculados) {
+          await deleteClienteServico(s.id, true)
+        }
+        await refetchPlanos()
+        await refetchServicos()
+      }
       await refetchContratos()
       if (onSave) onSave()
     } catch (error) {
@@ -283,16 +318,55 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
   }
 
   const handleDeletePlanoContrato = async (contrato: ClientePlano) => {
+    const qtdLancamentos = await countTransacoesAbertoByContrato(contrato.id, 'plano')
+    const nomePlano = contrato.plano?.nome || 'Plano'
+
+    if (qtdLancamentos > 0) {
+      const okCancelar = await confirm({
+        title: 'Excluir plano',
+        message: `O plano "${nomePlano}" possui ${qtdLancamentos} lançamento(s) financeiro(s) em aberto.\n\nDeseja excluir o plano e cancelar esses lançamentos?`,
+        confirmLabel: 'Sim, excluir e cancelar lançamentos',
+        cancelLabel: 'Não',
+        variant: 'danger',
+      })
+      if (okCancelar) {
+        try {
+          await deleteClientePlano(contrato.id, true)
+          await refetchPlanos()
+          if (onSave) onSave()
+        } catch (error) {
+          console.error('Erro ao excluir contrato de plano:', error)
+          await alert({ title: 'Erro', message: 'Erro ao excluir contrato de plano. Tente novamente.', variant: 'danger' })
+        }
+        return
+      }
+      const okApenas = await confirm({
+        title: 'Excluir apenas o plano',
+        message: `Excluir apenas o plano "${nomePlano}"?\n\nOs ${qtdLancamentos} lançamento(s) em aberto permanecerão no financeiro (você pode cancelá-los depois).`,
+        confirmLabel: 'Excluir apenas o plano',
+        variant: 'danger',
+      })
+      if (!okApenas) return
+      try {
+        await deleteClientePlano(contrato.id, false)
+        await refetchPlanos()
+        if (onSave) onSave()
+      } catch (error) {
+        console.error('Erro ao excluir contrato de plano:', error)
+        await alert({ title: 'Erro', message: 'Erro ao excluir contrato de plano. Tente novamente.', variant: 'danger' })
+      }
+      return
+    }
+
     const ok = await confirm({
       title: 'Excluir contrato',
-      message: `Deseja realmente excluir este plano contratado?\n\n${contrato.plano?.nome || 'Plano'}\n\nEsta ação é irreversível.`,
+      message: `Deseja realmente excluir este plano contratado?\n\n${nomePlano}\n\nEsta ação é irreversível.`,
       confirmLabel: 'Excluir',
       variant: 'danger',
     })
     if (!ok) return
-
     try {
-      await deleteClientePlano(contrato.id)
+      await deleteClientePlano(contrato.id, true)
       await refetchPlanos()
       if (onSave) onSave()
     } catch (error) {
@@ -306,16 +380,55 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
   }
 
   const handleDeleteServicoContrato = async (contrato: ClienteServico) => {
+    const qtdLancamentos = await countTransacoesAbertoByContrato(contrato.id, 'servico')
+    const nomeServico = contrato.servico?.nome || 'Serviço'
+
+    if (qtdLancamentos > 0) {
+      const okCancelar = await confirm({
+        title: 'Excluir serviço',
+        message: `O serviço "${nomeServico}" possui ${qtdLancamentos} lançamento(s) financeiro(s) em aberto.\n\nDeseja excluir o serviço e cancelar esses lançamentos?`,
+        confirmLabel: 'Sim, excluir e cancelar lançamentos',
+        cancelLabel: 'Não',
+        variant: 'danger',
+      })
+      if (okCancelar) {
+        try {
+          await deleteClienteServico(contrato.id, true)
+          await refetchServicos()
+          if (onSave) onSave()
+        } catch (error) {
+          console.error('Erro ao excluir contrato de serviço:', error)
+          await alert({ title: 'Erro', message: 'Erro ao excluir contrato de serviço. Tente novamente.', variant: 'danger' })
+        }
+        return
+      }
+      const okApenas = await confirm({
+        title: 'Excluir apenas o serviço',
+        message: `Excluir apenas o serviço "${nomeServico}"?\n\nOs ${qtdLancamentos} lançamento(s) em aberto permanecerão no financeiro (você pode cancelá-los depois).`,
+        confirmLabel: 'Excluir apenas o serviço',
+        variant: 'danger',
+      })
+      if (!okApenas) return
+      try {
+        await deleteClienteServico(contrato.id, false)
+        await refetchServicos()
+        if (onSave) onSave()
+      } catch (error) {
+        console.error('Erro ao excluir contrato de serviço:', error)
+        await alert({ title: 'Erro', message: 'Erro ao excluir contrato de serviço. Tente novamente.', variant: 'danger' })
+      }
+      return
+    }
+
     const ok = await confirm({
       title: 'Excluir contrato',
-      message: `Deseja realmente excluir este serviço contratado?\n\n${contrato.servico?.nome || 'Serviço'}\n\nEsta ação é irreversível.`,
+      message: `Deseja realmente excluir este serviço contratado?\n\n${nomeServico}\n\nEsta ação é irreversível.`,
       confirmLabel: 'Excluir',
       variant: 'danger',
     })
     if (!ok) return
-
     try {
-      await deleteClienteServico(contrato.id)
+      await deleteClienteServico(contrato.id, true)
       await refetchServicos()
       if (onSave) onSave()
     } catch (error) {
@@ -363,15 +476,62 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
   }
 
   const handleDeleteContrato = async (c: ClienteContrato) => {
-    const ok = await confirm({
-      title: 'Excluir contrato',
-      message: `Deseja realmente excluir o contrato "${c.nome || 'Sem nome'}"? Os planos e serviços vinculados ficarão sem contrato.`,
-      confirmLabel: 'Excluir',
-      variant: 'danger',
-    })
-    if (!ok) return
+    const planosVinculados = clientePlanos.filter((p) => p.contrato_id === c.id)
+    const servicosVinculados = clienteServicos.filter((s) => s.contrato_id === c.id)
+    const numPlanos = planosVinculados.length
+    const numServicos = servicosVinculados.length
+    let totalLancamentos = 0
+    for (const p of planosVinculados) {
+      totalLancamentos += await countTransacoesAbertoByContrato(p.id, 'plano')
+    }
+    for (const s of servicosVinculados) {
+      totalLancamentos += await countTransacoesAbertoByContrato(s.id, 'servico')
+    }
+
+    const temVinculados = numPlanos > 0 || numServicos > 0
+    if (temVinculados) {
+      const partes: string[] = []
+      if (numPlanos > 0) partes.push(`${numPlanos} plano(s)`)
+      if (numServicos > 0) partes.push(`${numServicos} serviço(s)`)
+      if (totalLancamentos > 0) partes.push(`${totalLancamentos} lançamento(s) em aberto`)
+      const okCascata = await confirm({
+        title: 'Excluir contrato',
+        message: `O contrato "${c.nome || 'Sem nome'}" possui: ${partes.join(', ')}.\n\nDeseja excluir em cascata (excluir planos, serviços e cancelar lançamentos)?`,
+        confirmLabel: 'Sim, excluir tudo em cascata',
+        cancelLabel: 'Não',
+        variant: 'danger',
+      })
+      if (okCascata) {
+        try {
+          await deleteClienteContrato(c.id, true)
+          await refetchContratos()
+          await refetchPlanos()
+          await refetchServicos()
+          if (onSave) onSave()
+        } catch (error) {
+          console.error('Erro ao excluir contrato:', error)
+          await alert({ title: 'Erro', message: 'Erro ao excluir contrato. Tente novamente.', variant: 'danger' })
+        }
+        return
+      }
+      const okApenas = await confirm({
+        title: 'Excluir apenas o contrato',
+        message: `Excluir apenas o contrato "${c.nome || 'Sem nome'}"?\n\nOs ${numPlanos} plano(s) e ${numServicos} serviço(s) vinculados ficarão sem contrato.`,
+        confirmLabel: 'Excluir apenas o contrato',
+        variant: 'danger',
+      })
+      if (!okApenas) return
+    } else {
+      const ok = await confirm({
+        title: 'Excluir contrato',
+        message: `Deseja realmente excluir o contrato "${c.nome || 'Sem nome'}"?`,
+        confirmLabel: 'Excluir',
+        variant: 'danger',
+      })
+      if (!ok) return
+    }
     try {
-      await deleteClienteContrato(c.id)
+      await deleteClienteContrato(c.id, false)
       await refetchContratos()
       if (onSave) onSave()
     } catch (error) {
