@@ -34,6 +34,11 @@ export function useClientes(options: UseClientesOptions = {}): UseClientesReturn
   const [pageSize] = useState(filters.limit || 50)
   const [currentFilters, setCurrentFilters] = useState<ClienteFilters>(filters)
 
+  useEffect(() => {
+    setCurrentFilters((prev) => ({ ...prev, ...filters }))
+    setPage(1)
+  }, [filters.status, filters.responsavel_id, filters.search, filters.smartConditions])
+
   const loadClientes = useCallback(async () => {
     try {
       setLoading(true)

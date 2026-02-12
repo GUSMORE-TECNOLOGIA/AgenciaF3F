@@ -110,6 +110,12 @@ Configure estas variáveis no painel da Vercel:
 | `cliente_responsaveis` | Responsáveis de clientes |
 | `contrato_status_historico` | Histórico de status |
 
+### RPCs relevantes
+
+| RPC | Descrição |
+|-----|-----------|
+| `list_clientes_filtrados(p_conditions, p_limit, p_offset)` | Lista clientes com filtros inteligentes (Campo + Operador + Valor, AND/OR). Suporta campos relacionais (tem_contrato, tem_plano, tem_financeiro_gerado). Respeita visibilidade (responsável ou admin). |
+
 ---
 
 ## Checklist de Verificação
