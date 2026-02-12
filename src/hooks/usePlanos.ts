@@ -449,11 +449,11 @@ export function useDeleteClienteContrato() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const remove = useCallback(async (id: string): Promise<void> => {
+  const remove = useCallback(async (id: string, cascata = false): Promise<void> => {
     try {
       setLoading(true)
       setError(null)
-      await deleteClienteContrato(id)
+      await deleteClienteContrato(id, cascata)
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Erro desconhecido')
       setError(error)
@@ -548,11 +548,11 @@ export function useDeleteClientePlano() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const remove = useCallback(async (id: string): Promise<void> => {
+  const remove = useCallback(async (id: string, cancelarLancamentos = true): Promise<void> => {
     try {
       setLoading(true)
       setError(null)
-      await deleteClientePlano(id)
+      await deleteClientePlano(id, cancelarLancamentos)
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Erro desconhecido')
       setError(error)
@@ -647,11 +647,11 @@ export function useDeleteClienteServico() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const remove = useCallback(async (id: string): Promise<void> => {
+  const remove = useCallback(async (id: string, cancelarLancamentos = true): Promise<void> => {
     try {
       setLoading(true)
       setError(null)
-      await deleteClienteServico(id)
+      await deleteClienteServico(id, cancelarLancamentos)
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Erro desconhecido')
       setError(error)

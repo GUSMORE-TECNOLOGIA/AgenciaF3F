@@ -762,16 +762,16 @@ export async function updateClienteContrato(id: string, input: ClienteContratoUp
 }
 
 /**
- * Soft delete do contrato do cliente
+ * Soft delete do contrato do cliente.
+ * Se cascata = true, exclui antes os planos e serviços vinculados (e cancela lançamentos deles), depois exclui o contrato.
+ * Usa RPC SECURITY DEFINER para evitar bloqueio por RLS.
  */
-export async function deleteClienteContrato(id: string): Promise<void> {
+export async function deleteClienteContrato(id: string, cascata = false): Promise<void> {
   try {
-    const { error } = await supabase
-      .from('cliente_contratos')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', id)
-      .is('deleted_at', null)
-
+    const { error } = await supabase.rpc('soft_delete_cliente_contrato', {
+      contrato_id: id,
+      cascata,
+    })
     if (error) {
       console.error('Erro ao excluir contrato:', error)
       throw error
@@ -1079,12 +1079,15 @@ export async function updateClientePlano(
 }
 
 /**
- * Soft delete de contrato de cliente com plano
+ * Soft delete de contrato de cliente com plano.
+ * Se cancelarLancamentos = true, cancela também os lançamentos financeiros em aberto vinculados ao plano.
  */
-export async function deleteClientePlano(id: string): Promise<void> {
+export async function deleteClientePlano(id: string, cancelarLancamentos = true): Promise<void> {
   try {
-    const { error } = await supabase.rpc('soft_delete_cliente_plano', { contrato_id: id })
-
+    const { error } = await supabase.rpc('soft_delete_cliente_plano', {
+      contrato_id: id,
+      cancelar_lancamentos: cancelarLancamentos,
+    })
     if (error) {
       console.error('Erro ao deletar contrato de plano:', error)
       throw error
@@ -1367,12 +1370,15 @@ export async function updateClienteServico(
 }
 
 /**
- * Soft delete de contrato de cliente com serviço avulso
+ * Soft delete de contrato de cliente com serviço avulso.
+ * Se cancelarLancamentos = true, cancela também os lançamentos financeiros em aberto vinculados ao serviço.
  */
-export async function deleteClienteServico(id: string): Promise<void> {
+export async function deleteClienteServico(id: string, cancelarLancamentos = true): Promise<void> {
   try {
-    const { error } = await supabase.rpc('soft_delete_cliente_servico', { contrato_id: id })
-
+    const { error } = await supabase.rpc('soft_delete_cliente_servico', {
+      contrato_id: id,
+      cancelar_lancamentos: cancelarLancamentos,
+    })
     if (error) {
       console.error('Erro ao deletar contrato de serviço:', error)
       throw error
