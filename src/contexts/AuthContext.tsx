@@ -33,15 +33,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [permissoes, setPermissoes] = useState<PerfilPermissao[]>([])
 
   useEffect(() => {
-    // Verificar sessão atual
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSupabaseUser(session?.user ?? null)
-      if (session?.user) {
-        loadUserProfile(session.user.id)
-      } else {
+    let cancelled = false
+    const timeout = setTimeout(() => {
+      if (!cancelled) {
         setLoading(false)
       }
-    })
+    }, 15000)
+
+    // Verificar sessão atual
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        if (cancelled) return
+        setSupabaseUser(session?.user ?? null)
+        if (session?.user) {
+          loadUserProfile(session.user.id)
+        } else {
+          setLoading(false)
+        }
+      })
+      .catch((err) => {
+        console.error('Erro ao verificar sessão:', err)
+        if (!cancelled) setLoading(false)
+      })
 
     // Ouvir mudanças de autenticação
     const {
@@ -57,7 +70,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      cancelled = true
+      clearTimeout(timeout)
+      subscription.unsubscribe()
+    }
   }, [])
 
   async function createUserProfileFromAuth(authUser: SupabaseUser) {

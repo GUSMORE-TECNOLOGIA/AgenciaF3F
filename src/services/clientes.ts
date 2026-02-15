@@ -3,11 +3,29 @@ import { Cliente, LinksUteis } from '@/types'
 import type { ClienteCreateInput, ClienteUpdateInput } from '@/lib/validators/cliente-schema'
 import { cleanLinksUteis } from '@/lib/validators/cliente-schema'
 
+// Condição de filtro inteligente (Campo + Operador + Valor)
+export interface SmartFilterCondition {
+  id?: string
+  field: string
+  operator: string
+  value?: string | string[]
+  logicalOperator?: 'AND' | 'OR'
+}
+
+// Filtro salvo com nome (lista no modal)
+export interface SmartFilter {
+  id: string
+  name: string
+  conditions: SmartFilterCondition[]
+  createdAt: string
+}
+
 // Tipos para filtros
 export interface ClienteFilters {
   status?: 'ativo' | 'inativo' | 'pausado'
   responsavel_id?: string
   search?: string
+  smartConditions?: SmartFilterCondition[]
   limit?: number
   offset?: number
 }
@@ -21,35 +39,96 @@ export interface ClientesResponse {
 }
 
 /**
- * Buscar lista de clientes com filtros opcionais
+ * Buscar lista de clientes com filtros opcionais.
+ * Se smartConditions tiver condições, usa RPC list_clientes_filtrados (filtros relacionais).
  */
 export async function fetchClientes(filters?: ClienteFilters): Promise<ClientesResponse> {
   try {
+    const limit = filters?.limit || 50
+    const offset = filters?.offset || 0
+
+    const hasSmartConditions =
+      filters?.smartConditions && filters.smartConditions.length > 0
+
+    if (hasSmartConditions) {
+      const conditions: Record<string, unknown>[] = filters.smartConditions!.map((c) => ({
+        field: c.field,
+        operator: c.operator,
+        value: c.value,
+        logicalOperator: c.logicalOperator,
+      }))
+      if (filters?.search?.trim()) {
+        conditions.unshift({
+          field: 'search',
+          operator: 'contains',
+          value: filters.search.trim(),
+        })
+      }
+      if (filters?.status) {
+        conditions.push({
+          field: 'status',
+          operator: 'equals',
+          value: filters.status,
+          logicalOperator: 'AND',
+        })
+      }
+      if (filters?.responsavel_id) {
+        conditions.push({
+          field: 'responsavel_id',
+          operator: 'equals',
+          value: filters.responsavel_id,
+          logicalOperator: 'AND',
+        })
+      }
+      const { data, error } = await supabase.rpc('list_clientes_filtrados', {
+        p_conditions: conditions,
+        p_limit: limit,
+        p_offset: offset,
+      })
+      if (error) {
+        console.error('Erro ao buscar clientes (RPC):', error)
+        throw error
+      }
+      const rows = (data as any[]) || []
+      const total = rows[0]?.total_count ?? 0
+      const clientes: Cliente[] = rows.map((item: any) => ({
+        id: item.id,
+        nome: item.nome,
+        email: item.email || undefined,
+        telefone: item.telefone || undefined,
+        responsavel_id: item.responsavel_id ?? null,
+        status: item.status,
+        logo_url: item.logo_url || undefined,
+        links_uteis: item.links_uteis || {},
+        drive_url: item.drive_url || undefined,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        responsavel: undefined,
+      }))
+      return {
+        data: clientes,
+        total: Number(total),
+        page: Math.floor(offset / limit) + 1,
+        pageSize: limit,
+      }
+    }
+
     let query = supabase
       .from('clientes')
       .select('*', { count: 'exact' })
       .is('deleted_at', null)
 
-    // Aplicar filtros
     if (filters?.status) {
       query = query.eq('status', filters.status)
     }
-
     if (filters?.responsavel_id) {
       query = query.eq('responsavel_id', filters.responsavel_id)
     }
-
     if (filters?.search) {
       const searchTerm = `%${filters.search}%`
       query = query.or(`nome.ilike.${searchTerm},email.ilike.${searchTerm},telefone.ilike.${searchTerm}`)
     }
-
-    // Ordenação padrão
     query = query.order('created_at', { ascending: false })
-
-    // Paginação
-    const limit = filters?.limit || 50
-    const offset = filters?.offset || 0
     query = query.range(offset, offset + limit - 1)
 
     const promise = query as unknown as Promise<{ data: unknown; error: unknown; count: number }>

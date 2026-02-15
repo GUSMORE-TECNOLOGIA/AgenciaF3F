@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, Edit } from 'lucide-react'
+import { Plus, Search, Edit, Sparkles } from 'lucide-react'
 import { useClientes } from '@/hooks/useClientes'
+import { useSmartFiltersClientes } from '@/hooks/useSmartFiltersClientes'
+import SmartFiltersModal from './components/SmartFiltersModal'
 import { fetchPrincipaisParaLista } from '@/services/usuarios'
 import { fetchClientePlanos } from '@/services/planos'
 
@@ -9,13 +11,25 @@ export default function Clientes() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<'ativo' | 'inativo' | 'pausado' | ''>('')
   const [responsavelFilter, setResponsavelFilter] = useState<string>('')
+  const [smartFiltersOpen, setSmartFiltersOpen] = useState(false)
   const [principais, setPrincipais] = useState<Array<{ cliente_id: string; responsavel_id: string; responsavel_name: string }>>([])
   const [planosAtivos, setPlanosAtivos] = useState<Map<string, string>>(new Map())
 
-  // Buscar clientes sem filtro de search (só status)
+  const {
+    conditions: smartConditions,
+    savedFilters,
+    applyConditions,
+    saveFilter,
+    deleteFilter,
+    loadFilter,
+  } = useSmartFiltersClientes()
+
   const { clientes: clientesRaw, loading, error, refetch } = useClientes({
     status: statusFilter || undefined,
-    limit: 500, // Buscar todos para filtrar client-side
+    responsavel_id: responsavelFilter || undefined,
+    search: searchTerm.trim() || undefined,
+    smartConditions: smartConditions.length > 0 ? smartConditions : undefined,
+    limit: 500,
   })
 
   useEffect(() => {
@@ -57,8 +71,9 @@ export default function Clientes() {
     })
   }, [principais])
 
-  // Filtro client-side: busca + responsável; não causa re-fetch
+  // Filtro client-side: busca + responsável; só quando NÃO há filtros inteligentes (esses são aplicados no backend)
   const clientes = useMemo(() => {
+    if (smartConditions.length > 0) return clientesRaw
     let list = clientesRaw
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase().trim()
@@ -73,7 +88,7 @@ export default function Clientes() {
       list = list.filter((c) => responsavelIdPorClienteMap.get(c.id) === responsavelFilter)
     }
     return list
-  }, [clientesRaw, searchTerm, responsavelFilter, responsavelIdPorClienteMap])
+  }, [clientesRaw, searchTerm, responsavelFilter, responsavelIdPorClienteMap, smartConditions.length])
 
   if (loading) {
     return <div className="text-center py-12">Carregando...</div>
@@ -107,8 +122,8 @@ export default function Clientes() {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="relative flex-1">
+        <div className="flex flex-col md:flex-row gap-4 flex-wrap">
+          <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
@@ -141,6 +156,20 @@ export default function Clientes() {
               </option>
             ))}
           </select>
+          <button
+            type="button"
+            onClick={() => setSmartFiltersOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-primary focus:border-transparent"
+            title="Filtros Inteligentes"
+          >
+            <Sparkles className="w-5 h-5 text-purple-500" />
+            Filtros Inteligentes
+            {smartConditions.length > 0 && (
+              <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                {smartConditions.length}
+              </span>
+            )}
+          </button>
         </div>
         {clientes.length > 0 && (
           <p className="text-sm text-gray-600 mt-2">
@@ -238,6 +267,21 @@ export default function Clientes() {
           </tbody>
         </table>
       </div>
+
+      <SmartFiltersModal
+        open={smartFiltersOpen}
+        onOpenChange={setSmartFiltersOpen}
+        onApply={(conds) => {
+          applyConditions(conds)
+        }}
+        currentConditions={smartConditions}
+        savedFilters={savedFilters}
+        onSaveFilter={saveFilter}
+        onDeleteFilter={deleteFilter}
+        onLoadFilter={(f) => {
+          loadFilter(f)
+        }}
+      />
     </div>
   )
 }
