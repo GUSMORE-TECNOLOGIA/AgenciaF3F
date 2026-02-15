@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, Edit, Sparkles } from 'lucide-react'
+import { Plus, Search, Edit, Sparkles, FileSpreadsheet } from 'lucide-react'
 import { useClientes } from '@/hooks/useClientes'
 import { useSmartFiltersClientes } from '@/hooks/useSmartFiltersClientes'
 import SmartFiltersModal from './components/SmartFiltersModal'
+import ExportClientesModal from './components/ExportClientesModal'
 import { fetchPrincipaisParaLista } from '@/services/usuarios'
 import { fetchClientePlanos } from '@/services/planos'
 
@@ -12,6 +13,7 @@ export default function Clientes() {
   const [statusFilter, setStatusFilter] = useState<'ativo' | 'inativo' | 'pausado' | ''>('')
   const [responsavelFilter, setResponsavelFilter] = useState<string>('')
   const [smartFiltersOpen, setSmartFiltersOpen] = useState(false)
+  const [exportModalOpen, setExportModalOpen] = useState(false)
   const [principais, setPrincipais] = useState<Array<{ cliente_id: string; responsavel_id: string; responsavel_name: string }>>([])
   const [planosAtivos, setPlanosAtivos] = useState<Map<string, string>>(new Map())
 
@@ -112,13 +114,24 @@ export default function Clientes() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-foreground">Clientes</h1>
-        <Link
-          to="/clientes/novo"
-          className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          Novo Cliente
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setExportModalOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-primary focus:border-transparent"
+            title="Exportar para Excel"
+          >
+            <FileSpreadsheet className="w-5 h-5 text-green-600" />
+            Exportar
+          </button>
+          <Link
+            to="/clientes/novo"
+            className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            Novo Cliente
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
@@ -267,6 +280,14 @@ export default function Clientes() {
           </tbody>
         </table>
       </div>
+
+      <ExportClientesModal
+        open={exportModalOpen}
+        onClose={() => setExportModalOpen(false)}
+        clientes={clientes}
+        planosAtivos={planosAtivos}
+        responsavelPorClienteMap={responsavelPorClienteMap}
+      />
 
       <SmartFiltersModal
         open={smartFiltersOpen}
