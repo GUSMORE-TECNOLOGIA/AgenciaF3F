@@ -1,6 +1,9 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, Edit, Sparkles, FileSpreadsheet } from 'lucide-react'
+import { Plus, Search, Edit, Sparkles, FileSpreadsheet, ChevronUp, ChevronDown } from 'lucide-react'
+
+type SortColumn = 'nome' | 'email' | 'telefone' | 'plano' | 'responsavel' | 'status'
+type SortOrder = 'asc' | 'desc'
 import { useClientes } from '@/hooks/useClientes'
 import { useSmartFiltersClientes } from '@/hooks/useSmartFiltersClientes'
 import SmartFiltersModal from './components/SmartFiltersModal'
@@ -14,6 +17,8 @@ export default function Clientes() {
   const [responsavelFilter, setResponsavelFilter] = useState<string>('')
   const [smartFiltersOpen, setSmartFiltersOpen] = useState(false)
   const [exportModalOpen, setExportModalOpen] = useState(false)
+  const [sortBy, setSortBy] = useState<SortColumn | null>('nome')
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc')
   const [principais, setPrincipais] = useState<Array<{ cliente_id: string; responsavel_id: string; responsavel_name: string }>>([])
   const [planosAtivos, setPlanosAtivos] = useState<Map<string, string>>(new Map())
 
@@ -91,6 +96,56 @@ export default function Clientes() {
     }
     return list
   }, [clientesRaw, searchTerm, responsavelFilter, responsavelIdPorClienteMap, smartConditions.length])
+
+  const sortedClientes = useMemo(() => {
+    if (!sortBy) return clientes
+    const cmp = (a: number) => (a < 0 ? -1 : a > 0 ? 1 : 0)
+    const dir = sortOrder === 'asc' ? 1 : -1
+    return [...clientes].sort((a, b) => {
+      let valA: string | number
+      let valB: string | number
+      switch (sortBy) {
+        case 'nome':
+          valA = (a.nome ?? '').toLowerCase()
+          valB = (b.nome ?? '').toLowerCase()
+          break
+        case 'email':
+          valA = (a.email ?? '').toLowerCase()
+          valB = (b.email ?? '').toLowerCase()
+          break
+        case 'telefone':
+          valA = a.telefone ?? ''
+          valB = b.telefone ?? ''
+          break
+        case 'plano':
+          valA = planosAtivos.get(a.id) ?? ''
+          valB = planosAtivos.get(b.id) ?? ''
+          break
+        case 'responsavel':
+          valA = (responsavelPorClienteMap.get(a.id) ?? '').toLowerCase()
+          valB = (responsavelPorClienteMap.get(b.id) ?? '').toLowerCase()
+          break
+        case 'status':
+          valA = (a.status ?? '').toLowerCase()
+          valB = (b.status ?? '').toLowerCase()
+          break
+        default:
+          return 0
+      }
+      const strA = String(valA)
+      const strB = String(valB)
+      return dir * cmp(strA.localeCompare(strB, 'pt-BR'))
+    })
+  }, [clientes, sortBy, sortOrder, planosAtivos, responsavelPorClienteMap])
+
+  function handleSort(column: SortColumn) {
+    if (sortBy === column) {
+      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortBy(column)
+      setSortOrder('asc')
+    }
+  }
 
   if (loading) {
     return <div className="text-center py-12">Carregando...</div>
@@ -195,23 +250,59 @@ export default function Clientes() {
         <table className="w-full min-w-[800px]">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Nome
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                onClick={() => handleSort('nome')}
+              >
+                <span className="inline-flex items-center gap-1">
+                  Nome
+                  {sortBy === 'nome' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                </span>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                E-mail
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                onClick={() => handleSort('email')}
+              >
+                <span className="inline-flex items-center gap-1">
+                  E-mail
+                  {sortBy === 'email' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                </span>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Telefone
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                onClick={() => handleSort('telefone')}
+              >
+                <span className="inline-flex items-center gap-1">
+                  Telefone
+                  {sortBy === 'telefone' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                </span>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Plano Atual
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                onClick={() => handleSort('plano')}
+              >
+                <span className="inline-flex items-center gap-1">
+                  Plano Atual
+                  {sortBy === 'plano' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                </span>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Responsável
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                onClick={() => handleSort('responsavel')}
+              >
+                <span className="inline-flex items-center gap-1">
+                  Responsável
+                  {sortBy === 'responsavel' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                </span>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                onClick={() => handleSort('status')}
+              >
+                <span className="inline-flex items-center gap-1">
+                  Status
+                  {sortBy === 'status' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                </span>
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Ações
@@ -228,7 +319,7 @@ export default function Clientes() {
                 </td>
               </tr>
             ) : (
-              clientes.map((cliente) => (
+              sortedClientes.map((cliente) => (
                 <tr key={cliente.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     <Link
@@ -284,7 +375,7 @@ export default function Clientes() {
       <ExportClientesModal
         open={exportModalOpen}
         onClose={() => setExportModalOpen(false)}
-        clientes={clientes}
+        clientes={sortedClientes}
         planosAtivos={planosAtivos}
         responsavelPorClienteMap={responsavelPorClienteMap}
       />
