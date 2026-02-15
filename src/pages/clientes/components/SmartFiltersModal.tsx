@@ -276,7 +276,7 @@ export default function SmartFiltersModal({
                               logicalOperator: e.target.value as 'AND' | 'OR',
                             })
                           }
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                          className="min-w-[8.5rem] w-36 px-3 py-2 border border-gray-300 rounded-lg text-sm"
                         >
                           <option value="AND">E (AND)</option>
                           <option value="OR">OU (OR)</option>
