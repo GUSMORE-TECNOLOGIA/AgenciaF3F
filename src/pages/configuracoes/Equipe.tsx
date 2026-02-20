@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Plus, Search, Users, Shield, Pencil, Trash2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/services/supabase'
 import { EquipeMembro, Perfil } from '@/types'
 import {
   createEquipeMembro,
@@ -34,6 +35,7 @@ export default function Equipe() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [sendingResetEmailId, setSendingResetEmailId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [editingMembro, setEditingMembro] = useState<EquipeMembro | null>(null)
@@ -155,6 +157,34 @@ export default function Equipe() {
       await alert({ title: 'Erro', message: msg, variant: 'danger' })
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleSendPasswordReset = async (membro: EquipeMembro) => {
+    const emailToUse = (membro.email ?? '').trim()
+    if (!emailToUse) {
+      await alert({
+        title: 'E-mail ausente',
+        message: 'Este membro não possui e-mail cadastrado.',
+        variant: 'warning',
+      })
+      return
+    }
+    try {
+      setSendingResetEmailId(membro.id)
+      const redirectTo = `${window.location.origin}/alterar-senha`
+      const { error } = await supabase.auth.resetPasswordForEmail(emailToUse, { redirectTo })
+      if (error) throw error
+      await alert({
+        title: 'E-mail enviado',
+        message: `Se o e-mail estiver cadastrado, ${membro.nome_completo} receberá um link para redefinir a senha.`,
+        variant: 'success',
+      })
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erro ao enviar e-mail de redefinição.'
+      await alert({ title: 'Erro', message: msg, variant: 'danger' })
+    } finally {
+      setSendingResetEmailId(null)
     }
   }
 
@@ -349,6 +379,8 @@ export default function Equipe() {
                 setEditingMembro(membro)
                 setShowForm(true)
               }}
+              onSendPasswordReset={handleSendPasswordReset}
+              sendingResetEmailId={sendingResetEmailId}
               onDelete={handleDelete}
               deletingId={deletingId}
             />

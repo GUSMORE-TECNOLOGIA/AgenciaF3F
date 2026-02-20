@@ -1,4 +1,4 @@
-import { Edit, Trash2 } from 'lucide-react'
+import { Edit, Trash2, KeyRound } from 'lucide-react'
 import { EquipeMembro, Perfil } from '@/types'
 
 function PerfilCell({ membro, perfis }: { membro: EquipeMembro; perfis: Perfil[] }) {
@@ -21,10 +21,12 @@ interface EquipeMembrosTableProps {
   perfis: Perfil[]
   onEdit: (membro: EquipeMembro) => void
   onDelete: (membro: EquipeMembro) => void
+  onSendPasswordReset?: (membro: EquipeMembro) => void
   deletingId?: string | null
+  sendingResetEmailId?: string | null
 }
 
-export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, deletingId }: EquipeMembrosTableProps) {
+export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, onSendPasswordReset, deletingId, sendingResetEmailId }: EquipeMembrosTableProps) {
   if (membros.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-600">
@@ -64,6 +66,16 @@ export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, 
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                 <div className="inline-flex items-center gap-3">
+                  {onSendPasswordReset && membro.email && (
+                    <button
+                      onClick={() => onSendPasswordReset(membro)}
+                      className="text-gray-600 hover:text-primary disabled:opacity-50"
+                      title="Enviar link para redefinir senha"
+                      disabled={sendingResetEmailId === membro.id}
+                    >
+                      <KeyRound className="w-4 h-4" />
+                    </button>
+                  )}
                   <button
                     onClick={() => onEdit(membro)}
                     className="text-primary hover:text-primary/80"
