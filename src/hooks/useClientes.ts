@@ -25,11 +25,13 @@ interface UseClientesReturn {
  * Hook para gerenciar listagem de clientes
  */
 /**
- * Perfil de agente operacional: vê apenas clientes em que é o responsável.
- * Admin e demais perfis veem todos (respeitando filtros da UI).
+ * Apenas perfil agente operacional é restrito aos clientes em que é responsável.
+ * Administradores (role === 'admin' ou perfil === 'admin') e demais perfis veem TODOS os clientes.
  */
-function isAgenteRestrito(perfil: string | undefined): boolean {
-  return perfil === 'agente'
+function deveRestringirAoResponsavel(user: { role?: string; perfil?: string; id?: string } | null): boolean {
+  if (!user?.id) return false
+  if (user.role === 'admin' || user.perfil === 'admin') return false
+  return user.perfil === 'agente'
 }
 
 export function useClientes(options: UseClientesOptions = {}): UseClientesReturn {
@@ -59,8 +61,8 @@ export function useClientes(options: UseClientesOptions = {}): UseClientesReturn
         limit: pageSize,
         offset: (page - 1) * pageSize,
       }
-      if (isAgenteRestrito(user?.perfil) && user?.id) {
-        effectiveFilters.responsavel_id = user.id
+      if (deveRestringirAoResponsavel(user)) {
+        effectiveFilters.responsavel_id = user!.id
       }
 
       const response: ClientesResponse = await fetchClientes(effectiveFilters)
@@ -75,7 +77,7 @@ export function useClientes(options: UseClientesOptions = {}): UseClientesReturn
     } finally {
       setLoading(false)
     }
-  }, [currentFilters, page, pageSize, user?.id, user?.perfil])
+  }, [currentFilters, page, pageSize, user?.id, user?.perfil, user?.role])
 
   useEffect(() => {
     if (autoFetch) {

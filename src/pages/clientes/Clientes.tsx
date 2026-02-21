@@ -14,7 +14,7 @@ import { fetchClientePlanos } from '@/services/planos'
 
 export default function Clientes() {
   const { user } = useAuth()
-  const isAgente = user?.perfil === 'agente'
+  const isAgenteOperacional = user?.perfil === 'agente' && user?.role !== 'admin'
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<'ativo' | 'inativo' | 'pausado' | ''>('')
   const [responsavelFilter, setResponsavelFilter] = useState<string>('')
@@ -214,7 +214,7 @@ export default function Clientes() {
             <option value="pausado">Pausado</option>
             <option value="inativo">Inativo</option>
           </select>
-          {!isAgente && (
+          {!isAgenteOperacional && (
             <select
               value={responsavelFilter}
               onChange={(e) => setResponsavelFilter(e.target.value)}

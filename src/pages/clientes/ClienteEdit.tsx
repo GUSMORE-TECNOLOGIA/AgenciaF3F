@@ -99,7 +99,8 @@ export default function ClienteEdit() {
     )
   }
 
-  if (user?.perfil === 'agente' && cliente.responsavel_id !== user?.id) {
+  const isAgenteOperacional = user?.perfil === 'agente' && user?.role !== 'admin'
+  if (isAgenteOperacional && cliente.responsavel_id !== user?.id) {
     return <Navigate to="/clientes" replace />
   }
 
