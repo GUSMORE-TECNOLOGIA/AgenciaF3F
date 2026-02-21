@@ -31,10 +31,10 @@ const COLORS = ['#5B7CFA', '#22D3EE', '#34D399', '#F59E0B', '#EF4444', '#8B5CF6'
 export default function Dashboard() {
   const { user, pode } = useAuth()
   const podeFinanceiro = pode('financeiro', 'visualizar')
-  const isAgente = user?.perfil === 'agente'
+  const isAgenteOperacional = user?.perfil === 'agente' && user?.role !== 'admin'
   const { stats, loading, error, refetch } = useDashboard({
     skipFinance: !podeFinanceiro,
-    responsavelId: isAgente ? user?.id : undefined,
+    responsavelId: isAgenteOperacional ? user?.id : undefined,
   })
 
   if (loading) {
