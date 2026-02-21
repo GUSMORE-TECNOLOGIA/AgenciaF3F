@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
-import { Plus, Search, Edit, Sparkles, FileSpreadsheet, ChevronUp, ChevronDown } from 'lucide-react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { Plus, Search, Edit, Sparkles, FileSpreadsheet, ChevronUp, ChevronDown, FileText } from 'lucide-react'
 
 type SortColumn = 'nome' | 'email' | 'telefone' | 'plano' | 'responsavel' | 'status'
+type ContratoSortColumn = 'cliente' | 'numero' | 'plano' | 'data_inicio' | 'data_fim' | 'valor' | 'status'
 type SortOrder = 'asc' | 'desc'
 import { useAuth } from '@/contexts/AuthContext'
 import { useClientes } from '@/hooks/useClientes'
@@ -10,11 +11,21 @@ import { useSmartFiltersClientes } from '@/hooks/useSmartFiltersClientes'
 import SmartFiltersModal from './components/SmartFiltersModal'
 import ExportClientesModal from './components/ExportClientesModal'
 import { fetchPrincipaisParaLista } from '@/services/usuarios'
-import { fetchClientePlanos } from '@/services/planos'
+import { fetchClientePlanos, fetchTodosContratosPlanos } from '@/services/planos'
+import type { ClientePlano } from '@/types'
+
+type ViewMode = 'clientes' | 'contratos'
 
 export default function Clientes() {
+  const [searchParams] = useSearchParams()
   const { user } = useAuth()
   const isAgenteOperacional = user?.perfil === 'agente' && user?.role !== 'admin'
+  const [viewMode, setViewMode] = useState<ViewMode>(() =>
+    searchParams.get('view') === 'contratos' ? 'contratos' : 'clientes'
+  )
+  useEffect(() => {
+    if (searchParams.get('view') === 'contratos' && viewMode !== 'contratos') setViewMode('contratos')
+  }, [searchParams])
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<'ativo' | 'inativo' | 'pausado' | ''>('')
   const [responsavelFilter, setResponsavelFilter] = useState<string>('')
@@ -24,6 +35,15 @@ export default function Clientes() {
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc')
   const [principais, setPrincipais] = useState<Array<{ cliente_id: string; responsavel_id: string; responsavel_name: string }>>([])
   const [planosAtivos, setPlanosAtivos] = useState<Map<string, string>>(new Map())
+
+  // Estado da vista Contratos
+  const [contratosRaw, setContratosRaw] = useState<ClientePlano[]>([])
+  const [contratosLoading, setContratosLoading] = useState(false)
+  const [contratosError, setContratosError] = useState<Error | null>(null)
+  const [contratosStatusFilter, setContratosStatusFilter] = useState<string>('')
+  const [contratosSearch, setContratosSearch] = useState('')
+  const [contratosSortBy, setContratosSortBy] = useState<ContratoSortColumn | null>('data_fim')
+  const [contratosSortOrder, setContratosSortOrder] = useState<SortOrder>('asc')
 
   const {
     conditions: smartConditions,
@@ -45,6 +65,17 @@ export default function Clientes() {
   useEffect(() => {
     fetchPrincipaisParaLista().then(setPrincipais)
   }, [])
+
+  // Carregar todos os contratos quando alternar para a vista Contratos
+  useEffect(() => {
+    if (viewMode !== 'contratos') return
+    setContratosLoading(true)
+    setContratosError(null)
+    fetchTodosContratosPlanos(contratosStatusFilter || undefined)
+      .then(setContratosRaw)
+      .catch((err) => setContratosError(err))
+      .finally(() => setContratosLoading(false))
+  }, [viewMode, contratosStatusFilter])
 
   // Buscar planos ativos de todos os clientes
   useEffect(() => {
@@ -150,11 +181,82 @@ export default function Clientes() {
     }
   }
 
-  if (loading) {
+  // Filtro e ordenação da lista de contratos
+  const contratosFiltrados = useMemo(() => {
+    let list = contratosRaw
+    if (contratosSearch.trim()) {
+      const term = contratosSearch.toLowerCase().trim()
+      list = list.filter((c) => (c.cliente?.nome ?? '').toLowerCase().includes(term))
+    }
+    return list
+  }, [contratosRaw, contratosSearch])
+
+  const contratosOrdenados = useMemo(() => {
+    if (!contratosSortBy) return contratosFiltrados
+    const cmp = (a: number) => (a < 0 ? -1 : a > 0 ? 1 : 0)
+    const dir = contratosSortOrder === 'asc' ? 1 : -1
+    return [...contratosFiltrados].sort((a, b) => {
+      let valA: string | number
+      let valB: string | number
+      switch (contratosSortBy) {
+        case 'cliente':
+          valA = (a.cliente?.nome ?? '').toLowerCase()
+          valB = (b.cliente?.nome ?? '').toLowerCase()
+          break
+        case 'numero':
+          valA = a.contrato?.nome ?? a.id
+          valB = b.contrato?.nome ?? b.id
+          break
+        case 'plano':
+          valA = (a.plano?.nome ?? '').toLowerCase()
+          valB = (b.plano?.nome ?? '').toLowerCase()
+          break
+        case 'data_inicio':
+          valA = a.data_inicio ?? ''
+          valB = b.data_inicio ?? ''
+          break
+        case 'data_fim':
+          valA = a.data_fim ?? ''
+          valB = b.data_fim ?? ''
+          break
+        case 'valor':
+          valA = a.valor ?? 0
+          valB = b.valor ?? 0
+          return dir * cmp(valA - valB)
+        case 'status':
+          valA = (a.status ?? '').toLowerCase()
+          valB = (b.status ?? '').toLowerCase()
+          break
+        default:
+          return 0
+      }
+      return dir * cmp(String(valA).localeCompare(String(valB), 'pt-BR'))
+    })
+  }, [contratosFiltrados, contratosSortBy, contratosSortOrder])
+
+  function handleContratosSort(column: ContratoSortColumn) {
+    if (contratosSortBy === column) {
+      setContratosSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setContratosSortBy(column)
+      setContratosSortOrder(column === 'valor' ? 'desc' : 'asc')
+    }
+  }
+
+  function formatarMoeda(valor: number, moeda = 'BRL') {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: moeda }).format(valor)
+  }
+  function formatarData(s: string | undefined) {
+    if (!s) return '-'
+    const d = new Date(s + 'T00:00:00')
+    return d.toLocaleDateString('pt-BR')
+  }
+
+  if (loading && viewMode === 'clientes') {
     return <div className="text-center py-12">Carregando...</div>
   }
 
-  if (error) {
+  if (error && viewMode === 'clientes') {
     return (
       <div className="text-center py-12">
         <p className="text-red-600 mb-4">Erro ao carregar clientes: {error.message}</p>
@@ -171,7 +273,9 @@ export default function Clientes() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-foreground">Clientes</h1>
+        <h1 className="text-3xl font-bold text-foreground">
+          {viewMode === 'clientes' ? 'Clientes' : 'Contratos'}
+        </h1>
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -181,6 +285,15 @@ export default function Clientes() {
           >
             <FileSpreadsheet className="w-5 h-5 text-green-600" />
             Exportar
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode(viewMode === 'clientes' ? 'contratos' : 'clientes')}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-primary focus:border-transparent"
+            title={viewMode === 'clientes' ? 'Ver todos os contratos' : 'Voltar para lista de clientes'}
+          >
+            <FileText className="w-5 h-5 text-blue-600" />
+            {viewMode === 'clientes' ? 'Contratos' : 'Clientes'}
           </button>
           <Link
             to="/clientes/novo"
@@ -192,6 +305,210 @@ export default function Clientes() {
         </div>
       </div>
 
+      {viewMode === 'contratos' ? (
+        <>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+            <div className="flex flex-col md:flex-row gap-4 flex-wrap">
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Buscar por nome do cliente..."
+                  value={contratosSearch}
+                  onChange={(e) => setContratosSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
+              <select
+                value={contratosStatusFilter}
+                onChange={(e) => setContratosStatusFilter(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+                <option value="">Todos os status</option>
+                <option value="ativo">Ativo</option>
+                <option value="pausado">Pausado</option>
+                <option value="cancelado">Cancelado</option>
+                <option value="finalizado">Finalizado</option>
+              </select>
+            </div>
+            {contratosFiltrados.length > 0 && (
+              <p className="text-sm text-gray-600 mt-2">
+                {contratosFiltrados.length}{' '}
+                {contratosFiltrados.length === 1 ? 'contrato encontrado' : 'contratos encontrados'}
+              </p>
+            )}
+          </div>
+
+          {contratosLoading ? (
+            <div className="text-center py-12">Carregando contratos...</div>
+          ) : contratosError ? (
+            <div className="text-center py-12">
+              <p className="text-red-600 mb-4">Erro ao carregar contratos: {contratosError.message}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setContratosLoading(true)
+                  fetchTodosContratosPlanos(contratosStatusFilter || undefined)
+                    .then(setContratosRaw)
+                    .catch(setContratosError)
+                    .finally(() => setContratosLoading(false))
+                }}
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+              >
+                Tentar novamente
+              </button>
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+              <table className="w-full min-w-[900px]">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleContratosSort('cliente')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        Cliente
+                        {contratosSortBy === 'cliente' &&
+                          (contratosSortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                      </span>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleContratosSort('numero')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        Nº Contrato
+                        {contratosSortBy === 'numero' &&
+                          (contratosSortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                      </span>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleContratosSort('plano')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        Plano
+                        {contratosSortBy === 'plano' &&
+                          (contratosSortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                      </span>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleContratosSort('data_inicio')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        Data Início
+                        {contratosSortBy === 'data_inicio' &&
+                          (contratosSortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                      </span>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleContratosSort('data_fim')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        Data Fim
+                        {contratosSortBy === 'data_fim' &&
+                          (contratosSortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                      </span>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleContratosSort('valor')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        Valor
+                        {contratosSortBy === 'valor' &&
+                          (contratosSortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                      </span>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleContratosSort('status')}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        Status
+                        {contratosSortBy === 'status' &&
+                          (contratosSortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                      </span>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Ações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {contratosOrdenados.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
+                        {contratosSearch || contratosStatusFilter
+                          ? 'Nenhum contrato encontrado com os filtros aplicados'
+                          : 'Nenhum contrato cadastrado'}
+                      </td>
+                    </tr>
+                  ) : (
+                    contratosOrdenados.map((cp) => (
+                      <tr key={cp.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          <Link
+                            to={`/clientes/${cp.cliente_id}/editar`}
+                            className="text-primary hover:text-primary/80 hover:underline"
+                            title="Editar cliente"
+                          >
+                            {cp.cliente?.nome ?? '-'}
+                          </Link>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {cp.contrato?.nome ?? cp.id.slice(0, 8)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                          {cp.plano?.nome ?? '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {formatarData(cp.data_inicio)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {formatarData(cp.data_fim)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                          {formatarMoeda(cp.valor, cp.moeda)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                              cp.status === 'ativo'
+                                ? 'bg-green-100 text-green-800'
+                                : cp.status === 'pausado'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : cp.status === 'cancelado'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}
+                          >
+                            {cp.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <Link
+                            to={`/clientes/${cp.cliente_id}/editar`}
+                            className="text-primary hover:text-primary/80 inline-flex items-center gap-1 font-medium"
+                            title="Editar cliente"
+                          >
+                            <Edit className="w-4 h-4" />
+                            <span>Editar</span>
+                          </Link>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
+      ) : (
+        <>
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4 flex-wrap">
           <div className="relative flex-1 min-w-[200px]">
@@ -376,6 +693,8 @@ export default function Clientes() {
           </tbody>
         </table>
       </div>
+        </>
+      )}
 
       <ExportClientesModal
         open={exportModalOpen}

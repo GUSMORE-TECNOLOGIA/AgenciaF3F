@@ -37,6 +37,7 @@ const AVAILABLE_FIELDS: FieldDefinition[] = [
       { value: 'cancelado', label: 'Cancelado' },
     ],
   },
+  { value: 'contrato_vencido', label: 'Contrato vencido', type: 'boolean' },
   { value: 'tem_plano', label: 'Tem plano', type: 'boolean' },
   {
     value: 'plano_status',

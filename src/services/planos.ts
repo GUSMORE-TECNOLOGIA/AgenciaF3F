@@ -863,6 +863,85 @@ export async function fetchClientePlanos(clienteId: string): Promise<ClientePlan
 }
 
 /**
+ * Buscar todos os contratos de planos (todos os clientes) para listagem.
+ * Retorna cliente_planos com cliente, plano e contrato (nome) para exibir na tela de Contratos.
+ */
+export async function fetchTodosContratosPlanos(filtroStatus?: string): Promise<ClientePlano[]> {
+  try {
+    let query = supabase
+      .from('cliente_planos')
+      .select(
+        `
+        *,
+        cliente:clientes(id, nome),
+        plano:planos(*),
+        contrato:cliente_contratos(id, nome, status, contrato_assinado)
+      `
+      )
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
+
+    if (filtroStatus && filtroStatus.trim()) {
+      query = query.eq('status', filtroStatus.trim())
+    }
+
+    const { data, error } = await query
+
+    if (error) {
+      console.error('Erro ao buscar todos os contratos:', error)
+      throw error
+    }
+
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      cliente_id: item.cliente_id,
+      plano_id: item.plano_id,
+      contrato_id: item.contrato_id || undefined,
+      valor: Number(item.valor),
+      moeda: item.moeda,
+      status: item.status,
+      contrato_assinado: mapContratoAssinado(item.contrato_assinado ?? 'nao_assinado'),
+      data_inicio: item.data_inicio || undefined,
+      data_fim: item.data_fim || undefined,
+      data_assinatura: item.data_assinatura || undefined,
+      data_cancelamento: item.data_cancelamento || undefined,
+      observacoes: item.observacoes || undefined,
+      created_at: item.created_at,
+      updated_at: item.updated_at,
+      deleted_at: item.deleted_at || undefined,
+      cliente: item.cliente
+        ? ({ id: item.cliente.id, nome: item.cliente.nome } as Cliente)
+        : undefined,
+      plano: item.plano
+        ? {
+            id: item.plano.id,
+            nome: item.plano.nome,
+            descricao: item.plano.descricao || undefined,
+            valor: Number(item.plano.valor),
+            moeda: item.plano.moeda,
+            ativo: item.plano.ativo ?? true,
+            recorrencia_meses: Number(item.plano.recorrencia_meses ?? 12),
+            created_at: item.plano.created_at ?? item.created_at,
+            updated_at: item.plano.updated_at ?? item.updated_at,
+            deleted_at: item.plano.deleted_at || undefined,
+          }
+        : undefined,
+      contrato: item.contrato
+        ? ({
+            id: item.contrato.id,
+            nome: item.contrato.nome,
+            status: item.contrato.status,
+            contrato_assinado: mapContratoAssinado(item.contrato.contrato_assinado),
+          } as ClienteContrato)
+        : undefined,
+    }))
+  } catch (error) {
+    console.error('Erro em fetchTodosContratosPlanos:', error)
+    throw error
+  }
+}
+
+/**
  * Criar contrato de cliente com plano.
  * Se status for 'ativo', qualquer plano ativo existente do cliente é finalizado (troca de plano em um passo).
  */
