@@ -1,4 +1,4 @@
-import { Edit, Trash2, KeyRound, Lock } from 'lucide-react'
+import { Edit, Trash2, KeyRound, Lock, UserPlus } from 'lucide-react'
 import { EquipeMembro, Perfil } from '@/types'
 
 function PerfilCell({ membro, perfis }: { membro: EquipeMembro; perfis: Perfil[] }) {
@@ -23,12 +23,14 @@ interface EquipeMembrosTableProps {
   onDelete: (membro: EquipeMembro) => void
   onSendPasswordReset?: (membro: EquipeMembro) => void
   onEditPassword?: (membro: EquipeMembro) => void
+  onCreateAccess?: (membro: EquipeMembro) => void
   deletingId?: string | null
   sendingResetEmailId?: string | null
   updatingPasswordId?: string | null
+  creatingAccessId?: string | null
 }
 
-export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, onSendPasswordReset, onEditPassword, deletingId, sendingResetEmailId, updatingPasswordId }: EquipeMembrosTableProps) {
+export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, onSendPasswordReset, onEditPassword, onCreateAccess, deletingId, sendingResetEmailId, updatingPasswordId, creatingAccessId }: EquipeMembrosTableProps) {
   if (membros.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-600">
@@ -68,6 +70,16 @@ export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, 
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                 <div className="inline-flex items-center gap-3">
+                  {onCreateAccess && membro.email && !membro.user_id && (
+                    <button
+                      onClick={() => onCreateAccess(membro)}
+                      className="text-amber-600 hover:text-amber-800 disabled:opacity-50"
+                      title="Criar usuário de acesso (senha padrão 123456)"
+                      disabled={creatingAccessId === membro.id}
+                    >
+                      <UserPlus className="w-4 h-4" />
+                    </button>
+                  )}
                   {onEditPassword && membro.user_id && (
                     <button
                       onClick={() => onEditPassword(membro)}

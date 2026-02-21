@@ -42,10 +42,23 @@ export interface DashboardStats {
   }
 }
 
-export async function fetchDashboardData(): Promise<DashboardStats> {
+export interface FetchDashboardOptions {
+  skipFinance?: boolean
+  /** Quando informado (ex.: perfil agente), restringe clientes ao responsável. */
+  responsavelId?: string
+}
+
+export async function fetchDashboardData(options?: FetchDashboardOptions): Promise<DashboardStats> {
+  const skipFinance = options?.skipFinance === true
+  const responsavelId = options?.responsavelId
+
   const [clientesRes, transacoesRes, ocorrencias, responsaveis] = await Promise.all([
-    fetchClientes({ limit: 5000, offset: 0 }),
-    fetchTransacoes({ tipo: 'receita', limit: 10000, offset: 0 }),
+    fetchClientes({
+      limit: 5000,
+      offset: 0,
+      ...(responsavelId ? { responsavel_id: responsavelId } : {}),
+    }),
+    skipFinance ? Promise.resolve({ transacoes: [], total: 0 }) : fetchTransacoes({ tipo: 'receita', limit: 10000, offset: 0 }),
     fetchOcorrencias(),
     fetchResponsaveisParaDashboard(),
   ])

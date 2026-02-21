@@ -39,6 +39,7 @@ export default function Equipe() {
   const [sendingResetEmailId, setSendingResetEmailId] = useState<string | null>(null)
   const [editingPasswordMembro, setEditingPasswordMembro] = useState<EquipeMembro | null>(null)
   const [updatingPasswordId, setUpdatingPasswordId] = useState<string | null>(null)
+  const [creatingAccessId, setCreatingAccessId] = useState<string | null>(null)
   const [editPasswordNew, setEditPasswordNew] = useState('')
   const [editPasswordConfirm, setEditPasswordConfirm] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
@@ -167,6 +168,59 @@ export default function Equipe() {
 
   const handleEditPassword = (membro: EquipeMembro) => {
     if (membro.user_id) setEditingPasswordMembro(membro)
+  }
+
+  const handleCreateAccess = async (membro: EquipeMembro) => {
+    const emailToUse = (membro.email ?? '').trim()
+    if (!emailToUse) {
+      await alert({
+        title: 'E-mail ausente',
+        message: 'Cadastre um e-mail no membro (editar) para depois criar o acesso.',
+        variant: 'warning',
+      })
+      return
+    }
+    if (!user) {
+      await alert({
+        title: 'Sessão expirada',
+        message: 'Faça login novamente.',
+        variant: 'warning',
+      })
+      return
+    }
+    try {
+      setCreatingAccessId(membro.id)
+      const { id: userId } = await createTeamUser({
+        email: emailToUse,
+        name: membro.nome_completo,
+        perfil: membro.perfil,
+        perfil_id: membro.perfil_id ?? undefined,
+      })
+      await updateEquipeMembro(membro.id, {
+        nome_completo: membro.nome_completo,
+        email: membro.email ?? undefined,
+        telefone: membro.telefone ?? undefined,
+        perfil: membro.perfil,
+        status: membro.status,
+        perfil_id: membro.perfil_id ?? undefined,
+        user_id: userId,
+      })
+      await updateUsuarioNameAndPerfil(userId, {
+        name: membro.nome_completo,
+        perfil_id: membro.perfil_id ?? null,
+      })
+      await loadMembros()
+      await alert({
+        title: 'Acesso criado',
+        message: `Usuário de acesso criado para ${membro.nome_completo}. Senha padrão: 123456. Ele(a) pode alterar em "Alterar senha" ou você pode definir com "Editar senha".`,
+        variant: 'success',
+      })
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erro ao criar usuário de acesso.'
+      await alert({ title: 'Erro', message: msg, variant: 'danger' })
+    } finally {
+      setCreatingAccessId(null)
+    }
   }
 
   const handleSendPasswordReset = async (membro: EquipeMembro) => {
@@ -430,9 +484,11 @@ export default function Equipe() {
                 setShowForm(true)
               }}
               onEditPassword={handleEditPassword}
+              onCreateAccess={handleCreateAccess}
               onSendPasswordReset={handleSendPasswordReset}
               sendingResetEmailId={sendingResetEmailId}
               updatingPasswordId={updatingPasswordId}
+              creatingAccessId={creatingAccessId}
               onDelete={handleDelete}
               deletingId={deletingId}
             />

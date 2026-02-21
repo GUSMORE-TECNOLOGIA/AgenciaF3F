@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Cliente } from '@/types'
+import { useAuth } from '@/contexts/AuthContext'
 import { fetchClientes, ClienteFilters, ClientesResponse } from '@/services/clientes'
 
 interface UseClientesOptions extends ClienteFilters {
@@ -23,7 +24,16 @@ interface UseClientesReturn {
 /**
  * Hook para gerenciar listagem de clientes
  */
+/**
+ * Perfil de agente operacional: vê apenas clientes em que é o responsável.
+ * Admin e demais perfis veem todos (respeitando filtros da UI).
+ */
+function isAgenteRestrito(perfil: string | undefined): boolean {
+  return perfil === 'agente'
+}
+
 export function useClientes(options: UseClientesOptions = {}): UseClientesReturn {
+  const { user } = useAuth()
   const { autoFetch = true, ...filters } = options
 
   const [clientes, setClientes] = useState<Cliente[]>([])
@@ -44,12 +54,16 @@ export function useClientes(options: UseClientesOptions = {}): UseClientesReturn
       setLoading(true)
       setError(null)
 
-      const offset = (page - 1) * pageSize
-      const response: ClientesResponse = await fetchClientes({
+      const effectiveFilters: ClienteFilters = {
         ...currentFilters,
         limit: pageSize,
-        offset,
-      })
+        offset: (page - 1) * pageSize,
+      }
+      if (isAgenteRestrito(user?.perfil) && user?.id) {
+        effectiveFilters.responsavel_id = user.id
+      }
+
+      const response: ClientesResponse = await fetchClientes(effectiveFilters)
 
       setClientes(response.data)
       setTotal(response.total)
@@ -61,7 +75,7 @@ export function useClientes(options: UseClientesOptions = {}): UseClientesReturn
     } finally {
       setLoading(false)
     }
-  }, [currentFilters, page, pageSize])
+  }, [currentFilters, page, pageSize, user?.id, user?.perfil])
 
   useEffect(() => {
     if (autoFetch) {

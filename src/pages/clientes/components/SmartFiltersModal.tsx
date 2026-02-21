@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Sparkles, Plus, X, Save, Filter, BookmarkCheck } from 'lucide-react'
 import type { SmartFilter, SmartFilterCondition } from '@/services/clientes'
+import { useAuth } from '@/contexts/AuthContext'
 import { fetchUsuariosParaSelecaoResponsavel } from '@/services/usuarios'
 
 interface FieldDefinition {
@@ -60,7 +61,7 @@ const AVAILABLE_FIELDS: FieldDefinition[] = [
       { value: 'finalizado', label: 'Finalizado' },
     ],
   },
-  { value: 'tem_financeiro_gerado', label: 'Tem financeiro gerado', type: 'boolean' },
+  { value: 'tem_financeiro_gerado', label: 'Tem financeiro gerado', type: 'boolean' as const },
 ]
 
 const OPERATORS: Array<{ value: string; label: string; supportsValue: boolean }> = [
@@ -102,6 +103,16 @@ export default function SmartFiltersModal({
   onDeleteFilter,
   onLoadFilter,
 }: Props) {
+  const { pode } = useAuth()
+  const podeFinanceiro = pode('financeiro', 'visualizar')
+  const availableFields = useMemo(
+    () =>
+      podeFinanceiro
+        ? AVAILABLE_FIELDS
+        : AVAILABLE_FIELDS.filter((f) => f.value !== 'tem_financeiro_gerado'),
+    [podeFinanceiro]
+  )
+
   const [conditions, setConditions] = useState<SmartFilterCondition[]>(currentConditions)
   const [saveFilterName, setSaveFilterName] = useState('')
   const [showSaveDialog, setShowSaveDialog] = useState(false)
@@ -136,7 +147,10 @@ export default function SmartFiltersModal({
   }
 
   function handleApply() {
-    const validConditions = conditions.filter((c) => c.field && c.operator)
+    let validConditions = conditions.filter((c) => c.field && c.operator)
+    if (!podeFinanceiro) {
+      validConditions = validConditions.filter((c) => c.field !== 'tem_financeiro_gerado')
+    }
     if (validConditions.length === 0) {
       return
     }
@@ -302,7 +316,7 @@ export default function SmartFiltersModal({
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                         >
                           <option value="">Selecione o campo</option>
-                          {AVAILABLE_FIELDS.map((f) => (
+                          {availableFields.map((f) => (
                             <option key={f.value} value={f.value}>
                               {f.label}
                             </option>

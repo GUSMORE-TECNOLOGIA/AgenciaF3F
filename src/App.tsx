@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { ModalProvider } from './contexts/ModalContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
+import { ModuleGuard } from './components/auth/ModuleGuard'
 import Login from './pages/auth/Login'
 import ResetPassword from './pages/auth/ResetPassword'
 import Dashboard from './pages/Dashboard'
@@ -56,9 +57,30 @@ function App() {
             <Route path="planos/novo" element={<PlanoNovo />} />
             <Route path="planos/:id/editar" element={<PlanoEdit />} />
             <Route path="planos/:id" element={<PlanoDetail />} />
-            <Route path="financeiro" element={<Financeiro />} />
-            <Route path="financeiro/nova" element={<TransacaoNovo />} />
-            <Route path="financeiro/:id/editar" element={<TransacaoEdit />} />
+            <Route
+              path="financeiro"
+              element={
+                <ModuleGuard modulo="financeiro" acao="visualizar">
+                  <Financeiro />
+                </ModuleGuard>
+              }
+            />
+            <Route
+              path="financeiro/nova"
+              element={
+                <ModuleGuard modulo="financeiro" acao="visualizar">
+                  <TransacaoNovo />
+                </ModuleGuard>
+              }
+            />
+            <Route
+              path="financeiro/:id/editar"
+              element={
+                <ModuleGuard modulo="financeiro" acao="visualizar">
+                  <TransacaoEdit />
+                </ModuleGuard>
+              }
+            />
             <Route path="ocorrencias" element={<Ocorrencias />} />
             <Route path="ocorrencias/nova" element={<OcorrenciaNovo />} />
             <Route path="ocorrencias/:id/editar" element={<OcorrenciaEdit />} />
