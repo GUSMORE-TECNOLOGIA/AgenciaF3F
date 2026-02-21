@@ -1,4 +1,4 @@
-import { Edit, Trash2, KeyRound } from 'lucide-react'
+import { Edit, Trash2, KeyRound, Lock } from 'lucide-react'
 import { EquipeMembro, Perfil } from '@/types'
 
 function PerfilCell({ membro, perfis }: { membro: EquipeMembro; perfis: Perfil[] }) {
@@ -22,11 +22,13 @@ interface EquipeMembrosTableProps {
   onEdit: (membro: EquipeMembro) => void
   onDelete: (membro: EquipeMembro) => void
   onSendPasswordReset?: (membro: EquipeMembro) => void
+  onEditPassword?: (membro: EquipeMembro) => void
   deletingId?: string | null
   sendingResetEmailId?: string | null
+  updatingPasswordId?: string | null
 }
 
-export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, onSendPasswordReset, deletingId, sendingResetEmailId }: EquipeMembrosTableProps) {
+export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, onSendPasswordReset, onEditPassword, deletingId, sendingResetEmailId, updatingPasswordId }: EquipeMembrosTableProps) {
   if (membros.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-600">
@@ -66,6 +68,16 @@ export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, 
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                 <div className="inline-flex items-center gap-3">
+                  {onEditPassword && membro.user_id && (
+                    <button
+                      onClick={() => onEditPassword(membro)}
+                      className="text-gray-600 hover:text-primary disabled:opacity-50"
+                      title="Editar senha"
+                      disabled={updatingPasswordId === membro.id}
+                    >
+                      <Lock className="w-4 h-4" />
+                    </button>
+                  )}
                   {onSendPasswordReset && membro.email && (
                     <button
                       onClick={() => onSendPasswordReset(membro)}
