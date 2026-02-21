@@ -52,7 +52,13 @@ export default function Login() {
       if (resetError) throw resetError
       setForgotSent(true)
     } catch (err: any) {
-      setError(err?.message ?? 'Erro ao enviar e-mail. Tente novamente.')
+      const raw = err?.message ?? 'Erro ao enviar e-mail. Tente novamente.'
+      const isRateLimit = String(raw).toLowerCase().includes('rate limit')
+      setError(
+        isRateLimit
+          ? 'Muitas solicitações de e-mail no momento. O provedor de autenticação limita envios por hora. Tente novamente em alguns minutos ou peça ao administrador para reenviar o link mais tarde.'
+          : raw
+      )
     } finally {
       setForgotLoading(false)
     }

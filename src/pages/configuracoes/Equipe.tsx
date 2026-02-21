@@ -21,6 +21,7 @@ import {
   updatePerfil,
 } from '@/services/perfis'
 import { createTeamUser } from '@/services/createTeamUser'
+import { adminUpdateUserPassword } from '@/services/adminUpdateUserPassword'
 import EquipeMembroForm from './components/EquipeMembroForm'
 import EquipeMembrosTable from './components/EquipeMembrosTable'
 import PerfilPermissoesForm, { type PerfilFormInput } from './components/PerfilPermissoesForm'
@@ -36,6 +37,10 @@ export default function Equipe() {
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [sendingResetEmailId, setSendingResetEmailId] = useState<string | null>(null)
+  const [editingPasswordMembro, setEditingPasswordMembro] = useState<EquipeMembro | null>(null)
+  const [updatingPasswordId, setUpdatingPasswordId] = useState<string | null>(null)
+  const [editPasswordNew, setEditPasswordNew] = useState('')
+  const [editPasswordConfirm, setEditPasswordConfirm] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [editingMembro, setEditingMembro] = useState<EquipeMembro | null>(null)
@@ -160,6 +165,10 @@ export default function Equipe() {
     }
   }
 
+  const handleEditPassword = (membro: EquipeMembro) => {
+    if (membro.user_id) setEditingPasswordMembro(membro)
+  }
+
   const handleSendPasswordReset = async (membro: EquipeMembro) => {
     const emailToUse = (membro.email ?? '').trim()
     if (!emailToUse) {
@@ -181,10 +190,51 @@ export default function Equipe() {
         variant: 'success',
       })
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Erro ao enviar e-mail de redefinição.'
+      const raw = err instanceof Error ? err.message : 'Erro ao enviar e-mail de redefinição.'
+      const isRateLimit = String(raw).toLowerCase().includes('rate limit')
+      const msg = isRateLimit
+        ? 'Muitas solicitações de e-mail no momento. O Supabase limita a quantidade de e-mails de redefinição por hora. Tente novamente em alguns minutos.'
+        : raw
       await alert({ title: 'Erro', message: msg, variant: 'danger' })
     } finally {
       setSendingResetEmailId(null)
+    }
+  }
+
+  const handleSaveNewPassword = async () => {
+    if (!editingPasswordMembro?.user_id) return
+    if (!editPasswordNew || editPasswordNew.length < 8) {
+      await alert({
+        title: 'Senha inválida',
+        message: 'A nova senha deve ter pelo menos 8 caracteres.',
+        variant: 'warning',
+      })
+      return
+    }
+    if (editPasswordNew !== editPasswordConfirm) {
+      await alert({
+        title: 'Senhas não conferem',
+        message: 'Digite a mesma senha nos dois campos.',
+        variant: 'warning',
+      })
+      return
+    }
+    try {
+      setUpdatingPasswordId(editingPasswordMembro.id)
+      await adminUpdateUserPassword(editingPasswordMembro.user_id, editPasswordNew)
+      setEditingPasswordMembro(null)
+      setEditPasswordNew('')
+      setEditPasswordConfirm('')
+      await alert({
+        title: 'Senha alterada',
+        message: `A senha de ${editingPasswordMembro.nome_completo} foi atualizada. Ele(a) já pode entrar com a nova senha.`,
+        variant: 'success',
+      })
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erro ao alterar senha.'
+      await alert({ title: 'Erro', message: msg, variant: 'danger' })
+    } finally {
+      setUpdatingPasswordId(null)
     }
   }
 
@@ -379,8 +429,10 @@ export default function Equipe() {
                 setEditingMembro(membro)
                 setShowForm(true)
               }}
+              onEditPassword={handleEditPassword}
               onSendPasswordReset={handleSendPasswordReset}
               sendingResetEmailId={sendingResetEmailId}
+              updatingPasswordId={updatingPasswordId}
               onDelete={handleDelete}
               deletingId={deletingId}
             />
@@ -464,6 +516,62 @@ export default function Equipe() {
               </table>
             </div>
           )}
+        </div>
+      )}
+
+      {editingPasswordMembro && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Editar senha – {editingPasswordMembro.nome_completo}
+            </h3>
+            <p className="text-sm text-gray-600">
+              Defina uma nova senha. O usuário poderá entrar com ela na próxima vez.
+            </p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nova senha</label>
+              <input
+                type="password"
+                value={editPasswordNew}
+                onChange={(e) => setEditPasswordNew(e.target.value)}
+                placeholder="Mínimo 8 caracteres"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                autoComplete="new-password"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar senha</label>
+              <input
+                type="password"
+                value={editPasswordConfirm}
+                onChange={(e) => setEditPasswordConfirm(e.target.value)}
+                placeholder="Repita a senha"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                autoComplete="new-password"
+              />
+            </div>
+            <div className="flex gap-2 justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingPasswordMembro(null)
+                  setEditPasswordNew('')
+                  setEditPasswordConfirm('')
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveNewPassword}
+                disabled={updatingPasswordId === editingPasswordMembro.id}
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50"
+              >
+                {updatingPasswordId === editingPasswordMembro.id ? 'Salvando...' : 'Salvar senha'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
