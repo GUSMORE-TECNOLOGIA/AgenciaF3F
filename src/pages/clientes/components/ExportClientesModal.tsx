@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { X, FileSpreadsheet, Loader2 } from 'lucide-react'
 import * as XLSX from 'xlsx'
 import type { Cliente } from '@/types'
+import { useAuth } from '@/contexts/AuthContext'
 import { fetchClienteLinks } from '@/services/clienteLinks'
 import { fetchClienteResponsaveis } from '@/services/cliente-responsaveis'
 import { fetchClientePlanos, fetchClienteServicos } from '@/services/planos'
@@ -40,9 +41,13 @@ export default function ExportClientesModal({
   planosAtivos,
   responsavelPorClienteMap,
 }: ExportClientesModalProps) {
+  const { pode } = useAuth()
+  const podeFinanceiro = pode('financeiro', 'visualizar')
   const [selected, setSelected] = useState<Set<ExportSection>>(new Set(['dados_pessoais']))
   const [exporting, setExporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const sectionsToShow = podeFinanceiro ? SECTIONS : SECTIONS.filter((s) => s.id !== 'financeiro')
 
   function toggle(id: ExportSection) {
     setSelected((prev) => {
@@ -158,7 +163,7 @@ export default function ExportClientesModal({
         }
       }
 
-      if (selected.has('financeiro')) {
+      if (podeFinanceiro && selected.has('financeiro')) {
         const allTrans: Array<Record<string, string | number>> = []
         for (const c of clientes) {
           const trans = await fetchTransacoesCliente(c.id)
@@ -240,7 +245,7 @@ export default function ExportClientesModal({
           </p>
 
           <div className="space-y-2">
-            {SECTIONS.map((s) => (
+            {sectionsToShow.map((s) => (
               <label
                 key={s.id}
                 className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"

@@ -29,8 +29,13 @@ const formatCurrency = (v: number) =>
 const COLORS = ['#5B7CFA', '#22D3EE', '#34D399', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']
 
 export default function Dashboard() {
-  const { user } = useAuth()
-  const { stats, loading, error, refetch } = useDashboard()
+  const { user, pode } = useAuth()
+  const podeFinanceiro = pode('financeiro', 'visualizar')
+  const isAgente = user?.perfil === 'agente'
+  const { stats, loading, error, refetch } = useDashboard({
+    skipFinance: !podeFinanceiro,
+    responsavelId: isAgente ? user?.id : undefined,
+  })
 
   if (loading) {
     return (
@@ -63,7 +68,7 @@ export default function Dashboard() {
   const { clientes, financeiro, ocorrencias } = stats
   const ocorrenciasAbertasTotal = ocorrencias.abertas + ocorrencias.emAndamento
 
-  const kpis = [
+  const kpisBase = [
     {
       label: 'Total de clientes',
       value: clientes.total,
@@ -84,16 +89,20 @@ export default function Dashboard() {
       iconBg: 'bg-emerald-500/20',
       iconColor: 'text-emerald-600',
     },
-    {
-      label: 'Receita do mês',
-      value: formatCurrency(financeiro.receitaMes),
-      icon: DollarSign,
-      href: '/financeiro',
-      gradient: 'from-amber-500 to-orange-600',
-      bg: 'bg-gradient-to-br from-amber-500/10 to-orange-600/10',
-      iconBg: 'bg-amber-500/20',
-      iconColor: 'text-amber-600',
-    },
+    ...(podeFinanceiro
+      ? [
+          {
+            label: 'Receita do mês',
+            value: formatCurrency(financeiro.receitaMes),
+            icon: DollarSign,
+            href: '/financeiro',
+            gradient: 'from-amber-500 to-orange-600',
+            bg: 'bg-gradient-to-br from-amber-500/10 to-orange-600/10',
+            iconBg: 'bg-amber-500/20',
+            iconColor: 'text-amber-600',
+          },
+        ]
+      : []),
     {
       label: 'Ocorrências abertas',
       value: ocorrenciasAbertasTotal,
@@ -105,6 +114,7 @@ export default function Dashboard() {
       iconColor: 'text-rose-600',
     },
   ]
+  const kpis = kpisBase
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -220,156 +230,158 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center gap-2 mb-6">
-          <DollarSign className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">
-            Financeiro · visão geral
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-4">
-            <div className="flex items-center gap-2 text-emerald-700">
-              <TrendingUp className="w-4 h-4" />
-              <span className="text-sm font-medium">Receita do mês</span>
-            </div>
-            <p className="mt-2 text-xl font-bold text-emerald-800 tabular-nums">
-              {formatCurrency(financeiro.receitaMes)}
-            </p>
+      {podeFinanceiro && (
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6">
+            <DollarSign className="w-5 h-5 text-primary" />
+            <h2 className="text-lg font-semibold text-foreground">
+              Financeiro · visão geral
+            </h2>
           </div>
-          <div className="rounded-xl bg-blue-50 border border-blue-100 p-4">
-            <div className="flex items-center gap-2 text-blue-700">
-              <Clock className="w-4 h-4" />
-              <span className="text-sm font-medium">Em abertos</span>
-            </div>
-            <p className="mt-2 text-xl font-bold text-blue-800 tabular-nums">
-              {formatCurrency(financeiro.totalEmAbertos)}
-            </p>
-            <p className="text-xs text-blue-600 mt-1">
-              {financeiro.percEmAbertos.toFixed(1)}% do total
-            </p>
-          </div>
-          <div className="rounded-xl bg-rose-50 border border-rose-100 p-4">
-            <div className="flex items-center gap-2 text-rose-700">
-              <AlertCircle className="w-4 h-4" />
-              <span className="text-sm font-medium">Atrasados</span>
-            </div>
-            <p className="mt-2 text-xl font-bold text-rose-800 tabular-nums">
-              {formatCurrency(financeiro.totalAtrasados)}
-            </p>
-            <p className="text-xs text-rose-600 mt-1">
-              {financeiro.percAtrasados.toFixed(1)}% do total
-            </p>
-          </div>
-          <div className="rounded-xl bg-violet-50 border border-violet-100 p-4">
-            <div className="flex items-center gap-2 text-violet-700">
-              <ArrowUpRight className="w-4 h-4" />
-              <span className="text-sm font-medium">Provisão faturamento</span>
-            </div>
-            <p className="mt-2 text-xl font-bold text-violet-800 tabular-nums">
-              {formatCurrency(financeiro.provisaoFaturamento)}
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-4">
-              Atrasados por responsável
-            </h3>
-            {financeiro.atrasadosPorResponsavel.length === 0 ? (
-              <p className="text-gray-500 text-sm py-4">Nenhum título atrasado</p>
-            ) : (
-              <div className="space-y-2">
-                {financeiro.atrasadosPorResponsavel
-                  .sort((a, b) => b.valor - a.valor)
-                  .map((r) => (
-                    <div
-                      key={r.responsavelId}
-                      className="flex items-center justify-between rounded-lg bg-rose-50/50 px-4 py-3 border border-rose-100"
-                    >
-                      <span className="font-medium text-gray-800">{r.responsavelNome}</span>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm text-rose-600">{r.qtd} título(s)</span>
-                        <span className="font-bold text-rose-700 tabular-nums">
-                          {formatCurrency(r.valor)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-4">
+              <div className="flex items-center gap-2 text-emerald-700">
+                <TrendingUp className="w-4 h-4" />
+                <span className="text-sm font-medium">Receita do mês</span>
               </div>
-            )}
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-4">
-              Em abertos por responsável
-            </h3>
-            {financeiro.emAbertosPorResponsavel.length === 0 ? (
-              <p className="text-gray-500 text-sm py-4">Nenhum título em aberto</p>
-            ) : (
-              <div className="space-y-2">
-                {financeiro.emAbertosPorResponsavel
-                  .sort((a, b) => b.valor - a.valor)
-                  .map((r) => (
-                    <div
-                      key={r.responsavelId}
-                      className="flex items-center justify-between rounded-lg bg-blue-50/50 px-4 py-3 border border-blue-100"
-                    >
-                      <span className="font-medium text-gray-800">{r.responsavelNome}</span>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm text-blue-600">{r.qtd} título(s)</span>
-                        <span className="font-bold text-blue-700 tabular-nums">
-                          {formatCurrency(r.valor)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+              <p className="mt-2 text-xl font-bold text-emerald-800 tabular-nums">
+                {formatCurrency(financeiro.receitaMes)}
+              </p>
+            </div>
+            <div className="rounded-xl bg-blue-50 border border-blue-100 p-4">
+              <div className="flex items-center gap-2 text-blue-700">
+                <Clock className="w-4 h-4" />
+                <span className="text-sm font-medium">Em abertos</span>
               </div>
-            )}
+              <p className="mt-2 text-xl font-bold text-blue-800 tabular-nums">
+                {formatCurrency(financeiro.totalEmAbertos)}
+              </p>
+              <p className="text-xs text-blue-600 mt-1">
+                {financeiro.percEmAbertos.toFixed(1)}% do total
+              </p>
+            </div>
+            <div className="rounded-xl bg-rose-50 border border-rose-100 p-4">
+              <div className="flex items-center gap-2 text-rose-700">
+                <AlertCircle className="w-4 h-4" />
+                <span className="text-sm font-medium">Atrasados</span>
+              </div>
+              <p className="mt-2 text-xl font-bold text-rose-800 tabular-nums">
+                {formatCurrency(financeiro.totalAtrasados)}
+              </p>
+              <p className="text-xs text-rose-600 mt-1">
+                {financeiro.percAtrasados.toFixed(1)}% do total
+              </p>
+            </div>
+            <div className="rounded-xl bg-violet-50 border border-violet-100 p-4">
+              <div className="flex items-center gap-2 text-violet-700">
+                <ArrowUpRight className="w-4 h-4" />
+                <span className="text-sm font-medium">Provisão faturamento</span>
+              </div>
+              <p className="mt-2 text-xl font-bold text-violet-800 tabular-nums">
+                {formatCurrency(financeiro.provisaoFaturamento)}
+              </p>
+            </div>
           </div>
-        </div>
 
-        {financeiro.atrasadosPorResponsavel.length > 0 && (
-          <div className="mt-8">
-            <h3 className="text-sm font-semibold text-gray-700 mb-4">
-              Gráfico · Atrasados por responsável
-            </h3>
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart
-                data={[...financeiro.atrasadosPorResponsavel].sort(
-                  (a, b) => b.valor - a.valor
-                )}
-                layout="vertical"
-                margin={{ top: 0, right: 24, left: 0, bottom: 0 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis
-                  type="number"
-                  tickFormatter={(v) => formatCurrency(v)}
-                  fontSize={11}
-                />
-                <YAxis
-                  type="category"
-                  dataKey="responsavelNome"
-                  width={100}
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip
-                  formatter={(v) => [formatCurrency(Number(v) || 0), 'Atrasados']}
-                  labelFormatter={(label) => `Responsável: ${label}`}
-                />
-                <Bar dataKey="valor" name="Atrasados" radius={[0, 4, 4, 0]} fill="#f43f5e">
-                  {[...financeiro.atrasadosPorResponsavel]
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                Atrasados por responsável
+              </h3>
+              {financeiro.atrasadosPorResponsavel.length === 0 ? (
+                <p className="text-gray-500 text-sm py-4">Nenhum título atrasado</p>
+              ) : (
+                <div className="space-y-2">
+                  {financeiro.atrasadosPorResponsavel
                     .sort((a, b) => b.valor - a.valor)
-                    .map((_, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    .map((r) => (
+                      <div
+                        key={r.responsavelId}
+                        className="flex items-center justify-between rounded-lg bg-rose-50/50 px-4 py-3 border border-rose-100"
+                      >
+                        <span className="font-medium text-gray-800">{r.responsavelNome}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm text-rose-600">{r.qtd} título(s)</span>
+                          <span className="font-bold text-rose-700 tabular-nums">
+                            {formatCurrency(r.valor)}
+                          </span>
+                        </div>
+                      </div>
                     ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                </div>
+              )}
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                Em abertos por responsável
+              </h3>
+              {financeiro.emAbertosPorResponsavel.length === 0 ? (
+                <p className="text-gray-500 text-sm py-4">Nenhum título em aberto</p>
+              ) : (
+                <div className="space-y-2">
+                  {financeiro.emAbertosPorResponsavel
+                    .sort((a, b) => b.valor - a.valor)
+                    .map((r) => (
+                      <div
+                        key={r.responsavelId}
+                        className="flex items-center justify-between rounded-lg bg-blue-50/50 px-4 py-3 border border-blue-100"
+                      >
+                        <span className="font-medium text-gray-800">{r.responsavelNome}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm text-blue-600">{r.qtd} título(s)</span>
+                          <span className="font-bold text-blue-700 tabular-nums">
+                            {formatCurrency(r.valor)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+
+          {financeiro.atrasadosPorResponsavel.length > 0 && (
+            <div className="mt-8">
+              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                Gráfico · Atrasados por responsável
+              </h3>
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart
+                  data={[...financeiro.atrasadosPorResponsavel].sort(
+                    (a, b) => b.valor - a.valor
+                  )}
+                  layout="vertical"
+                  margin={{ top: 0, right: 24, left: 0, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis
+                    type="number"
+                    tickFormatter={(v) => formatCurrency(v)}
+                    fontSize={11}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="responsavelNome"
+                    width={100}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip
+                    formatter={(v) => [formatCurrency(Number(v) || 0), 'Atrasados']}
+                    labelFormatter={(label) => `Responsável: ${label}`}
+                  />
+                  <Bar dataKey="valor" name="Atrasados" radius={[0, 4, 4, 0]} fill="#f43f5e">
+                    {[...financeiro.atrasadosPorResponsavel]
+                      .sort((a, b) => b.valor - a.valor)
+                      .map((_, i) => (
+                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                      ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

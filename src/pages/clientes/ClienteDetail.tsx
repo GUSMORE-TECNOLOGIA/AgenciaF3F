@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link, useNavigate, Navigate } from 'react-router-dom'
 import { ArrowLeft, User, Briefcase, DollarSign, AlertCircle, MessageSquare, Edit, Link as LinkIcon, Trash2 } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
 import { useCliente, useUpdateClienteStatus, useDeleteCliente } from '@/hooks/useCliente'
 import { useModal } from '@/contexts/ModalContext'
 import ClienteResponsaveisTab from './ClienteResponsaveisTab'
@@ -13,10 +14,12 @@ import OcorrenciasTab from './components/tabs/OcorrenciasTab'
 export default function ClienteDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { user, pode } = useAuth()
   const { cliente, loading, refetch } = useCliente(id || null)
   const { update: updateStatus } = useUpdateClienteStatus(id || '')
   const { remove: deleteCliente, loading: deleting } = useDeleteCliente(id || '')
   const { confirm, alert } = useModal()
+  const podeFinanceiro = pode('financeiro', 'visualizar')
 
   const [activeTab, setActiveTab] = useState<
     'identificacao' | 'links' | 'responsaveis' | 'servicos' | 'financeiro' | 'ocorrencias' | 'atendimento'
@@ -81,12 +84,16 @@ export default function ClienteDetail() {
     )
   }
 
+  if (user?.perfil === 'agente' && cliente.responsavel_id !== user?.id) {
+    return <Navigate to="/clientes" replace />
+  }
+
   const tabs = [
     { id: 'identificacao', label: 'Identificação', icon: Briefcase },
     { id: 'links', label: 'Links Úteis', icon: LinkIcon },
     { id: 'responsaveis', label: 'Responsáveis', icon: User },
     { id: 'servicos', label: 'Serviços', icon: Briefcase },
-    { id: 'financeiro', label: 'Financeiro', icon: DollarSign },
+    ...(podeFinanceiro ? [{ id: 'financeiro' as const, label: 'Financeiro', icon: DollarSign }] : []),
     { id: 'ocorrencias', label: 'Ocorrências', icon: AlertCircle },
     { id: 'atendimento', label: 'Atendimento', icon: MessageSquare },
   ]
@@ -218,7 +225,7 @@ export default function ClienteDetail() {
             <ServicosTab cliente={cliente} onSave={refetch} />
           )}
 
-          {activeTab === 'financeiro' && (
+          {podeFinanceiro && activeTab === 'financeiro' && (
             <FinanceiroTab clienteId={cliente.id} clienteNome={cliente.nome} />
           )}
 

@@ -4,6 +4,7 @@ import { Plus, Search, Edit, Sparkles, FileSpreadsheet, ChevronUp, ChevronDown }
 
 type SortColumn = 'nome' | 'email' | 'telefone' | 'plano' | 'responsavel' | 'status'
 type SortOrder = 'asc' | 'desc'
+import { useAuth } from '@/contexts/AuthContext'
 import { useClientes } from '@/hooks/useClientes'
 import { useSmartFiltersClientes } from '@/hooks/useSmartFiltersClientes'
 import SmartFiltersModal from './components/SmartFiltersModal'
@@ -12,6 +13,8 @@ import { fetchPrincipaisParaLista } from '@/services/usuarios'
 import { fetchClientePlanos } from '@/services/planos'
 
 export default function Clientes() {
+  const { user } = useAuth()
+  const isAgente = user?.perfil === 'agente'
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<'ativo' | 'inativo' | 'pausado' | ''>('')
   const [responsavelFilter, setResponsavelFilter] = useState<string>('')
@@ -211,19 +214,21 @@ export default function Clientes() {
             <option value="pausado">Pausado</option>
             <option value="inativo">Inativo</option>
           </select>
-          <select
-            value={responsavelFilter}
-            onChange={(e) => setResponsavelFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            title="Filtrar por responsável"
-          >
-            <option value="">Todos os responsáveis</option>
-            {responsaveisUnicos.map((r) => (
-              <option key={r.responsavel_id} value={r.responsavel_id}>
-                {r.responsavel_name || '(sem nome)'}
-              </option>
-            ))}
-          </select>
+          {!isAgente && (
+            <select
+              value={responsavelFilter}
+              onChange={(e) => setResponsavelFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              title="Filtrar por responsável"
+            >
+              <option value="">Todos os responsáveis</option>
+              {responsaveisUnicos.map((r) => (
+                <option key={r.responsavel_id} value={r.responsavel_id}>
+                  {r.responsavel_name || '(sem nome)'}
+                </option>
+              ))}
+            </select>
+          )}
           <button
             type="button"
             onClick={() => setSmartFiltersOpen(true)}

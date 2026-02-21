@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link, useNavigate, Navigate } from 'react-router-dom'
 import { ArrowLeft, User, Briefcase, DollarSign, AlertCircle, MessageSquare, Link as LinkIcon, Trash2 } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
 import { useCliente, useDeleteCliente } from '@/hooks/useCliente'
 import { useModal } from '@/contexts/ModalContext'
 import IdentificacaoTab from './components/tabs/IdentificacaoTab'
@@ -11,6 +12,7 @@ import ServicosTab from './components/tabs/ServicosTab'
 export default function ClienteEdit() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { user, pode } = useAuth()
   const { cliente, loading: loadingCliente, error: errorCliente, refetch } = useCliente(id || null)
   const { remove: deleteCliente, loading: deleting } = useDeleteCliente(id || '')
   const { confirm, alert } = useModal()
@@ -19,12 +21,13 @@ export default function ClienteEdit() {
     'identificacao' | 'links' | 'responsaveis' | 'servicos' | 'financeiro' | 'ocorrencias' | 'atendimento'
   >('identificacao')
 
+  const podeFinanceiro = pode('financeiro', 'visualizar')
   const tabs = [
     { id: 'identificacao', label: 'Identificação', icon: Briefcase },
     { id: 'links', label: 'Links Úteis', icon: LinkIcon },
     { id: 'responsaveis', label: 'Responsáveis', icon: User },
     { id: 'servicos', label: 'Serviços', icon: Briefcase },
-    { id: 'financeiro', label: 'Financeiro', icon: DollarSign },
+    ...(podeFinanceiro ? [{ id: 'financeiro' as const, label: 'Financeiro', icon: DollarSign }] : []),
     { id: 'ocorrencias', label: 'Ocorrências', icon: AlertCircle },
     { id: 'atendimento', label: 'Atendimento', icon: MessageSquare },
   ]
@@ -96,6 +99,10 @@ export default function ClienteEdit() {
     )
   }
 
+  if (user?.perfil === 'agente' && cliente.responsavel_id !== user?.id) {
+    return <Navigate to="/clientes" replace />
+  }
+
   return (
     <div className="max-w-[1200px]">
       {/* Breadcrumb e botões */}
@@ -159,7 +166,7 @@ export default function ClienteEdit() {
             <ServicosTab cliente={cliente} onSave={refetch} />
           )}
 
-          {activeTab === 'financeiro' && (
+          {podeFinanceiro && activeTab === 'financeiro' && (
             <div className="text-center py-12 text-gray-500">
               Módulo Financeiro em desenvolvimento
             </div>
