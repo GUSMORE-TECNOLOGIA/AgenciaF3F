@@ -1,5 +1,7 @@
+import { useState, useMemo } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDashboard } from '@/hooks/useDashboard'
+import type { DashboardStats } from '@/services/dashboard'
 import {
   Users,
   UserCheck,
@@ -10,6 +12,8 @@ import {
   ArrowUpRight,
   BarChart3,
   PieChart,
+  FileText,
+  Filter,
 } from 'lucide-react'
 import {
   BarChart,
@@ -27,11 +31,21 @@ const formatCurrency = (v: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
 
 const COLORS = ['#5B7CFA', '#22D3EE', '#34D399', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']
+const CONTRATO_FAIXA_COLORS: Record<string, string> = {
+  Vencidos: '#EF4444',
+  'Próximos 30 dias': '#F59E0B',
+  '31 a 60 dias': '#EAB308',
+  '61 a 90 dias': '#84CC16',
+  'Após 90 dias': '#22C55E',
+  'Sem data fim': '#94A3B8',
+}
 
 export default function Dashboard() {
   const { user, pode } = useAuth()
   const podeFinanceiro = pode('financeiro', 'visualizar')
   const isAgenteOperacional = user?.perfil === 'agente' && user?.role !== 'admin'
+  const [filterContratoResponsavel, setFilterContratoResponsavel] = useState<string>('')
+  const [filterContratoFaixa, setFilterContratoFaixa] = useState<string>('todos')
   const { stats, loading, error, refetch } = useDashboard({
     skipFinance: !podeFinanceiro,
     responsavelId: isAgenteOperacional ? user?.id : undefined,
@@ -382,6 +396,221 @@ export default function Dashboard() {
           )}
         </div>
       )}
+
+      {/* Painel Contratos · análise por responsável e vencimento */}
+      {stats.contratos && (
+        <ContratosPanel
+          contratos={stats.contratos}
+          filterResponsavel={filterContratoResponsavel}
+          setFilterResponsavel={setFilterContratoResponsavel}
+          filterFaixa={filterContratoFaixa}
+          setFilterFaixa={setFilterContratoFaixa}
+        />
+      )}
+    </div>
+  )
+}
+
+type ContratosPanelProps = {
+  contratos: NonNullable<DashboardStats['contratos']>
+  filterResponsavel: string
+  setFilterResponsavel: (v: string) => void
+  filterFaixa: string
+  setFilterFaixa: (v: string) => void
+}
+
+function ContratosPanel({
+  contratos,
+  filterResponsavel,
+  setFilterResponsavel,
+  filterFaixa,
+  setFilterFaixa,
+}: ContratosPanelProps) {
+  const faixaKeys: Array<{ key: string; label: string }> = [
+    { key: 'todos', label: 'Todos' },
+    { key: 'vencidos', label: 'Vencidos' },
+    { key: 'proximos30', label: 'Próximos 30 dias' },
+    { key: 'proximos60', label: '31 a 60 dias' },
+    { key: 'proximos90', label: '61 a 90 dias' },
+    { key: 'apos90', label: 'Após 90 dias' },
+    { key: 'semData', label: 'Sem data fim' },
+  ]
+
+  const chartPorResponsavelData = useMemo(() => {
+    let list = contratos.porResponsavel
+    if (filterResponsavel) {
+      list = list.filter((r) => r.responsavelId === filterResponsavel)
+    }
+    const getValue = (r: (typeof list)[0]) => {
+      if (filterFaixa === 'todos') return r.total
+      if (filterFaixa === 'vencidos') return r.vencidos
+      if (filterFaixa === 'proximos30') return r.pertoVencer30
+      if (filterFaixa === 'proximos60') return r.pertoVencer60
+      if (filterFaixa === 'proximos90') return r.pertoVencer90
+      if (filterFaixa === 'apos90') return r.apos90
+      if (filterFaixa === 'semData') return r.semData
+      return r.total
+    }
+    return list
+      .map((r) => ({ ...r, valor: getValue(r) }))
+      .filter((r) => r.valor > 0)
+      .sort((a, b) => b.valor - a.valor)
+  }, [contratos.porResponsavel, filterResponsavel, filterFaixa])
+
+  const chartPorFaixaData = useMemo(() => {
+    if (filterResponsavel && contratos.faixasPorResponsavel[filterResponsavel]) {
+      const f = contratos.faixasPorResponsavel[filterResponsavel]
+      return [
+        { faixa: 'Vencidos', count: f.vencidos, ordem: 0 },
+        { faixa: 'Próximos 30 dias', count: f.proximos30, ordem: 1 },
+        { faixa: '31 a 60 dias', count: f.proximos60, ordem: 2 },
+        { faixa: '61 a 90 dias', count: f.proximos90, ordem: 3 },
+        { faixa: 'Após 90 dias', count: f.apos90, ordem: 4 },
+        { faixa: 'Sem data fim', count: f.semData, ordem: 5 },
+      ].sort((a, b) => a.ordem - b.ordem)
+    }
+    return contratos.porFaixaVencimento
+  }, [contratos.porFaixaVencimento, contratos.faixasPorResponsavel, filterResponsavel])
+
+  const responsavelLabel = filterResponsavel
+    ? contratos.responsaveisUnicos.find((r) => r.responsavelId === filterResponsavel)?.responsavelNome ?? 'Responsável'
+    : 'Todos'
+
+  return (
+    <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="flex items-center gap-2">
+          <div className="rounded-xl p-2.5 bg-indigo-50 text-indigo-600">
+            <FileText className="w-6 h-6" />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">
+              Contratos · visão para decisão
+            </h2>
+            <p className="text-sm text-gray-500">
+              Analise por responsável e por vencimento para renovar e priorizar
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-gray-500" />
+            <select
+              value={filterResponsavel}
+              onChange={(e) => setFilterResponsavel(e.target.value)}
+              className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              title="Filtrar por responsável (agente)"
+            >
+              <option value="">Todos os responsáveis</option>
+              {contratos.responsaveisUnicos.map((r) => (
+                <option key={r.responsavelId} value={r.responsavelId}>
+                  {r.responsavelNome}
+                </option>
+              ))}
+            </select>
+          </div>
+          <select
+            value={filterFaixa}
+            onChange={(e) => setFilterFaixa(e.target.value)}
+            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            title="Filtrar por faixa de vencimento"
+          >
+            {faixaKeys.map((f) => (
+              <option key={f.key} value={f.key}>
+                {f.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+          <h3 className="text-sm font-semibold text-gray-700 mb-4">
+            Por responsável {filterFaixa !== 'todos' ? `· ${faixaKeys.find((f) => f.key === filterFaixa)?.label}` : ''}
+          </h3>
+          {chartPorResponsavelData.length === 0 ? (
+            <div className="rounded-xl bg-gray-50 border border-gray-100 py-12 text-center text-gray-500 text-sm">
+              Nenhum contrato nesta combinação de filtros
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart
+                data={chartPorResponsavelData}
+                layout="vertical"
+                margin={{ top: 0, right: 24, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis type="number" tickFormatter={(v) => String(v)} fontSize={11} />
+                <YAxis
+                  type="category"
+                  dataKey="responsavelNome"
+                  width={120}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip
+                  formatter={(v) => [Number(v), 'Contratos']}
+                  labelFormatter={(label) => `Responsável: ${label}`}
+                />
+                <Bar dataKey="valor" name="Contratos" radius={[0, 4, 4, 0]} maxBarSize={32}>
+                  {chartPorResponsavelData.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+        <div>
+          <h3 className="text-sm font-semibold text-gray-700 mb-4">
+            Por faixa de vencimento {filterResponsavel ? `· ${responsavelLabel}` : ''}
+          </h3>
+          {chartPorFaixaData.every((d) => d.count === 0) ? (
+            <div className="rounded-xl bg-gray-50 border border-gray-100 py-12 text-center text-gray-500 text-sm">
+              Nenhum contrato com data de vencimento nesta seleção
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart
+                data={chartPorFaixaData.filter((d) => d.count > 0)}
+                layout="vertical"
+                margin={{ top: 0, right: 24, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis type="number" tickFormatter={(v) => String(v)} fontSize={11} />
+                <YAxis
+                  type="category"
+                  dataKey="faixa"
+                  width={120}
+                  tick={{ fontSize: 11 }}
+                />
+                <Tooltip formatter={(v) => [Number(v), 'Contratos']} />
+                <Bar dataKey="count" name="Contratos" radius={[0, 4, 4, 0]} maxBarSize={28}>
+                  {chartPorFaixaData
+                    .filter((d) => d.count > 0)
+                    .map((d) => (
+                      <Cell key={d.faixa} fill={CONTRATO_FAIXA_COLORS[d.faixa] ?? '#64748B'} />
+                    ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-gradient-to-r from-indigo-50 to-violet-50 border border-indigo-100 px-4 py-3">
+        <p className="text-sm text-gray-700">
+          <strong>Dica:</strong> Use &quot;Próximos 30 dias&quot; para ver quem renovar primeiro; filtre por responsável para acompanhar sua carteira.
+        </p>
+        <Link
+          to="/clientes?view=contratos"
+          className="inline-flex items-center gap-2 text-sm font-medium text-indigo-700 hover:text-indigo-800"
+        >
+          Ver lista de contratos
+          <ArrowUpRight className="w-4 h-4" />
+        </Link>
+      </div>
     </div>
   )
 }

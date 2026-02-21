@@ -1,7 +1,8 @@
 import { fetchClientes } from './clientes'
 import { fetchTransacoes } from './financeiro'
 import { fetchOcorrencias } from './ocorrencias'
-import { fetchResponsaveisParaDashboard } from './usuarios'
+import { fetchResponsaveisParaDashboard, fetchPrincipaisParaLista } from './usuarios'
+import { fetchTodosContratosPlanos } from './planos'
 import type { Transacao } from '@/types'
 
 const hoje = () => new Date().toISOString().slice(0, 10)
@@ -40,6 +41,25 @@ export interface DashboardStats {
     abertas: number
     emAndamento: number
   }
+  /** Dados para o painel de contratos (por responsável e por vencimento). */
+  contratos: {
+    porResponsavel: Array<{
+      responsavelId: string
+      responsavelNome: string
+      total: number
+      ativos: number
+      vencidos: number
+      pertoVencer30: number
+      pertoVencer60: number
+      pertoVencer90: number
+      apos90: number
+      semData: number
+    }>
+    porFaixaVencimento: Array<{ faixa: string; count: number; ordem: number }>
+    /** Faixas por responsável, para filtrar o gráfico de vencimento por agente. */
+    faixasPorResponsavel: Record<string, { vencidos: number; proximos30: number; proximos60: number; proximos90: number; apos90: number; semData: number }>
+    responsaveisUnicos: Array<{ responsavelId: string; responsavelNome: string }>
+  }
 }
 
 export interface FetchDashboardOptions {
@@ -52,7 +72,7 @@ export async function fetchDashboardData(options?: FetchDashboardOptions): Promi
   const skipFinance = options?.skipFinance === true
   const responsavelId = options?.responsavelId
 
-  const [clientesRes, transacoesRes, ocorrencias, responsaveis] = await Promise.all([
+  const [clientesRes, transacoesRes, ocorrencias, responsaveis, contratosPlanos, principais] = await Promise.all([
     fetchClientes({
       limit: 5000,
       offset: 0,
@@ -61,6 +81,8 @@ export async function fetchDashboardData(options?: FetchDashboardOptions): Promi
     skipFinance ? Promise.resolve({ transacoes: [], total: 0 }) : fetchTransacoes({ tipo: 'receita', limit: 10000, offset: 0 }),
     fetchOcorrencias(),
     fetchResponsaveisParaDashboard(),
+    fetchTodosContratosPlanos(),
+    fetchPrincipaisParaLista(),
   ])
 
   const clientes = clientesRes.data
@@ -150,6 +172,112 @@ export async function fetchDashboardData(options?: FetchDashboardOptions): Promi
       qtd: v.qtd,
     }))
 
+  // Contratos: cliente_id -> responsavel
+  const clienteToResp = new Map(principais.map((p) => [p.cliente_id, { id: p.responsavel_id, nome: p.responsavel_name }]))
+  const addDays = (base: string, n: number) => {
+    const d = new Date(base + 'T12:00:00')
+    d.setDate(d.getDate() + n)
+    return d.toISOString().slice(0, 10)
+  }
+  const d30 = addDays(hojeStr, 30)
+  const d60 = addDays(hojeStr, 60)
+  const d90 = addDays(hojeStr, 90)
+
+  const contratosFiltrados = responsavelId
+    ? contratosPlanos.filter((c) => clienteToResp.get(c.cliente_id)?.id === responsavelId)
+    : contratosPlanos
+
+  const porRespContratos = new Map<
+    string,
+    { total: number; ativos: number; vencidos: number; pertoVencer30: number; pertoVencer60: number; pertoVencer90: number; apos90: number; semData: number }
+  >()
+  const faixasCount = {
+    vencidos: 0,
+    proximos30: 0,
+    proximos60: 0,
+    proximos90: 0,
+    apos90: 0,
+    semData: 0,
+  }
+  const faixasPerResp = new Map<
+    string,
+    { vencidos: number; proximos30: number; proximos60: number; proximos90: number; apos90: number; semData: number }
+  >()
+
+  const ensureFaixas = (rid: string) => {
+    if (!faixasPerResp.has(rid)) {
+      faixasPerResp.set(rid, { vencidos: 0, proximos30: 0, proximos60: 0, proximos90: 0, apos90: 0, semData: 0 })
+    }
+    return faixasPerResp.get(rid)!
+  }
+
+  for (const c of contratosFiltrados) {
+    const r = clienteToResp.get(c.cliente_id)
+    const rid = r?.id ?? ''
+    if (!porRespContratos.has(rid)) {
+      porRespContratos.set(rid, {
+        total: 0,
+        ativos: 0,
+        vencidos: 0,
+        pertoVencer30: 0,
+        pertoVencer60: 0,
+        pertoVencer90: 0,
+        apos90: 0,
+        semData: 0,
+      })
+    }
+    const pr = porRespContratos.get(rid)!
+    pr.total++
+    if (c.status === 'ativo') pr.ativos++
+    const df = c.data_fim
+    const fr = ensureFaixas(rid)
+    if (!df) {
+      pr.semData++
+      faixasCount.semData++
+      fr.semData++
+    } else {
+      if (df < hojeStr) {
+        pr.vencidos++
+        faixasCount.vencidos++
+        fr.vencidos++
+      } else if (df <= d30) {
+        pr.pertoVencer30++
+        faixasCount.proximos30++
+        fr.proximos30++
+      } else if (df <= d60) {
+        pr.pertoVencer60++
+        faixasCount.proximos60++
+        fr.proximos60++
+      } else if (df <= d90) {
+        pr.pertoVencer90++
+        faixasCount.proximos90++
+        fr.proximos90++
+      } else {
+        pr.apos90++
+        faixasCount.apos90++
+        fr.apos90++
+      }
+    }
+  }
+
+  const faixasPorResponsavel: Record<string, { vencidos: number; proximos30: number; proximos60: number; proximos90: number; apos90: number; semData: number }> = {}
+  faixasPerResp.forEach((v, k) => {
+    faixasPorResponsavel[k] = v
+  })
+
+  const responsaveisUnicosMap = new Map<string, string>()
+  for (const p of principais) {
+    if (p.responsavel_id && !responsaveisUnicosMap.has(p.responsavel_id))
+      responsaveisUnicosMap.set(p.responsavel_id, p.responsavel_name || 'Sem responsável')
+  }
+  const responsaveisUnicos = [...porRespContratos.entries()].map(([responsavelId]) => ({
+    responsavelId,
+    responsavelNome: responsaveisUnicosMap.get(responsavelId) ?? userMap.get(responsavelId) ?? 'Sem responsável',
+  }))
+  const responsaveisUnicosDedup = responsaveisUnicos.filter(
+    (r, i, arr) => arr.findIndex((x) => x.responsavelId === r.responsavelId) === i
+  )
+
   return {
     clientes: {
       total: totalClientes,
@@ -177,6 +305,23 @@ export async function fetchDashboardData(options?: FetchDashboardOptions): Promi
     ocorrencias: {
       abertas: ocorrenciasAbertas,
       emAndamento: ocorrenciasEmAndamento,
+    },
+    contratos: {
+      porResponsavel: [...porRespContratos.entries()].map(([responsavelId, v]) => ({
+        responsavelId,
+        responsavelNome: userMap.get(responsavelId) ?? 'Sem responsável',
+        ...v,
+      })),
+      porFaixaVencimento: [
+        { faixa: 'Vencidos', count: faixasCount.vencidos, ordem: 0 },
+        { faixa: 'Próximos 30 dias', count: faixasCount.proximos30, ordem: 1 },
+        { faixa: '31 a 60 dias', count: faixasCount.proximos60, ordem: 2 },
+        { faixa: '61 a 90 dias', count: faixasCount.proximos90, ordem: 3 },
+        { faixa: 'Após 90 dias', count: faixasCount.apos90, ordem: 4 },
+        { faixa: 'Sem data fim', count: faixasCount.semData, ordem: 5 },
+      ].sort((a, b) => a.ordem - b.ordem),
+      faixasPorResponsavel,
+      responsaveisUnicos: responsaveisUnicosDedup,
     },
   }
 }
