@@ -231,8 +231,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signOut() {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
+    try {
+      await supabase.auth.signOut()
+    } catch (e) {
+      console.warn('signOut API falhou (sessão já inválida ou 403):', e)
+    }
+    // Sempre limpar estado local para o usuário conseguir sair mesmo com 403/sessão ausente
     setUser(null)
     setSupabaseUser(null)
     setMustResetPassword(false)

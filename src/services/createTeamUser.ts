@@ -47,13 +47,17 @@ export async function createTeamUser(input: CreateTeamUserInput): Promise<Create
     console.error('createTeamUser:', error)
     const msg = error?.message ?? ''
     const parsed = (data as { error?: string } | null)?.error
-    if (msg.includes('401') || parsed === 'Token inválido ou expirado' || parsed === 'Token ausente') {
+    // 401 ou token inválido: função respondeu, mas sessão não aceita
+    if (
+      msg.includes('401') ||
+      msg.includes('non-2xx') ||
+      parsed === 'Token inválido ou expirado' ||
+      parsed === 'Token ausente'
+    ) {
       throw new Error('Sessão expirada ou inválida. Faça login novamente e tente criar o usuário.')
     }
-    if (
-      /failed to send|fetch failed|network|edge function/i.test(msg) ||
-      msg.includes('Failed to send a request')
-    ) {
+    // Falha de rede/conexão (função não alcançada)
+    if (/failed to send|fetch failed|network error/i.test(msg) || msg.includes('Failed to send a request')) {
       throw new Error(
         'Não foi possível conectar à função de criação de usuário. Verifique se a Edge Function "create-team-user" está implantada no Supabase (Dashboard > Edge Functions ou: supabase functions deploy create-team-user).'
       )
