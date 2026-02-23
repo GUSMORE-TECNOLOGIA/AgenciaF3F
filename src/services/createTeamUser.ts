@@ -20,6 +20,14 @@ export interface CreateTeamUserResult {
  * Requer usuário logado com role admin.
  */
 export async function createTeamUser(input: CreateTeamUserInput): Promise<CreateTeamUserResult> {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession()
+  if (sessionError || !session?.access_token) {
+    throw new Error('Sessão expirada ou inválida. Faça login novamente e tente criar o usuário.')
+  }
+
   const { data, error } = await supabase.functions.invoke<CreateTeamUserResult | { error: string }>(
     'create-team-user',
     {
@@ -29,12 +37,19 @@ export async function createTeamUser(input: CreateTeamUserInput): Promise<Create
         perfil: input.perfil || 'agente',
         perfil_id: input.perfil_id ?? undefined,
       },
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
     }
   )
 
   if (error) {
     console.error('createTeamUser:', error)
     const msg = error?.message ?? ''
+    const parsed = (data as { error?: string } | null)?.error
+    if (msg.includes('401') || parsed === 'Token inválido ou expirado' || parsed === 'Token ausente') {
+      throw new Error('Sessão expirada ou inválida. Faça login novamente e tente criar o usuário.')
+    }
     if (
       /failed to send|fetch failed|network|edge function/i.test(msg) ||
       msg.includes('Failed to send a request')
