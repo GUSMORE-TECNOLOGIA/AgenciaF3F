@@ -46,15 +46,31 @@ export async function createTeamUser(input: CreateTeamUserInput): Promise<Create
   if (error) {
     console.error('createTeamUser:', error)
     const msg = error?.message ?? ''
-    const parsed = (data as { error?: string } | null)?.error
-    // 401 ou token inválido: função respondeu, mas sessão não aceita
+    let parsedError = (data as { error?: string } | null)?.error
+    // Resposta non-2xx: body pode vir em error.context (supabase-js)
+    if (!parsedError && error && typeof (error as { context?: Response }).context?.json === 'function') {
+      try {
+        const body = await (error as { context: Response }).context.json()
+        parsedError = body?.error
+      } catch {
+        // ignorar falha ao parsear
+      }
+    }
+    // Só 401: token ausente ou inválido (não confundir com 400 = dados inválidos)
     if (
       msg.includes('401') ||
-      msg.includes('non-2xx') ||
-      parsed === 'Token inválido ou expirado' ||
-      parsed === 'Token ausente'
+      parsedError === 'Token inválido ou expirado' ||
+      parsedError === 'Token ausente'
     ) {
       throw new Error('Sessão expirada ou inválida. Faça login novamente e tente criar o usuário.')
+    }
+    // 400/403/500: mostrar a mensagem que a função devolveu (ex.: "Email inválido")
+    if (parsedError && typeof parsedError === 'string') {
+      throw new Error(parsedError)
+    }
+    // Resposta de erro sem body legível (ex.: 400 genérico)
+    if (msg.includes('non-2xx')) {
+      throw new Error('Erro ao criar usuário. Verifique o e-mail e tente novamente.')
     }
     // Falha de rede/conexão (função não alcançada)
     if (/failed to send|fetch failed|network error/i.test(msg) || msg.includes('Failed to send a request')) {
