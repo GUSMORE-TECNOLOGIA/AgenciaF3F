@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
 
     if (createErr) {
       const msg = createErr.message || ''
-      if (/already registered|already exists/i.test(msg)) {
+      if (/already .*registered|already exists|email.*already/i.test(msg)) {
         const { data: list } = await admin.auth.admin.listUsers({ perPage: 1000 })
         const existing = (list?.users ?? []).find((u) => (u.email ?? '').toLowerCase() === email)
         if (existing) {
