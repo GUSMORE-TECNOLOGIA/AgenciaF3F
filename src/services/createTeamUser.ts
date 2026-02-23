@@ -34,6 +34,15 @@ export async function createTeamUser(input: CreateTeamUserInput): Promise<Create
 
   if (error) {
     console.error('createTeamUser:', error)
+    const msg = error?.message ?? ''
+    if (
+      /failed to send|fetch failed|network|edge function/i.test(msg) ||
+      msg.includes('Failed to send a request')
+    ) {
+      throw new Error(
+        'Não foi possível conectar à função de criação de usuário. Verifique se a Edge Function "create-team-user" está implantada no Supabase (Dashboard > Edge Functions ou: supabase functions deploy create-team-user).'
+      )
+    }
     throw error
   }
 
