@@ -190,7 +190,7 @@ export default function Equipe() {
     }
     try {
       setCreatingAccessId(membro.id)
-      const { id: userId } = await createTeamUser({
+      const { id: userId, created } = await createTeamUser({
         email: emailToUse,
         name: membro.nome_completo,
         perfil: membro.perfil,
@@ -210,11 +210,20 @@ export default function Equipe() {
         perfil_id: membro.perfil_id ?? null,
       })
       await loadMembros()
-      await alert({
-        title: 'Acesso criado',
-        message: `Usuário de acesso criado para ${membro.nome_completo}. Senha padrão: 123456. Ele(a) pode alterar em "Alterar senha" ou você pode definir com "Editar senha".`,
-        variant: 'success',
-      })
+      if (created) {
+        await alert({
+          title: 'Acesso criado',
+          message: `Usuário de acesso criado para ${membro.nome_completo}. Senha padrão: 123456. Ele(a) pode alterar em "Alterar senha" ou você pode definir com "Editar senha".`,
+          variant: 'success',
+        })
+      } else {
+        await alert({
+          title: 'E-mail já cadastrado',
+          message: `Este e-mail já possuía acesso. Membro vinculado ao usuário existente. Use "Editar senha" para definir uma nova senha.`,
+          variant: 'success',
+        })
+        setEditingPasswordMembro({ ...membro, user_id: userId })
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Erro ao criar usuário de acesso.'
       await alert({ title: 'Erro', message: msg, variant: 'danger' })
