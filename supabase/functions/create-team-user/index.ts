@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({})) as { email?: string; name?: string; perfil?: string; perfil_id?: string }
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
     const name = typeof body.name === 'string' ? body.name.trim() : email.split('@')[0] || 'Usuário'
-    let perfil = ['admin', 'gerente', 'agente', 'suporte'].includes(body.perfil) ? body.perfil : 'agente'
+    let perfil = ['admin', 'gerente', 'agente', 'suporte', 'financeiro'].includes(body.perfil) ? body.perfil : 'agente'
     const perfilId = typeof body.perfil_id === 'string' && /^[0-9a-f-]{36}$/i.test(body.perfil_id) ? body.perfil_id : null
     if (perfilId) {
       const { data: perfilRow } = await admin.from('perfis').select('slug').eq('id', perfilId).maybeSingle()

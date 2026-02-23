@@ -4,6 +4,19 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 
 ---
 
+## 2026-02-21 – "Failed to send a request to the Edge Function" ao criar usuário de acesso (RESOLVER)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-02-21 |
+| **Descrição do erro** | Ao criar usuário de acesso (Equipe / novo usuário), o sistema exibe "Failed to send a request to the Edge Function". |
+| **Arquivo(s)/módulo** | `createTeamUser.ts` (supabase.functions.invoke('create-team-user')), Edge Function `supabase/functions/create-team-user/index.ts`. |
+| **Causa raiz** | A **Edge Function `create-team-user` não está implantada** no projeto Supabase (F3F), ou a URL do projeto/env está incorreta. O cliente Supabase chama `https://<project>.supabase.co/functions/v1/create-team-user`; se a função não existir (404) ou houver falha de rede, o SDK retorna essa mensagem. |
+| **Solução aplicada** | (1) **Frontend:** mensagem de erro mais clara em `createTeamUser.ts` quando a chamada falha, orientando a implantar a função. (2) **Para corrigir:** implantar a Edge Function no projeto F3F: no diretório do repo, `npx supabase login` (se necessário), `npx supabase link --project-ref rhnkffeyspymjpellmnd`, depois `npx supabase functions deploy create-team-user`. No Dashboard Supabase: Settings > Edge Functions > verificar se `create-team-user` aparece. (3) Garantir que as env vars da função no Supabase (SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY) estão definidas (geralmente injetadas automaticamente). |
+| **Lição aprendida** | Criar usuário no Auth (admin.createUser) exige privilégios de service role; por isso o fluxo usa Edge Function. Sem deploy da função, a criação de usuário de acesso falha com erro genérico de rede. Documentar no projeto a necessidade de implantar Edge Functions após clone/setup. |
+
+---
+
 ## 2026-02-10 – Alteração de perfil: "Administrador" aparecia como "agente" na lista (RESOLVIDO)
 
 | Campo | Conteúdo |
