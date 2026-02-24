@@ -89,6 +89,14 @@ export async function fetchDashboardData(options?: FetchDashboardOptions): Promi
   const totalClientes = clientesRes.total
   const transacoes = transacoesRes.transacoes
   const userMap = new Map(responsaveis.map((r) => [r.id, r.name]))
+  // Prefer nome from principais (aba Responsáveis) when available
+  for (const p of principais) {
+    if (p.responsavel_id && p.responsavel_name) userMap.set(p.responsavel_id, p.responsavel_name)
+  }
+
+  // Responsável do cliente: apenas principal (cliente_responsaveis) — fonte única
+  const principalByCliente = new Map(principais.map((p) => [p.cliente_id, p.responsavel_id]))
+  const getResponsavelId = (clienteId: string) => principalByCliente.get(clienteId) ?? ''
 
   const ativos = clientes.filter((c) => c.status === 'ativo').length
   const inativos = clientes.filter((c) => c.status === 'inativo').length
@@ -96,14 +104,14 @@ export async function fetchDashboardData(options?: FetchDashboardOptions): Promi
 
   const porResponsavel = new Map<string, { total: number; ativos: number }>()
   for (const c of clientes) {
-    const key = c.responsavel_id ?? ''
+    const key = getResponsavelId(c.id)
     const r = porResponsavel.get(key) ?? { total: 0, ativos: 0 }
     r.total++
     if (c.status === 'ativo') r.ativos++
     porResponsavel.set(key, r)
   }
 
-  const clienteToResponsavel = new Map(clientes.map((c) => [c.id, c.responsavel_id ?? '']))
+  const clienteToResponsavel = new Map(clientes.map((c) => [c.id, getResponsavelId(c.id)]))
 
   const hojeStr = hoje()
   const mesInicio = startOfMonth()

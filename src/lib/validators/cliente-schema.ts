@@ -19,7 +19,7 @@ export const clienteCreateSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(255, 'Nome muito longo'),
   email: z.string().email('Email inválido').optional().or(z.literal('')),
   telefone: z.string().optional(),
-  responsavel_id: z.string().uuid('Responsável inválido'),
+  responsavel_id: z.string().uuid('Responsável inválido').optional(),
   status: z.enum(['ativo', 'inativo', 'pausado'], {
     errorMap: () => ({ message: 'Status inválido' }),
   }),

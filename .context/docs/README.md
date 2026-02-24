@@ -16,6 +16,7 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 ## Requisitos (processos de negócio)
 - [Fluxo Perfil → Usuário → Responsável](./requisitos/fluxo-perfil-usuario-responsavel.md) – Cadeia interconectada: criar perfil, vincular ao usuário na Equipe, usar como responsável no cliente, exibir nome correto no dashboard e filtros.
 - [Status do fluxo Perfil → Usuário → Responsável](./requisitos/status-fluxo-perfil-usuario-responsavel.md) – Conferência requisitos vs implementação; o que já está OK e o que validar.
+- [Análise: Responsável por cliente](.context/docs/analise-responsavel-por-cliente.md) – Conceito, modelo de dados, onde é usado (backend/frontend/RLS), skills envolvidas.
 - [Contrato: entidade vs. campo (aba Serviços)](./requisitos/contrato-entidade-vs-campo-servicos.md) – Análise: contrato como campo (Assinado/Não assinado/Cancelado) vs. contrato como entidade com painel próprio; recomendação e critérios de aceite.
 - [Contrato: cascade ao cancelar e datas (assinatura/cancelamento)](./requisitos/contrato-cascade-e-datas.md) – Regra de cascade ao cancelar contrato (planos/serviços vinculados); campos data_assinatura e data_cancelamento em contrato, plano e serviço.
 
@@ -53,6 +54,7 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 | Guide | File | Primary Inputs |
 | --- | --- | --- |
 | Fluxo Perfil → Usuário → Responsável | [requisitos/fluxo-perfil-usuario-responsavel.md](./requisitos/fluxo-perfil-usuario-responsavel.md) | Perfil, Equipe, Responsável, Dashboard, Filtros (cadeia única) |
+| Análise Responsável por cliente | [.context/docs/analise-responsavel-por-cliente.md](.context/docs/analise-responsavel-por-cliente.md) | Modelo de dados, services, RLS, frontend, skills |
 | Fluxo ciclo de vida cliente | [fluxo-ciclo-vida-cliente.md](./fluxo-ciclo-vida-cliente.md) | Processos 1.1–1.5; validar com Arthur |
 | Skills Map | [skills-map.md](./skills-map.md) | Quando usar cada skill F3F |
 | Plano de varredura | [plano-varredura-atualizacao-projeto.md](./plano-varredura-atualizacao-projeto.md) | Ordem das skills para varredura |
