@@ -6,16 +6,17 @@ Convenções de commit, branch strategy, PR e Vercel. **Registro progressivo:** 
 
 ## Repositório e projeto (canonical)
 
-**Usar sempre estes identificadores.** Ao orientar commits, PR, merge ou deploy, referenciar este repositório e este projeto Vercel; não criar ou apontar para outro repo/projeto. Fonte de verdade: [.context/docs/PROJECT_INTEGRATIONS.md](.context/docs/PROJECT_INTEGRATIONS.md) e `.env`.
-
-**Template:** Em uso para outro projeto, substitua refs em PROJECT_INTEGRATIONS.md e `.env` pelos do novo projeto.
+**Usar sempre estes identificadores.** Ao orientar commits, PR, merge ou deploy, referenciar **apenas** este repositório (AgenciaF3F). **Não misturar com Organizacao10x nem PortalUploaders.**
 
 | Serviço | Identificador |
 |---------|----------------|
-| **GitHub** | Preencher: URL do repo (ex.: `https://github.com/<org>/<AgenciaF3F>`). Org e nome do repo conforme o projeto F3F. |
-| **Vercel** | Preencher: nome do projeto Vercel, URL de produção (site oficial). Previews: `*-*.vercel.app` por branch/commit. |
+| **GitHub** | https://github.com/GUSMORE-TECNOLOGIA/AgenciaF3F · org: GUSMORE-TECNOLOGIA |
+| **Vercel** | Projeto: agenciaf3f · Produção: https://agenciaf3f.app (conforme config) |
+| **Supabase** | Projeto F3F — Project ID: rhnkffeyspymjpellmnd (ver PROJECT_INTEGRATIONS.md; não usar projeto Uploaders/Org10x). |
 
-Fonte de verdade também em [AGENTS.md](AGENTS.md) (Repository & deployment). Ao configurar Vercel (conectar repo, env vars), usar o repo do projeto; ao falar de "origin", "push", "PR", tratar deste repositório.
+**Antes de executar:** confirmar que o workspace atual é o repositório AgenciaF3F (ex.: existe `.context/docs/PROJECT_INTEGRATIONS.md` deste projeto). Se o usuário anexar skill de outro projeto (ex.: org-github-vercel) mas as alterações estiverem aqui, executar **neste** repo e usar **F3F-github-vercel**.
+
+Fonte de verdade: [.context/docs/PROJECT_INTEGRATIONS.md](.context/docs/PROJECT_INTEGRATIONS.md), [AGENTS.md](AGENTS.md) e `.env`. Template: ao usar para outro projeto, substituir todos os refs.
 
 ---
 

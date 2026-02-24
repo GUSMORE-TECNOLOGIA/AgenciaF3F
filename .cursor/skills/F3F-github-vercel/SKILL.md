@@ -7,6 +7,15 @@ description: "GitHub and Vercel for F3F (AgenciaF3F). Commits (Conventional Comm
 
 Responsável por **fluxo Git** (commits, branches, PR, merge), **resolução de conflitos** e **integração Vercel** (deploy, preview, env). Alinha ao [AGENTS.md](AGENTS.md) (PR & Commit Guidelines) e ao [development-workflow.md](.context/docs/development-workflow.md) quando existir. Esta skill **orienta e executa** comandos e passos; não altera secrets ou produção sem confirmação.
 
+## Escopo obrigatório (não misturar projetos)
+
+**Esta skill aplica-se APENAS ao repositório AgenciaF3F.** Antes de executar commit, push, PR, merge ou deploy:
+
+1. Confirmar que o **repositório atual** (workspace/cwd) é o **AgenciaF3F** — por exemplo: o caminho contém `AgenciaF3F` e existe o arquivo [.context/docs/PROJECT_INTEGRATIONS.md](.context/docs/PROJECT_INTEGRATIONS.md) deste projeto.
+2. **Não executar** em outro workspace (ex.: Organizacao10x, PortalUploaders). Se o usuário anexar a skill org-github-vercel mas as alterações estiverem no AgenciaF3F, executar no repo F3F e usar **esta** skill (F3F-github-vercel).
+
+Identificadores canonical: GitHub `GUSMORE-TECNOLOGIA/AgenciaF3F`, Vercel (agenciaf3f), Supabase F3F. Fonte de verdade: [.context/docs/PROJECT_INTEGRATIONS.md](.context/docs/PROJECT_INTEGRATIONS.md).
+
 ## Regra de ouro
 
 - **Commits:** sempre Conventional Commits (`feat(scope): description`); escopo opcional mas recomendado (ex.: `feat(auth): login com redirect`). Esta skill sugere mensagem e valida formato.

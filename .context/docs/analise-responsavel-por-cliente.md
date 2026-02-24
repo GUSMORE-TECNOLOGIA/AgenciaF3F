@@ -41,7 +41,7 @@ Documento de referência para o Gerente e para quem for alterar o módulo.
 
 ### Visibilidade (RLS e RPCs)
 
-- **Função `is_responsavel_do_cliente(cliente_id)`:** retorna true se o usuário atual é admin ou está em `cliente_responsaveis` para o cliente (fonte única).
+- **Função `is_responsavel_do_cliente(cliente_id)`:** retorna true se o usuário atual é admin, está em `cliente_responsaveis` para o cliente, ou é o `clientes.responsavel_id` (fallback legado até dados migrados). Ver migration `20260224190000_fix_agente_visibilidade_responsavel.sql`.
 - **clientes:** SELECT/UPDATE por `is_responsavel_do_cliente(id)`; INSERT permitido para autenticados.
 - **cliente_responsaveis:** SELECT/INSERT/UPDATE por `is_responsavel_do_cliente(cliente_id)` ou role admin; INSERT permite também “primeiro responsável” (quando o cliente ainda não tem nenhum e o usuário se adiciona).
 - **cliente_contratos e RPCs de soft-delete:** usam `is_responsavel_do_cliente(c.id)` para permissão.
