@@ -2,6 +2,7 @@ import { supabase } from './supabase'
 import { Cliente, LinksUteis } from '@/types'
 import type { ClienteCreateInput, ClienteUpdateInput } from '@/lib/validators/cliente-schema'
 import { cleanLinksUteis } from '@/lib/validators/cliente-schema'
+import { createClienteResponsavel } from './cliente-responsaveis'
 
 // Condição de filtro inteligente (Campo + Operador + Valor)
 export interface SmartFilterCondition {
@@ -49,9 +50,10 @@ export async function fetchClientes(filters?: ClienteFilters): Promise<ClientesR
 
     const hasSmartConditions =
       filters?.smartConditions && filters.smartConditions.length > 0
+    const hasResponsavelFilter = Boolean(filters?.responsavel_id)
 
-    if (hasSmartConditions) {
-      const conditions: Record<string, unknown>[] = filters.smartConditions!.map((c) => ({
+    if (hasSmartConditions || hasResponsavelFilter) {
+      const conditions: Record<string, unknown>[] = (filters?.smartConditions ?? []).map((c) => ({
         field: c.field,
         operator: c.operator,
         value: c.value,
@@ -240,10 +242,8 @@ export async function createCliente(input: ClienteCreateInput): Promise<Cliente>
         nome: input.nome,
         email: input.email || null,
         telefone: input.telefone || null,
-        responsavel_id: input.responsavel_id,
         status: input.status,
         links_uteis: linksUteis,
-        // drive_url removido - usar cliente_links com tipo "Google Drive" ao invés
       })
       .select()
       .single()
@@ -253,12 +253,24 @@ export async function createCliente(input: ClienteCreateInput): Promise<Cliente>
       throw error
     }
 
+    if (input.responsavel_id) {
+      try {
+        await createClienteResponsavel({
+          cliente_id: data.id,
+          responsavel_id: input.responsavel_id,
+          roles: ['principal'],
+        })
+      } catch (err) {
+        console.error('Erro ao vincular responsável principal ao novo cliente:', err)
+      }
+    }
+
     return {
       id: data.id,
       nome: data.nome,
       email: data.email || undefined,
       telefone: data.telefone || undefined,
-      responsavel_id: data.responsavel_id,
+      responsavel_id: input.responsavel_id ?? data.responsavel_id ?? null,
       status: data.status,
       logo_url: data.logo_url || undefined,
       links_uteis: data.links_uteis || {},

@@ -4,6 +4,17 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 
 ---
 
+## 2026-02-24 – Responsável por cliente: fonte única (cliente_responsaveis)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-02-24 |
+| **Contexto** | Unificação: responsável do cliente passa a ser **apenas** a tabela `cliente_responsaveis` (aba Responsáveis). O campo legado `clientes.responsavel_id` deixa de ser usado para visibilidade e filtros. |
+| **Alterações** | Migration `20260224180000_responsavel_apenas_cliente_responsaveis.sql`: (1) Função `is_responsavel_do_cliente(cliente_id)` (true se usuário está em cliente_responsaveis ou é admin). (2) RLS em clientes, cliente_responsaveis, cliente_contratos passam a usar essa função. (3) `list_clientes_filtrados`: visibilidade e filtro por responsável via cliente_responsaveis; retorna principal como responsavel_id (subquery). (4) RPCs get_responsaveis_para_dashboard, get_principais_para_lista, get_responsavel_name e soft-delete usam is_responsavel_do_cliente. (5) Backend: dashboard usa só principais; createCliente não grava responsavel_id em clientes, mas chama createClienteResponsavel quando informado. (6) fetchClientes usa RPC quando há filtro por responsável. |
+| **Referência** | [analise-responsavel-por-cliente.md](./analise-responsavel-por-cliente.md). |
+
+---
+
 ## 2026-02-21 – "Failed to send a request to the Edge Function" ao criar usuário de acesso (RESOLVER)
 
 | Campo | Conteúdo |
