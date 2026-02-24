@@ -4,13 +4,26 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 
 ---
 
+## 2026-02-24 – Agente vê zero no dashboard após migração responsável (RESOLVIDO)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-02-24 |
+| **Descrição do erro** | Após a migração que passou a usar apenas `cliente_responsaveis` para visibilidade, usuários com perfil **agente** (ex.: Raphael Leça) passaram a ver dashboard e lista de clientes zerados — "Nenhum dado ainda", "Nenhum contrato nesta combinação de filtros". |
+| **Arquivo(s)/módulo** | RLS e função `is_responsavel_do_cliente`; tabela `cliente_responsaveis` vs `clientes.responsavel_id`. |
+| **Causa raiz** | A migração `20260224180000` considerou **somente** `cliente_responsaveis` para decidir se o usuário é responsável. Clientes que tinham apenas `clientes.responsavel_id` preenchido (legado) deixaram de ser visíveis para o agente, pois não havia linha correspondente em `cliente_responsaveis`. |
+| **Solução aplicada** | Migration `20260224190000_fix_agente_visibilidade_responsavel.sql`: (1) **Fallback** em `is_responsavel_do_cliente`: além de cliente_responsaveis, considerar `(SELECT c.responsavel_id FROM clientes c WHERE c.id = p_cliente_id AND c.deleted_at IS NULL) = auth.uid()`. (2) **Backfill**: INSERT em `cliente_responsaveis` (role principal) para cada cliente que tem `clientes.responsavel_id` preenchido e ainda não possui vínculo; ON CONFLICT DO UPDATE para restaurar linhas soft-deleted. Assim o agente volta a ver seus clientes e os dados ficam unificados em `cliente_responsaveis`. |
+| **Referência** | [analise-responsavel-por-cliente.md](./analise-responsavel-por-cliente.md). |
+
+---
+
 ## 2026-02-24 – Responsável por cliente: fonte única (cliente_responsaveis)
 
 | Campo | Conteúdo |
 |-------|----------|
 | **Data** | 2026-02-24 |
 | **Contexto** | Unificação: responsável do cliente passa a ser **apenas** a tabela `cliente_responsaveis` (aba Responsáveis). O campo legado `clientes.responsavel_id` deixa de ser usado para visibilidade e filtros. |
-| **Alterações** | Migration `20260224180000_responsavel_apenas_cliente_responsaveis.sql`: (1) Função `is_responsavel_do_cliente(cliente_id)` (true se usuário está em cliente_responsaveis ou é admin). (2) RLS em clientes, cliente_responsaveis, cliente_contratos passam a usar essa função. (3) `list_clientes_filtrados`: visibilidade e filtro por responsável via cliente_responsaveis; retorna principal como responsavel_id (subquery). (4) RPCs get_responsaveis_para_dashboard, get_principais_para_lista, get_responsavel_name e soft-delete usam is_responsavel_do_cliente. (5) Backend: dashboard usa só principais; createCliente não grava responsavel_id em clientes, mas chama createClienteResponsavel quando informado. (6) fetchClientes usa RPC quando há filtro por responsável. |
+| **Alterações** | Migration `20260224180000_responsavel_apenas_cliente_responsaveis.sql`: (1) Função `is_responsavel_do_cliente(cliente_id)` (true se usuário está em cliente_responsaveis ou é admin). (2) RLS em clientes, cliente_responsaveis, cliente_contratos passam a usar essa função. (3) `list_clientes_filtrados`: visibilidade e filtro por responsável via cliente_responsaveis; retorna principal como responsavel_id (subquery). (4) RPCs get_responsaveis_para_dashboard, get_principais_para_lista, get_responsavel_name e soft-delete usam is_responsavel_do_cliente. (5) Backend: dashboard usa só principais; createCliente não grava responsavel_id em clientes, mas chama createClienteResponsavel quando informado. (6) fetchClientes usa RPC quando há filtro por responsável. (7) **Correção:** migration 20260224190000 adiciona fallback em is_responsavel_do_cliente para clientes.responsavel_id e backfill em cliente_responsaveis. |
 | **Referência** | [analise-responsavel-por-cliente.md](./analise-responsavel-por-cliente.md). |
 
 ---
