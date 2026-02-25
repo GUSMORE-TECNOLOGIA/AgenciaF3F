@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Plus, Search, Edit, Sparkles, FileSpreadsheet, ChevronUp, ChevronDown, FileText } from 'lucide-react'
 
@@ -316,13 +316,13 @@ export default function Clientes() {
                   placeholder="Buscar por nome do cliente..."
                   value={contratosSearch}
                   onChange={(e) => setContratosSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               <select
                 value={contratosStatusFilter}
                 onChange={(e) => setContratosStatusFilter(e.target.value)}
-                className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               >
                 <option value="">Todos os status</option>
                 <option value="ativo">Ativo</option>
@@ -478,11 +478,11 @@ export default function Clientes() {
                           <span
                             className={`px-2 py-1 text-xs font-semibold rounded-full ${
                               cp.status === 'ativo'
-                                ? 'bg-green-100 text-green-800'
+                                ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300'
                                 : cp.status === 'pausado'
-                                ? 'bg-yellow-100 text-yellow-800'
+                                ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300'
                                 : cp.status === 'cancelado'
-                                ? 'bg-red-100 text-red-800'
+                                ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300'
                                 : 'bg-muted text-foreground'
                             }`}
                           >
@@ -518,13 +518,13 @@ export default function Clientes() {
               placeholder="Buscar clientes por nome, email ou telefone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           >
             <option value="">Todos os status</option>
             <option value="ativo">Ativo</option>
@@ -535,7 +535,7 @@ export default function Clientes() {
             <select
               value={responsavelFilter}
               onChange={(e) => setResponsavelFilter(e.target.value)}
-              className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               title="Filtrar por responsável"
             >
               <option value="">Todos os responsáveis</option>
@@ -555,7 +555,7 @@ export default function Clientes() {
             <Sparkles className="w-5 h-5 text-purple-500" />
             Filtros Inteligentes
             {smartConditions.length > 0 && (
-              <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+              <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300">
                 {smartConditions.length}
               </span>
             )}
@@ -668,9 +668,9 @@ export default function Clientes() {
                     <span
                       className={`px-2 py-1 text-xs font-semibold rounded-full ${
                         cliente.status === 'ativo'
-                          ? 'bg-green-100 text-green-800'
+                          ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300'
                           : cliente.status === 'pausado'
-                          ? 'bg-yellow-100 text-yellow-800'
+                          ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300'
                           : 'bg-muted text-foreground'
                       }`}
                     >

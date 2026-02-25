@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Search, MessageSquare, Loader2, Edit, Trash2 } from 'lucide-react'
 import { useAtendimentos, useDeleteAtendimento } from '@/hooks/useAtendimentos'
@@ -134,13 +134,13 @@ export default function Atendimento() {
               placeholder="Buscar atendimentos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              className="w-full pl-10 pr-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
             />
           </div>
           <select
             value={tipoFilter}
             onChange={(e) => setTipoFilter(e.target.value as any)}
-            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todos os tipos</option>
             <option value="email">Email</option>
@@ -151,7 +151,7 @@ export default function Atendimento() {
           <select
             value={clienteFilter}
             onChange={(e) => setClienteFilter(e.target.value)}
-            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todos os clientes</option>
             {clientes.map((cliente) => (
@@ -166,14 +166,14 @@ export default function Atendimento() {
               value={dataInicio}
               onChange={(e) => setDataInicio(e.target.value)}
               placeholder="Data Início"
-              className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              className="flex-1 px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
             />
             <input
               type="date"
               value={dataFim}
               onChange={(e) => setDataFim(e.target.value)}
               placeholder="Data Fim"
-              className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              className="flex-1 px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
             />
           </div>
         </div>

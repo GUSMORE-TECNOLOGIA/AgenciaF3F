@@ -67,9 +67,9 @@ export default function OcorrenciasList() {
 
   const getStatusBadge = (status: Ocorrencia['status']) => {
     const badges = {
-      aberta: { className: 'bg-blue-100 text-blue-800', label: 'Aberta' },
-      em_andamento: { className: 'bg-yellow-100 text-yellow-800', label: 'Em Andamento' },
-      resolvida: { className: 'bg-green-100 text-green-800', label: 'Resolvida' },
+      aberta: { className: 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300', label: 'Aberta' },
+      em_andamento: { className: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300', label: 'Em Andamento' },
+      resolvida: { className: 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300', label: 'Resolvida' },
       cancelada: { className: 'bg-muted text-foreground', label: 'Cancelada' },
     }
 
@@ -85,9 +85,9 @@ export default function OcorrenciasList() {
   const getPrioridadeBadge = (prioridade: Ocorrencia['prioridade']) => {
     const badges = {
       baixa: { className: 'bg-muted text-foreground', label: 'Baixa' },
-      media: { className: 'bg-blue-100 text-blue-800', label: 'Média' },
-      alta: { className: 'bg-orange-100 text-orange-800', label: 'Alta' },
-      urgente: { className: 'bg-red-100 text-red-800', label: 'Urgente' },
+      media: { className: 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300', label: 'Média' },
+      alta: { className: 'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300', label: 'Alta' },
+      urgente: { className: 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300', label: 'Urgente' },
     }
 
     const badge = badges[prioridade]
@@ -104,8 +104,8 @@ export default function OcorrenciasList() {
       return <span className="text-xs text-muted-foreground">—</span>
     }
     const badges = {
-      pendente: { className: 'bg-yellow-100 text-yellow-800', label: 'Pendente' },
-      feito: { className: 'bg-green-100 text-green-800', label: 'Feito' },
+      pendente: { className: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300', label: 'Pendente' },
+      feito: { className: 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300', label: 'Feito' },
       cancelado: { className: 'bg-muted text-foreground', label: 'Cancelado' },
     }
 
@@ -162,13 +162,13 @@ export default function OcorrenciasList() {
               placeholder="Buscar ocorrências..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              className="w-full pl-10 pr-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todos os status</option>
             <option value="aberta">Aberta</option>
@@ -179,7 +179,7 @@ export default function OcorrenciasList() {
           <select
             value={prioridadeFilter}
             onChange={(e) => setPrioridadeFilter(e.target.value as any)}
-            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todas as prioridades</option>
             <option value="baixa">Baixa</option>
@@ -190,7 +190,7 @@ export default function OcorrenciasList() {
           <select
             value={clienteFilter}
             onChange={(e) => setClienteFilter(e.target.value)}
-            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todos os clientes</option>
             {clientes.map((cliente) => (
@@ -205,7 +205,7 @@ export default function OcorrenciasList() {
               setGrupoFilter(e.target.value)
               setTipoFilter('')
             }}
-            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todos os grupos</option>
             {grupos.map((grupo) => (
@@ -217,7 +217,7 @@ export default function OcorrenciasList() {
           <select
             value={tipoFilter}
             onChange={(e) => setTipoFilter(e.target.value)}
-            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
             disabled={!grupoFilter}
           >
             <option value="">{grupoFilter ? 'Todos os tipos' : 'Selecione um grupo'}</option>
@@ -230,7 +230,7 @@ export default function OcorrenciasList() {
           <select
             value={reminderFilter}
             onChange={(e) => setReminderFilter(e.target.value as any)}
-            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todos os lembretes</option>
             <option value="pendente">Pendente</option>

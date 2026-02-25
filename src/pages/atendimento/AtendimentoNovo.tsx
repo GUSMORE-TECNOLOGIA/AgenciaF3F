@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Save, Loader2, MessageSquare } from 'lucide-react'
 import { useCreateAtendimento } from '@/hooks/useAtendimentos'
@@ -252,7 +252,7 @@ export default function AtendimentoNovo() {
                     duracao_minutos: e.target.value ? Number(e.target.value) : undefined,
                   }))
                 }
-                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 placeholder="Ex: 30"
               />
               <p className="mt-1 text-xs text-muted-foreground">Tempo de duração do atendimento em minutos</p>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { Plus, User, X } from 'lucide-react'
 import { Cliente, ClienteResponsavel } from '@/types'
 import { fetchClienteResponsaveis, softDeleteClienteResponsavel, createClienteResponsavel } from '@/services/cliente-responsaveis'
@@ -224,7 +224,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                 <select
                   value={selectedResponsavelId}
                   onChange={(e) => setSelectedResponsavelId(e.target.value)}
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value="">Selecione um responsável...</option>
                   {responsaveisDisponiveis
@@ -272,7 +272,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                   value={observacao}
                   onChange={(e) => setObservacao(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="Observações sobre este responsável..."
                 />
               </div>

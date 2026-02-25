@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Save, Loader2, DollarSign } from 'lucide-react'
 import { useTransacao, useUpdateTransacao } from '@/hooks/useFinanceiro'
@@ -210,7 +210,7 @@ export default function TransacaoEdit() {
                     status: e.target.value as 'pendente' | 'pago' | 'vencido' | 'cancelado' | 'reembolsado',
                   }))
                 }
-                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               >
                 <option value="pendente">Pendente</option>
                 <option value="pago">Pago</option>
@@ -230,7 +230,7 @@ export default function TransacaoEdit() {
                   id="metodo_pagamento"
                   value={formData.metodo_pagamento ?? ''}
                   onChange={(e) => setFormData((prev) => ({ ...prev, metodo_pagamento: e.target.value }))}
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 >
                   <option value="">Selecione...</option>
                   <option value="PIX">PIX</option>
@@ -254,7 +254,7 @@ export default function TransacaoEdit() {
                   type="date"
                   value={formData.data_pagamento}
                   onChange={(e) => setFormData((prev) => ({ ...prev, data_pagamento: e.target.value }))}
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 />
               </div>
             )}

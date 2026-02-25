@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { Cliente } from '@/types'
 import {
   useClienteContratos,
@@ -646,7 +646,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     type="text"
                     value={nomeContrato}
                     onChange={(e) => setNomeContrato(e.target.value)}
-                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                    className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     placeholder="Ex.: Contrato 2025-01"
                   />
                 </div>
@@ -656,7 +656,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     <select
                       value={statusContrato}
                       onChange={(e) => setStatusContrato(e.target.value as 'ativo' | 'pausado' | 'cancelado' | 'finalizado')}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="ativo">Ativo</option>
                       <option value="pausado">Pausado</option>
@@ -675,7 +675,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                           setDataAssinaturaContrato(getTodayISO())
                         }
                       }}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="nao_assinado">Não assinado</option>
                       <option value="assinado">Assinado</option>
@@ -692,7 +692,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       onChange={(e) => setDataInicioContrato(e.target.value)}
                       min={DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     />
                   </div>
                   <div>
@@ -703,7 +703,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       onChange={(e) => setDataFimContrato(e.target.value)}
                       min={dataInicioContrato || DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     />
                   </div>
                   <div>
@@ -714,7 +714,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       onChange={(e) => setDataAssinaturaContrato(e.target.value)}
                       min={DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     />
                   </div>
                   <div>
@@ -725,7 +725,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       onChange={(e) => setDataCancelamentoContrato(e.target.value)}
                       min={DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     />
                   </div>
                 </div>
@@ -893,7 +893,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                           setValorPlano(plano.valor)
                         }
                       }}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="">Selecione um plano...</option>
                       {planos.map((plano) => (
@@ -908,7 +908,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     <select
                       value={contratoIdPlano}
                       onChange={(e) => setContratoIdPlano(e.target.value)}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="">Nenhum</option>
                       {clienteContratos.map((c) => (
@@ -925,7 +925,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     <InputMoeda
                       value={valorPlano}
                       onValueChange={(v) => setValorPlano(v ?? '')}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                       placeholder="0,00"
                     />
                   </div>
@@ -936,7 +936,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     <select
                       value={statusPlano}
                       onChange={(e) => setStatusPlano(e.target.value as 'ativo' | 'pausado' | 'cancelado' | 'finalizado')}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="ativo">Ativo</option>
                       <option value="pausado">Pausado</option>
@@ -956,7 +956,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       onChange={(e) => setDataInicioPlano(e.target.value)}
                       min={DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                       required
                     />
                   </div>
@@ -970,7 +970,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       onChange={(e) => setDataFimPlano(e.target.value)}
                       min={dataInicioPlano || DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     />
                   </div>
                 </div>
@@ -1147,7 +1147,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                           setValorServico(Number(servico.valor))
                         }
                       }}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="">Selecione um serviço...</option>
                       {servicos.map((servico) => (
@@ -1163,7 +1163,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     <select
                       value={contratoIdServico}
                       onChange={(e) => setContratoIdServico(e.target.value)}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="">Nenhum</option>
                       {clienteContratos.map((c) => (
@@ -1180,7 +1180,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     <InputMoeda
                       value={valorServico}
                       onValueChange={(v) => setValorServico(v ?? '')}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                       placeholder="0,00"
                     />
                   </div>
@@ -1191,7 +1191,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     <select
                       value={statusServico}
                       onChange={(e) => setStatusServico(e.target.value as 'ativo' | 'pausado' | 'cancelado' | 'finalizado')}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="ativo">Ativo</option>
                       <option value="pausado">Pausado</option>
@@ -1211,7 +1211,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       onChange={(e) => setDataInicioServico(e.target.value)}
                       min={DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                       required
                     />
                   </div>
@@ -1225,7 +1225,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       onChange={(e) => setDataFimServico(e.target.value)}
                       min={dataInicioServico || DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     />
                   </div>
                 </div>

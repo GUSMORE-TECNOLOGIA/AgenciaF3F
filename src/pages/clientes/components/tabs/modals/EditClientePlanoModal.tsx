@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { X, Save, Loader2 } from 'lucide-react'
 import { ClientePlano } from '@/types'
 import { useUpdateClientePlano } from '@/hooks/usePlanos'
@@ -261,7 +261,7 @@ export default function EditClientePlanoModal({
                     status: e.target.value as 'ativo' | 'pausado' | 'cancelado' | 'finalizado',
                   }))
                 }
-                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 required
               >
                 <option value="ativo">Ativo</option>
@@ -281,7 +281,7 @@ export default function EditClientePlanoModal({
                 value={formData.observacoes ?? ''}
                 onChange={(e) => setFormData((prev) => ({ ...prev, observacoes: e.target.value }))}
                 rows={4}
-                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 placeholder="Observações sobre o contrato..."
               />
             </div>

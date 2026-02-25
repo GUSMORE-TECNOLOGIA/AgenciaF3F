@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { Cliente } from '@/types'
 import { clienteCreateSchema, clienteUpdateSchema, type ClienteCreateInput, type ClienteUpdateInput } from '@/lib/validators/cliente-schema'
 import { useAuth } from '@/contexts/AuthContext'
@@ -188,7 +188,7 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
           type="tel"
           value={telefone}
           onChange={(e) => setTelefone(e.target.value)}
-          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+          className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           placeholder="(11) 99999-9999"
         />
       </div>
@@ -202,7 +202,7 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
           id="status"
           value={status}
           onChange={(e) => setStatus(e.target.value as 'ativo' | 'inativo' | 'pausado')}
-          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+          className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           required
         >
           <option value="ativo">Ativo</option>

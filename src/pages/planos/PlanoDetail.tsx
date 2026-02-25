@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Edit, Package, Plus, Trash2, Loader2, CheckCircle2, XCircle } from 'lucide-react'
 import { usePlano } from '@/hooks/usePlanos'
@@ -175,7 +175,7 @@ export default function PlanoDetail() {
                   id="servico-select"
                   value={selectedServicoId}
                   onChange={(e) => setSelectedServicoId(e.target.value)}
-                  className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="flex-1 px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 >
                   <option value="">Selecione um serviço...</option>
                   {servicosNaoVinculados.map((servico) => (

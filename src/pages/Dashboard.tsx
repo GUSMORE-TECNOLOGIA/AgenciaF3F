@@ -78,12 +78,12 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <div className="rounded-xl bg-red-50 border border-red-200 p-6 text-center">
-        <p className="text-red-700 font-medium">Erro ao carregar o dashboard</p>
-        <p className="text-red-600 text-sm mt-1">{error.message}</p>
+      <div className="rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 p-6 text-center">
+        <p className="text-red-700 dark:text-red-400 font-medium">Erro ao carregar o dashboard</p>
+        <p className="text-red-600 dark:text-red-400 text-sm mt-1">{error.message}</p>
         <button
           onClick={refetch}
-          className="mt-4 px-4 py-2 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 transition-colors"
+          className="mt-4 px-4 py-2 bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors"
         >
           Tentar novamente
         </button>
@@ -147,15 +147,15 @@ export default function Dashboard() {
   return (
     <div className="space-y-8 animate-fade-in">
       {debugVisibilidade && clientes.total === 0 && debugVisibilidade.auth_uid && (
-        <div className="rounded-xl border-2 border-amber-400 bg-amber-50 p-4 text-sm text-amber-900">
+        <div className="rounded-xl border-2 border-amber-400 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200">
           <p className="font-semibold">Você vê 0 clientes — diagnóstico</p>
           <p className="mt-1">
-            ID do seu login: <code className="rounded bg-amber-100 px-1 font-mono text-xs">{debugVisibilidade.auth_uid}</code>
+            ID do seu login: <code className="rounded bg-amber-100 dark:bg-amber-900/50 px-1 font-mono text-xs">{debugVisibilidade.auth_uid}</code>
           </p>
-          <p className="mt-2 text-amber-800">
-            <strong>Admin:</strong> siga o guia <strong>VALIDAR_E_APLICAR_FIX_AGENTE_VISIBILIDADE</strong> no repositório (.context/docs/guias/). Primeiro rode a <em>Validação</em> no SQL Editor (projeto F3F). Se aparecer FALTA_APLICAR_FIX, execute o bloco <em>Aplicar o fix</em> e depois <code className="rounded bg-amber-100 px-1">NOTIFY pgrst, &apos;reload schema&apos;;</code>. Se o ID acima for diferente do responsável dos clientes, use o UPDATE do guia (seção 5).
+          <p className="mt-2 text-amber-800 dark:text-amber-300">
+            <strong>Admin:</strong> siga o guia <strong>VALIDAR_E_APLICAR_FIX_AGENTE_VISIBILIDADE</strong> no repositório (.context/docs/guias/). Primeiro rode a <em>Validação</em> no SQL Editor (projeto F3F). Se aparecer FALTA_APLICAR_FIX, execute o bloco <em>Aplicar o fix</em> e depois <code className="rounded bg-amber-100 dark:bg-amber-900/50 px-1">NOTIFY pgrst, &apos;reload schema&apos;;</code>. Se o ID acima for diferente do responsável dos clientes, use o UPDATE do guia (seção 5).
           </p>
-          <p className="mt-1 text-amber-700">
+          <p className="mt-1 text-amber-700 dark:text-amber-400">
             Depois o usuário atualiza a página (Ctrl+F5).
           </p>
         </div>
@@ -223,17 +223,18 @@ export default function Dashboard() {
                 layout="vertical"
                 margin={{ top: 0, right: 24, left: 0, bottom: 0 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                 <XAxis type="number" tickFormatter={(v) => String(v)} />
                 <YAxis
                   type="category"
                   dataKey="responsavelNome"
                   width={100}
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 12, fill: 'var(--muted-foreground)' }}
                 />
                 <Tooltip
                   formatter={(v) => [Number(v) || 0, 'Clientes']}
                   labelFormatter={(label) => `Responsável: ${label}`}
+                  contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--foreground)' }}
                 />
                 <Bar dataKey="total" name="Total" radius={[0, 4, 4, 0]} maxBarSize={28}>
                   {clientes.porResponsavel.map((_, i) => (
@@ -253,20 +254,20 @@ export default function Dashboard() {
             </h2>
           </div>
           <div className="flex flex-wrap gap-4">
-            <div className="flex items-center gap-3 rounded-xl bg-emerald-50 px-4 py-3 border border-emerald-100">
+            <div className="flex items-center gap-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 px-4 py-3 border border-emerald-100 dark:border-emerald-800/50">
               <div className="w-3 h-3 rounded-full bg-emerald-500" />
               <span className="text-sm text-muted-foreground">Ativos</span>
-              <span className="font-bold text-emerald-700">{clientes.ativos}</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">{clientes.ativos}</span>
             </div>
             <div className="flex items-center gap-3 rounded-xl bg-muted px-4 py-3 border border-border">
               <div className="w-3 h-3 rounded-full bg-gray-400" />
               <span className="text-sm text-muted-foreground">Inativos</span>
               <span className="font-bold text-foreground">{clientes.inativos}</span>
             </div>
-            <div className="flex items-center gap-3 rounded-xl bg-amber-50 px-4 py-3 border border-amber-100">
+            <div className="flex items-center gap-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 px-4 py-3 border border-amber-100 dark:border-amber-800/50">
               <div className="w-3 h-3 rounded-full bg-amber-500" />
               <span className="text-sm text-muted-foreground">Pausados</span>
-              <span className="font-bold text-amber-700">{clientes.pausados}</span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">{clientes.pausados}</span>
             </div>
           </div>
         </div>
@@ -281,45 +282,45 @@ export default function Dashboard() {
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-4">
-              <div className="flex items-center gap-2 text-emerald-700">
+            <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-800/50 p-4">
+              <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
                 <TrendingUp className="w-4 h-4" />
                 <span className="text-sm font-medium">Receita do mês</span>
               </div>
-              <p className="mt-2 text-xl font-bold text-emerald-800 tabular-nums">
+              <p className="mt-2 text-xl font-bold text-emerald-800 dark:text-emerald-300 tabular-nums">
                 {formatCurrency(financeiro.receitaMes)}
               </p>
             </div>
-            <div className="rounded-xl bg-blue-50 border border-blue-100 p-4">
-              <div className="flex items-center gap-2 text-blue-700">
+            <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-800/50 p-4">
+              <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
                 <Clock className="w-4 h-4" />
                 <span className="text-sm font-medium">Em abertos</span>
               </div>
-              <p className="mt-2 text-xl font-bold text-blue-800 tabular-nums">
+              <p className="mt-2 text-xl font-bold text-blue-800 dark:text-blue-300 tabular-nums">
                 {formatCurrency(financeiro.totalEmAbertos)}
               </p>
-              <p className="text-xs text-blue-600 mt-1">
+              <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
                 {financeiro.percEmAbertos.toFixed(1)}% do total
               </p>
             </div>
-            <div className="rounded-xl bg-rose-50 border border-rose-100 p-4">
-              <div className="flex items-center gap-2 text-rose-700">
+            <div className="rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-800/50 p-4">
+              <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400">
                 <AlertCircle className="w-4 h-4" />
                 <span className="text-sm font-medium">Atrasados</span>
               </div>
-              <p className="mt-2 text-xl font-bold text-rose-800 tabular-nums">
+              <p className="mt-2 text-xl font-bold text-rose-800 dark:text-rose-300 tabular-nums">
                 {formatCurrency(financeiro.totalAtrasados)}
               </p>
-              <p className="text-xs text-rose-600 mt-1">
+              <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">
                 {financeiro.percAtrasados.toFixed(1)}% do total
               </p>
             </div>
-            <div className="rounded-xl bg-violet-50 border border-violet-100 p-4">
-              <div className="flex items-center gap-2 text-violet-700">
+            <div className="rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-800/50 p-4">
+              <div className="flex items-center gap-2 text-violet-700 dark:text-violet-400">
                 <ArrowUpRight className="w-4 h-4" />
                 <span className="text-sm font-medium">Provisão faturamento</span>
               </div>
-              <p className="mt-2 text-xl font-bold text-violet-800 tabular-nums">
+              <p className="mt-2 text-xl font-bold text-violet-800 dark:text-violet-300 tabular-nums">
                 {formatCurrency(financeiro.provisaoFaturamento)}
               </p>
             </div>
@@ -339,12 +340,12 @@ export default function Dashboard() {
                     .map((r) => (
                       <div
                         key={r.responsavelId}
-                        className="flex items-center justify-between rounded-lg bg-rose-50/50 px-4 py-3 border border-rose-100"
+                        className="flex items-center justify-between rounded-lg bg-rose-50/50 dark:bg-rose-950/20 px-4 py-3 border border-rose-100 dark:border-rose-800/40"
                       >
                         <span className="font-medium text-foreground">{r.responsavelNome}</span>
                         <div className="flex items-center gap-3">
-                          <span className="text-sm text-rose-600">{r.qtd} título(s)</span>
-                          <span className="font-bold text-rose-700 tabular-nums">
+                          <span className="text-sm text-rose-600 dark:text-rose-400">{r.qtd} título(s)</span>
+                          <span className="font-bold text-rose-700 dark:text-rose-300 tabular-nums">
                             {formatCurrency(r.valor)}
                           </span>
                         </div>
@@ -366,12 +367,12 @@ export default function Dashboard() {
                     .map((r) => (
                       <div
                         key={r.responsavelId}
-                        className="flex items-center justify-between rounded-lg bg-blue-50/50 px-4 py-3 border border-blue-100"
+                        className="flex items-center justify-between rounded-lg bg-blue-50/50 dark:bg-blue-950/20 px-4 py-3 border border-blue-100 dark:border-blue-800/40"
                       >
                         <span className="font-medium text-foreground">{r.responsavelNome}</span>
                         <div className="flex items-center gap-3">
-                          <span className="text-sm text-blue-600">{r.qtd} título(s)</span>
-                          <span className="font-bold text-blue-700 tabular-nums">
+                          <span className="text-sm text-blue-600 dark:text-blue-400">{r.qtd} título(s)</span>
+                          <span className="font-bold text-blue-700 dark:text-blue-300 tabular-nums">
                             {formatCurrency(r.valor)}
                           </span>
                         </div>
@@ -395,7 +396,7 @@ export default function Dashboard() {
                   layout="vertical"
                   margin={{ top: 0, right: 24, left: 0, bottom: 0 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis
                     type="number"
                     tickFormatter={(v) => formatCurrency(v)}
@@ -405,11 +406,12 @@ export default function Dashboard() {
                     type="category"
                     dataKey="responsavelNome"
                     width={100}
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: 'var(--muted-foreground)' }}
                   />
                   <Tooltip
                     formatter={(v) => [formatCurrency(Number(v) || 0), 'Atrasados']}
                     labelFormatter={(label) => `Responsável: ${label}`}
+                    contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--foreground)' }}
                   />
                   <Bar dataKey="valor" name="Atrasados" radius={[0, 4, 4, 0]} fill="#f43f5e">
                     {[...financeiro.atrasadosPorResponsavel]
@@ -508,7 +510,7 @@ function ContratosPanel({
     <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-2">
-          <div className="rounded-xl p-2.5 bg-indigo-50 text-indigo-600">
+          <div className="rounded-xl p-2.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400">
             <FileText className="w-6 h-6" />
           </div>
           <div>
@@ -568,17 +570,18 @@ function ContratosPanel({
                 layout="vertical"
                 margin={{ top: 0, right: 24, left: 0, bottom: 0 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                 <XAxis type="number" tickFormatter={(v) => String(v)} fontSize={11} />
                 <YAxis
                   type="category"
                   dataKey="responsavelNome"
                   width={120}
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 12, fill: 'var(--muted-foreground)' }}
                 />
                 <Tooltip
                   formatter={(v) => [Number(v), 'Contratos']}
                   labelFormatter={(label) => `Responsável: ${label}`}
+                  contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--foreground)' }}
                 />
                 <Bar dataKey="valor" name="Contratos" radius={[0, 4, 4, 0]} maxBarSize={32}>
                   {chartPorResponsavelData.map((_, i) => (
@@ -605,15 +608,18 @@ function ContratosPanel({
                 layout="vertical"
                 margin={{ top: 0, right: 24, left: 0, bottom: 0 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                 <XAxis type="number" tickFormatter={(v) => String(v)} fontSize={11} />
                 <YAxis
                   type="category"
                   dataKey="faixa"
                   width={120}
-                  tick={{ fontSize: 11 }}
+                  tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
                 />
-                <Tooltip formatter={(v) => [Number(v), 'Contratos']} />
+                <Tooltip
+                  formatter={(v) => [Number(v), 'Contratos']}
+                  contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--foreground)' }}
+                />
                 <Bar dataKey="count" name="Contratos" radius={[0, 4, 4, 0]} maxBarSize={28}>
                   {chartPorFaixaData
                     .filter((d) => d.count > 0)
@@ -627,13 +633,13 @@ function ContratosPanel({
         </div>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-gradient-to-r from-indigo-50 to-violet-50 border border-indigo-100 px-4 py-3">
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-gradient-to-r from-indigo-50 to-violet-50 dark:from-indigo-950/40 dark:to-violet-950/40 border border-indigo-100 dark:border-indigo-800/40 px-4 py-3">
         <p className="text-sm text-foreground">
           <strong>Dica:</strong> Use &quot;Próximos 30 dias&quot; para ver quem renovar primeiro; filtre por responsável para acompanhar sua carteira.
         </p>
         <Link
           to="/clientes?view=contratos"
-          className="inline-flex items-center gap-2 text-sm font-medium text-indigo-700 hover:text-indigo-800"
+          className="inline-flex items-center gap-2 text-sm font-medium text-indigo-700 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
         >
           Ver lista de contratos
           <ArrowUpRight className="w-4 h-4" />

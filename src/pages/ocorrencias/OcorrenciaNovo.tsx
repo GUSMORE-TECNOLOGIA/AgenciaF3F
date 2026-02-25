@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Save, Loader2, AlertCircle } from 'lucide-react'
 import { useCreateOcorrencia } from '@/hooks/useOcorrencias'
@@ -259,7 +259,7 @@ export default function OcorrenciaNovo() {
                     prioridade: e.target.value as 'baixa' | 'media' | 'alta' | 'urgente',
                   }))
                 }
-                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               >
                 <option value="baixa">Baixa</option>
                 <option value="media">Média</option>
@@ -282,7 +282,7 @@ export default function OcorrenciaNovo() {
                     status: e.target.value as 'aberta' | 'em_andamento' | 'resolvida' | 'cancelada',
                   }))
                 }
-                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               >
                 <option value="aberta">Aberta</option>
                 <option value="em_andamento">Em Andamento</option>
@@ -301,7 +301,7 @@ export default function OcorrenciaNovo() {
                 type="datetime-local"
                 value={formData.reminder_at || ''}
                 onChange={(e) => setFormData((prev) => ({ ...prev, reminder_at: e.target.value }))}
-                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               />
             </div>
 

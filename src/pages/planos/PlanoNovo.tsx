@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { useCreatePlano } from '@/hooks/usePlanos'
@@ -97,7 +97,7 @@ export default function PlanoNovo() {
                 value={formData.descricao}
                 onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))}
                 rows={4}
-                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 placeholder="Descreva o plano e seus benefícios..."
               />
             </div>
@@ -129,7 +129,7 @@ export default function PlanoNovo() {
                   id="moeda"
                   value={formData.moeda}
                   onChange={(e) => setFormData((prev) => ({ ...prev, moeda: e.target.value }))}
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 >
                   <option value="BRL">BRL - Real Brasileiro</option>
                   <option value="USD">USD - Dólar Americano</option>

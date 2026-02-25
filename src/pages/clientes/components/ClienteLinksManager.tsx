@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { ClienteLink } from '@/types'
 import { useClienteLinks } from '@/hooks/useClienteLinks'
 import { ExternalLink, Plus, Edit2, Trash2, Save, X, Loader2 } from 'lucide-react'
@@ -211,7 +211,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                 list="tipos-sugeridos"
                 value={formData.tipo}
                 onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
-                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="Ex: Instagram, Facebook, Dashboard..."
               />
               <datalist id="tipos-sugeridos">
@@ -229,7 +229,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                 type="text"
                 value={formData.pessoa}
                 onChange={(e) => setFormData({ ...formData, pessoa: e.target.value })}
-                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="Ex: João Silva, Maria Santos..."
               />
             </div>
@@ -242,7 +242,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                 type="url"
                 value={formData.url}
                 onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="https://..."
               />
             </div>
@@ -256,7 +256,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                 onChange={(e) =>
                   setFormData({ ...formData, status: e.target.value as 'ativo' | 'inativo' })
                 }
-                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               >
                 <option value="ativo">Ativo</option>
                 <option value="inativo">Inativo</option>
