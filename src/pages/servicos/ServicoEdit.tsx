@@ -51,10 +51,10 @@ export default function ServicoEdit() {
         })
         setErrors(zodErrors)
       } else {
-        console.error('Erro ao atualizar serviço:', error)
+        console.error('Erro ao atualizar serviÃ§o:', error)
         await alert({
           title: 'Erro',
-          message: 'Erro ao atualizar serviço. Tente novamente.',
+          message: 'Erro ao atualizar serviÃ§o. Tente novamente.',
           variant: 'danger',
         })
       }
@@ -65,7 +65,7 @@ export default function ServicoEdit() {
     return (
       <div className="text-center py-12">
         <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-        <p className="text-muted-foreground">Carregando dados do serviço...</p>
+        <p className="text-muted-foreground">Carregando dados do serviÃ§o...</p>
       </div>
     )
   }
@@ -73,9 +73,9 @@ export default function ServicoEdit() {
   if (!servico) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">Serviço não encontrado</p>
+        <p className="text-muted-foreground mb-4">ServiÃ§o nÃ£o encontrado</p>
         <Link to="/servicos" className="text-primary hover:underline">
-          Voltar para lista de serviços
+          Voltar para lista de serviÃ§os
         </Link>
       </div>
     )
@@ -88,13 +88,13 @@ export default function ServicoEdit() {
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-5 h-5" />
-        Voltar para serviços
+        Voltar para serviÃ§os
       </Link>
 
       <div className="bg-card rounded-lg shadow-sm border border-border">
         <div className="border-b border-border px-6 py-4">
-          <h1 className="text-2xl font-bold text-foreground">Editar Serviço</h1>
-          <p className="text-sm text-muted-foreground mt-1">Atualize as informações do serviço</p>
+          <h1 className="text-2xl font-bold text-foreground">Editar ServiÃ§o</h1>
+          <p className="text-sm text-muted-foreground mt-1">Atualize as informaÃ§Ãµes do serviÃ§o</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
@@ -102,7 +102,7 @@ export default function ServicoEdit() {
             {/* Nome */}
             <div>
               <label htmlFor="nome" className="block text-sm font-medium text-foreground mb-2">
-                Nome do Serviço <span className="text-red-500">*</span>
+                Nome do ServiÃ§o <span className="text-red-500">*</span>
               </label>
               <input
                 id="nome"
@@ -117,10 +117,10 @@ export default function ServicoEdit() {
               {errors.nome && <p className="mt-1 text-sm text-red-600">{errors.nome}</p>}
             </div>
 
-            {/* Descrição */}
+            {/* DescriÃ§Ã£o */}
             <div>
               <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
-                Descrição
+                DescriÃ§Ã£o
               </label>
               <textarea
                 id="descricao"
@@ -164,12 +164,12 @@ export default function ServicoEdit() {
                   onChange={(e) => setFormData((prev) => ({ ...prev, ativo: e.target.checked }))}
                   className="w-5 h-5 text-primary border-border rounded focus:ring-primary/20"
                 />
-                <span className="text-sm font-medium text-foreground">Serviço ativo</span>
+                <span className="text-sm font-medium text-foreground">ServiÃ§o ativo</span>
               </label>
             </div>
           </div>
 
-          {/* Botões */}
+          {/* BotÃµes */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/servicos"
@@ -184,7 +184,7 @@ export default function ServicoEdit() {
             >
               {updating && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar Alterações
+              Salvar AlteraÃ§Ãµes
             </button>
           </div>
         </form>

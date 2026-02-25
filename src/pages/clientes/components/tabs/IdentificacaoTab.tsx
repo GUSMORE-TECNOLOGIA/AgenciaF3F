@@ -158,7 +158,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
               >
                 {(saving || loading) && <Loader2 className="w-4 h-4 animate-spin" />}
                 <Save className="w-4 h-4" />
-                Salvar Alterações
+                Salvar AlteraÃ§Ãµes
               </button>
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
           </div>
         </div>
 
-        {/* Informações do Sistema */}
+        {/* InformaÃ§Ãµes do Sistema */}
         <div className="bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow">
           <div className="border-b border-border px-6 py-3">
             <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
@@ -201,7 +201,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
                 Criado em{' '}
                 {cliente.created_at
                   ? new Date(cliente.created_at).toLocaleDateString('pt-BR')
-                  : 'Data não disponível'}
+                  : 'Data nÃ£o disponÃ­vel'}
               </span>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">

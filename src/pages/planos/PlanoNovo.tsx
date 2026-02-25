@@ -63,7 +63,7 @@ export default function PlanoNovo() {
       <div className="bg-card rounded-lg shadow-sm border border-border">
         <div className="border-b border-border px-6 py-4">
           <h1 className="text-2xl font-bold text-foreground">Novo Plano</h1>
-          <p className="text-sm text-muted-foreground mt-1">Cadastre um novo plano (pacote de serviços)</p>
+          <p className="text-sm text-muted-foreground mt-1">Cadastre um novo plano (pacote de serviÃ§os)</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
@@ -87,10 +87,10 @@ export default function PlanoNovo() {
               {errors.nome && <p className="mt-1 text-sm text-red-600">{errors.nome}</p>}
             </div>
 
-            {/* Descrição */}
+            {/* DescriÃ§Ã£o */}
             <div>
               <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
-                Descrição
+                DescriÃ§Ã£o
               </label>
               <textarea
                 id="descricao"
@@ -98,7 +98,7 @@ export default function PlanoNovo() {
                 onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))}
                 rows={4}
                 className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                placeholder="Descreva o plano e seus benefícios..."
+                placeholder="Descreva o plano e seus benefÃ­cios..."
               />
             </div>
 
@@ -132,17 +132,17 @@ export default function PlanoNovo() {
                   className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 >
                   <option value="BRL">BRL - Real Brasileiro</option>
-                  <option value="USD">USD - Dólar Americano</option>
+                  <option value="USD">USD - DÃ³lar Americano</option>
                   <option value="EUR">EUR - Euro</option>
                 </select>
               </div>
             </div>
 
-            {/* Recorrência (meses) | Plano ativo */}
+            {/* RecorrÃªncia (meses) | Plano ativo */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="recorrencia_meses" className="block text-sm font-medium text-foreground mb-2">
-                  Recorrência (meses) <span className="text-red-500">*</span>
+                  RecorrÃªncia (meses) <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="recorrencia_meses"
@@ -174,13 +174,13 @@ export default function PlanoNovo() {
                   <span className="text-sm font-medium text-foreground">Plano ativo</span>
                 </label>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Planos inativos não aparecerão nas opções de seleção
+                  Planos inativos nÃ£o aparecerÃ£o nas opÃ§Ãµes de seleÃ§Ã£o
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Botões */}
+          {/* BotÃµes */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/planos"

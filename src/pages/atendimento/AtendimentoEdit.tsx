@@ -100,7 +100,7 @@ export default function AtendimentoEdit() {
   if (!atendimento) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">Atendimento n„o encontrado</p>
+        <p className="text-muted-foreground mb-4">Atendimento n√£o encontrado</p>
         <Link to="/atendimento" className="text-primary hover:underline">
           Voltar para atendimento
         </Link>
@@ -124,7 +124,7 @@ export default function AtendimentoEdit() {
             <MessageSquare className="w-6 h-6 text-primary" />
             Editar Atendimento
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Atualize as informaÁıes do atendimento</p>
+          <p className="text-sm text-muted-foreground mt-1">Atualize as informa√ß√µes do atendimento</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
@@ -134,18 +134,18 @@ export default function AtendimentoEdit() {
               <label className="block text-sm font-medium text-foreground mb-2">Cliente</label>
               <input
                 type="text"
-                value="Cliente (n„o edit·vel)"
+                value="Cliente (n√£o edit?vel)"
                 disabled
                 className="w-full px-4 py-2 border border-border rounded-lg bg-muted text-muted-foreground"
               />
             </div>
 
-            {/* Usu·rio (readonly) */}
+            {/* Usu√°rio (readonly) */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">Atendente</label>
               <input
                 type="text"
-                value={usuarios.find((u) => u.id === atendimento.usuario_id)?.name || 'Usu·rio n„o encontrado'}
+                value={usuarios.find((u) => u.id === atendimento.usuario_id)?.name || 'Usu√°rio n√£o encontrado'}
                 disabled
                 className="w-full px-4 py-2 border border-border rounded-lg bg-muted text-muted-foreground"
               />
@@ -196,10 +196,10 @@ export default function AtendimentoEdit() {
               {errors.assunto && <p className="mt-1 text-sm text-red-600">{errors.assunto}</p>}
             </div>
 
-            {/* DescriÁ„o */}
+            {/* Descri√ß√£o */}
             <div>
               <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
-                DescriÁ„o <span className="text-red-500">*</span>
+                Descri√ß√£o <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="descricao"
@@ -237,10 +237,10 @@ export default function AtendimentoEdit() {
               {errors.data_atendimento && <p className="mt-1 text-sm text-red-600">{errors.data_atendimento}</p>}
             </div>
 
-            {/* DuraÁ„o */}
+            {/* Dura√ß√£o */}
             <div>
               <label htmlFor="duracao_minutos" className="block text-sm font-medium text-foreground mb-2">
-                DuraÁ„o (minutos)
+                Dura√ß√£o (minutos)
               </label>
               <input
                 id="duracao_minutos"
@@ -260,7 +260,7 @@ export default function AtendimentoEdit() {
             </div>
           </div>
 
-          {/* Botıes */}
+          {/* Bot√µes */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/atendimento"
@@ -275,7 +275,7 @@ export default function AtendimentoEdit() {
             >
               {updating && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar AlteraÁıes
+              Salvar Altera√ß√µes
             </button>
           </div>
         </form>

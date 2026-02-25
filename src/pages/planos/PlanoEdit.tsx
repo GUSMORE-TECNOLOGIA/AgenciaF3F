@@ -78,7 +78,7 @@ export default function PlanoEdit() {
   if (!plano) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">Plano não encontrado</p>
+        <p className="text-muted-foreground mb-4">Plano nÃ£o encontrado</p>
         <Link to="/planos" className="text-primary hover:underline">
           Voltar para lista de planos
         </Link>
@@ -99,7 +99,7 @@ export default function PlanoEdit() {
       <div className="bg-card rounded-lg shadow-sm border border-border">
         <div className="border-b border-border px-6 py-4">
           <h1 className="text-2xl font-bold text-foreground">Editar Plano</h1>
-          <p className="text-sm text-muted-foreground mt-1">Atualize as informações do plano</p>
+          <p className="text-sm text-muted-foreground mt-1">Atualize as informaÃ§Ãµes do plano</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
@@ -122,10 +122,10 @@ export default function PlanoEdit() {
               {errors.nome && <p className="mt-1 text-sm text-red-600">{errors.nome}</p>}
             </div>
 
-            {/* Descrição */}
+            {/* DescriÃ§Ã£o */}
             <div>
               <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
-                Descrição
+                DescriÃ§Ã£o
               </label>
               <textarea
                 id="descricao"
@@ -166,17 +166,17 @@ export default function PlanoEdit() {
                   className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 >
                   <option value="BRL">BRL - Real Brasileiro</option>
-                  <option value="USD">USD - Dólar Americano</option>
+                  <option value="USD">USD - DÃ³lar Americano</option>
                   <option value="EUR">EUR - Euro</option>
                 </select>
               </div>
             </div>
 
-            {/* Recorrência (meses) | Plano ativo */}
+            {/* RecorrÃªncia (meses) | Plano ativo */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="recorrencia_meses" className="block text-sm font-medium text-foreground mb-2">
-                  Recorrência (meses)
+                  RecorrÃªncia (meses)
                 </label>
                 <input
                   id="recorrencia_meses"
@@ -211,7 +211,7 @@ export default function PlanoEdit() {
             </div>
           </div>
 
-          {/* Botões */}
+          {/* BotÃµes */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/planos"
@@ -226,7 +226,7 @@ export default function PlanoEdit() {
             >
               {updating && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar Alterações
+              Salvar AlteraÃ§Ãµes
             </button>
           </div>
         </form>

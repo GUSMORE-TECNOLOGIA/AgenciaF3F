@@ -68,7 +68,7 @@ export default function OcorrenciaEdit() {
     setErrors({})
 
     if (isCancelamento && !(formData.notas ?? '').trim()) {
-      setErrors({ notas: 'Motivo/Causa é obrigatório para tipo Cancelamento.' })
+      setErrors({ notas: 'Motivo/Causa Ã© obrigatÃ³rio para tipo Cancelamento.' })
       return
     }
 
@@ -87,10 +87,10 @@ export default function OcorrenciaEdit() {
         })
         setErrors(zodErrors)
       } else {
-        console.error('Erro ao atualizar ocorrência:', error)
+        console.error('Erro ao atualizar ocorrÃªncia:', error)
         await alert({
           title: 'Erro',
-          message: 'Erro ao atualizar ocorrência. Tente novamente.',
+          message: 'Erro ao atualizar ocorrÃªncia. Tente novamente.',
           variant: 'danger',
         })
       }
@@ -101,7 +101,7 @@ export default function OcorrenciaEdit() {
     return (
       <div className="text-center py-12">
         <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-        <p className="text-muted-foreground">Carregando dados da ocorrência...</p>
+        <p className="text-muted-foreground">Carregando dados da ocorrÃªncia...</p>
       </div>
     )
   }
@@ -109,9 +109,9 @@ export default function OcorrenciaEdit() {
   if (!ocorrencia) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">Ocorrência não encontrada</p>
+        <p className="text-muted-foreground mb-4">OcorrÃªncia nÃ£o encontrada</p>
         <Link to="/ocorrencias" className="text-primary hover:underline">
-          Voltar para ocorrências
+          Voltar para ocorrÃªncias
         </Link>
       </div>
     )
@@ -124,16 +124,16 @@ export default function OcorrenciaEdit() {
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-5 h-5" />
-        Voltar para ocorrências
+        Voltar para ocorrÃªncias
       </Link>
 
       <div className="bg-card rounded-lg shadow-sm border border-border">
         <div className="border-b border-border px-6 py-4">
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <AlertCircle className="w-6 h-6 text-primary" />
-            Editar Ocorrência
+            Editar OcorrÃªncia
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Atualize as informações da ocorrência</p>
+          <p className="text-sm text-muted-foreground mt-1">Atualize as informaÃ§Ãµes da ocorrÃªncia</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
@@ -193,7 +193,7 @@ export default function OcorrenciaEdit() {
             {/* Data */}
             <div>
               <label htmlFor="ocorreu_em" className="block text-sm font-medium text-foreground mb-2">
-                Data da Ocorrência <span className="text-red-500">*</span>
+                Data da OcorrÃªncia <span className="text-red-500">*</span>
               </label>
               <input
                 id="ocorreu_em"
@@ -212,7 +212,7 @@ export default function OcorrenciaEdit() {
             {/* Notas */}
             <div>
               <label htmlFor="notas" className="block text-sm font-medium text-foreground mb-2">
-                {isCancelamento ? 'Motivo/Causa (obrigatório)' : 'Notas'} <span className="text-red-500">*</span>
+                {isCancelamento ? 'Motivo/Causa (obrigatÃ³rio)' : 'Notas'} <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="notas"
@@ -227,10 +227,10 @@ export default function OcorrenciaEdit() {
               {errors.notas && <p className="mt-1 text-sm text-red-600">{errors.notas}</p>}
             </div>
 
-            {/* Responsável */}
+            {/* ResponsÃ¡vel */}
             <div>
               <label htmlFor="responsavel_id" className="block text-sm font-medium text-foreground mb-2">
-                Responsável <span className="text-red-500">*</span>
+                ResponsÃ¡vel <span className="text-red-500">*</span>
               </label>
               <select
                 id="responsavel_id"
@@ -241,7 +241,7 @@ export default function OcorrenciaEdit() {
                 }`}
                 required
               >
-                <option value="">Selecione um responsável...</option>
+                <option value="">Selecione um responsÃ¡vel...</option>
                 {usuarios.map((usuario) => (
                   <option key={usuario.id} value={usuario.id}>
                     {usuario.name} ({usuario.email})
@@ -268,7 +268,7 @@ export default function OcorrenciaEdit() {
                 className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               >
                 <option value="baixa">Baixa</option>
-                <option value="media">Média</option>
+                <option value="media">MÃ©dia</option>
                 <option value="alta">Alta</option>
                 <option value="urgente">Urgente</option>
               </select>
@@ -335,7 +335,7 @@ export default function OcorrenciaEdit() {
               </select>
             </div>
 
-            {/* Sensível */}
+            {/* SensÃ­vel */}
             <div>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
@@ -344,12 +344,12 @@ export default function OcorrenciaEdit() {
                   onChange={(e) => setFormData((prev) => ({ ...prev, is_sensitive: e.target.checked }))}
                   className="w-5 h-5 text-primary border-border rounded focus:ring-primary/20"
                 />
-                <span className="text-sm font-medium text-foreground">Ocorrência sensível</span>
+                <span className="text-sm font-medium text-foreground">OcorrÃªncia sensÃ­vel</span>
               </label>
             </div>
           </div>
 
-          {/* Botões */}
+          {/* BotÃµes */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/ocorrencias"
@@ -364,7 +364,7 @@ export default function OcorrenciaEdit() {
             >
               {updating && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar Alterações
+              Salvar AlteraÃ§Ãµes
             </button>
           </div>
         </form>

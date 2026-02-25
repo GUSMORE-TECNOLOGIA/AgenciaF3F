@@ -22,7 +22,7 @@ export default function ResetPassword() {
     }
 
     if (password !== confirmPassword) {
-      setError('As senhas n„o conferem.')
+      setError('As senhas n√£o conferem.')
       return
     }
 
@@ -65,7 +65,7 @@ export default function ResetPassword() {
           </h1>
           <p className="text-muted-foreground">
             {mustResetPassword
-              ? 'Primeiro acesso detectado. Por seguranÁa, defina uma nova senha.'
+              ? 'Primeiro acesso detectado. Por seguran√ßa, defina uma nova senha.'
               : 'Defina uma nova senha para sua conta.'}
           </p>
         </div>
@@ -88,7 +88,7 @@ export default function ResetPassword() {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              placeholder="ïïïïïïïï"
+              placeholder="????????"
             />
           </div>
 
@@ -103,7 +103,7 @@ export default function ResetPassword() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              placeholder="ïïïïïïïï"
+              placeholder="????????"
             />
           </div>
 

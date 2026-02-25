@@ -125,23 +125,23 @@ export default function PerfilPermissoesForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1">DescriÁ„o (opcional)</label>
+          <label className="block text-sm font-medium text-foreground mb-1">Descri√ß√£o (opcional)</label>
           <input
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
             className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-            placeholder="Breve descriÁ„o do perfil"
+            placeholder="Breve descri√ß√£o do perfil"
           />
         </div>
       </div>
 
       <div className="mb-6">
-        <h4 className="text-sm font-medium text-foreground mb-2">Permissıes por mÛdulo</h4>
+        <h4 className="text-sm font-medium text-foreground mb-2">Permiss√µes por m√≥dulo</h4>
         <div className="border border-border rounded-lg overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-muted border-b border-border">
-                <th className="text-left py-3 px-4 font-medium text-foreground">MÛdulo</th>
+                <th className="text-left py-3 px-4 font-medium text-foreground">M√≥dulo</th>
                 <th className="text-center py-3 px-4 font-medium text-foreground">Visualizar</th>
                 <th className="text-center py-3 px-4 font-medium text-foreground">Editar</th>
                 <th className="text-center py-3 px-4 font-medium text-foreground">Excluir</th>

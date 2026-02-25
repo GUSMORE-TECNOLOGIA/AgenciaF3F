@@ -9,7 +9,7 @@ import { useModal } from '@/contexts/ModalContext'
 export default function PlanoDetail() {
   const { id } = useParams<{ id: string }>()
   const { plano, loading, refetch } = usePlano(id || null)
-  const { servicos: servicosDisponiveis } = useServicos(true) // Apenas serviÁos ativos
+  const { servicos: servicosDisponiveis } = useServicos(true) // Apenas servi√ßos ativos
   const { add: addServico, loading: adding } = useAddServicoToPlano()
   const { remove: removeServico, loading: removing } = useRemoveServicoFromPlano()
   const { confirm, alert } = useModal()
@@ -19,11 +19,11 @@ export default function PlanoDetail() {
   const handleAddServico = async () => {
     if (!selectedServicoId || !plano) return
 
-    // Verificar se o serviÁo j· est· no plano
+    // Verificar se o servi√ßo j√° est√° no plano
     if (plano.servicos?.some((s) => s.id === selectedServicoId)) {
       await alert({
-        title: 'AtenÁ„o',
-        message: 'Este serviÁo j· est· vinculado ao plano',
+        title: 'Aten√ß√£o',
+        message: 'Este servi√ßo j√° est√° vinculado ao plano',
         variant: 'warning',
       })
       return
@@ -38,10 +38,10 @@ export default function PlanoDetail() {
       await refetch()
       setSelectedServicoId('')
     } catch (error) {
-      console.error('Erro ao adicionar serviÁo:', error)
+      console.error('Erro ao adicionar servi√ßo:', error)
       await alert({
         title: 'Erro',
-        message: 'Erro ao adicionar serviÁo. Tente novamente.',
+        message: 'Erro ao adicionar servi√ßo. Tente novamente.',
         variant: 'danger',
       })
     }
@@ -51,8 +51,8 @@ export default function PlanoDetail() {
     if (!plano) return
 
     const ok = await confirm({
-      title: 'Remover serviÁo',
-      message: 'Deseja remover este serviÁo do plano?',
+      title: 'Remover servi√ßo',
+      message: 'Deseja remover este servi√ßo do plano?',
       confirmLabel: 'Remover',
       variant: 'danger',
     })
@@ -62,10 +62,10 @@ export default function PlanoDetail() {
       await removeServico(plano.id, servicoId)
       await refetch()
     } catch (error) {
-      console.error('Erro ao remover serviÁo:', error)
+      console.error('Erro ao remover servi√ßo:', error)
       await alert({
         title: 'Erro',
-        message: 'Erro ao remover serviÁo. Tente novamente.',
+        message: 'Erro ao remover servi√ßo. Tente novamente.',
         variant: 'danger',
       })
     }
@@ -78,7 +78,7 @@ export default function PlanoDetail() {
     }).format(value)
   }
 
-  // ServiÁos disponÌveis que ainda n„o est„o no plano
+  // Servi√ßos dispon√≠veis que ainda n√£o est?o no plano
   const servicosNaoVinculados = servicosDisponiveis.filter(
     (s) => !plano?.servicos?.some((ps) => ps.id === s.id)
   )
@@ -95,7 +95,7 @@ export default function PlanoDetail() {
   if (!plano) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">Plano n„o encontrado</p>
+        <p className="text-muted-foreground mb-4">Plano n√£o encontrado</p>
         <Link to="/planos" className="text-primary hover:underline">
           Voltar para lista de planos
         </Link>
@@ -137,7 +137,7 @@ export default function PlanoDetail() {
                 <div>
                   <div className="text-2xl font-bold text-foreground">{plano.servicos.length}</div>
                   <div className="text-sm text-muted-foreground">
-                    {plano.servicos.length === 1 ? 'serviÁo' : 'serviÁos'} vinculado
+                    {plano.servicos.length === 1 ? 'servi√ßo' : 'servi√ßos'} vinculado
                     {plano.servicos.length === 1 ? '' : 's'}
                   </div>
                 </div>
@@ -154,21 +154,21 @@ export default function PlanoDetail() {
         </div>
       </div>
 
-      {/* ServiÁos Vinculados */}
+      {/* Servi√ßos Vinculados */}
       <div className="bg-card rounded-lg shadow-sm border border-border mb-6">
         <div className="border-b border-border px-6 py-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Package className="w-5 h-5 text-primary" />
-            ServiÁos do Plano
+            Servi√ßos do Plano
           </h2>
         </div>
 
         <div className="p-6">
-          {/* Adicionar ServiÁo */}
+          {/* Adicionar Servi√ßo */}
           {servicosNaoVinculados.length > 0 && (
             <div className="mb-6 p-4 bg-muted rounded-lg border border-border">
               <label htmlFor="servico-select" className="block text-sm font-medium text-foreground mb-2">
-                Adicionar ServiÁo ao Plano
+                Adicionar Servi√ßo ao Plano
               </label>
               <div className="flex gap-2">
                 <select
@@ -177,7 +177,7 @@ export default function PlanoDetail() {
                   onChange={(e) => setSelectedServicoId(e.target.value)}
                   className="flex-1 px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 >
-                  <option value="">Selecione um serviÁo...</option>
+                  <option value="">Selecione um servi√ßo...</option>
                   {servicosNaoVinculados.map((servico) => (
                     <option key={servico.id} value={servico.id}>
                       {servico.nome}
@@ -201,13 +201,13 @@ export default function PlanoDetail() {
             </div>
           )}
 
-          {/* Lista de ServiÁos */}
+          {/* Lista de Servi√ßos */}
           {!plano.servicos || plano.servicos.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="mb-4">Nenhum serviÁo vinculado a este plano</p>
+              <p className="mb-4">Nenhum servi√ßo vinculado a este plano</p>
               {servicosNaoVinculados.length > 0 && (
-                <p className="text-sm">Use o campo acima para adicionar serviÁos</p>
+                <p className="text-sm">Use o campo acima para adicionar servi√ßos</p>
               )}
             </div>
           ) : (
@@ -237,7 +237,7 @@ export default function PlanoDetail() {
                     onClick={() => handleRemoveServico(servico.id)}
                     disabled={removing}
                     className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Remover serviÁo"
+                    title="Remover servi√ßo"
                   >
                     {removing ? (
                       <Loader2 className="w-4 h-4 animate-spin" />

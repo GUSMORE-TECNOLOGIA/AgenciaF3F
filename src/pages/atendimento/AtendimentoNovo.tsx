@@ -123,7 +123,7 @@ export default function AtendimentoNovo() {
               {errors.cliente_id && <p className="mt-1 text-sm text-red-600">{errors.cliente_id}</p>}
             </div>
 
-            {/* Usu·rio */}
+            {/* Usu√°rio */}
             <div>
               <label htmlFor="usuario_id" className="block text-sm font-medium text-foreground mb-2">
                 Atendente <span className="text-red-500">*</span>
@@ -187,16 +187,16 @@ export default function AtendimentoNovo() {
                 className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.assunto ? 'border-red-500' : 'border-border'
                 }`}
-                placeholder="Ex: D˙vida sobre serviÁo, SolicitaÁ„o de alteraÁ„o..."
+                placeholder="Ex: D√∫vida sobre servi√ßo, Solicita√ß√£o de altera√ß√£o..."
                 required
               />
               {errors.assunto && <p className="mt-1 text-sm text-red-600">{errors.assunto}</p>}
             </div>
 
-            {/* DescriÁ„o */}
+            {/* Descri√ß√£o */}
             <div>
               <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
-                DescriÁ„o <span className="text-red-500">*</span>
+                Descri√ß√£o <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="descricao"
@@ -235,10 +235,10 @@ export default function AtendimentoNovo() {
               {errors.data_atendimento && <p className="mt-1 text-sm text-red-600">{errors.data_atendimento}</p>}
             </div>
 
-            {/* DuraÁ„o */}
+            {/* Dura√ß√£o */}
             <div>
               <label htmlFor="duracao_minutos" className="block text-sm font-medium text-foreground mb-2">
-                DuraÁ„o (minutos)
+                Dura√ß√£o (minutos)
               </label>
               <input
                 id="duracao_minutos"
@@ -255,11 +255,11 @@ export default function AtendimentoNovo() {
                 className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 placeholder="Ex: 30"
               />
-              <p className="mt-1 text-xs text-muted-foreground">Tempo de duraÁ„o do atendimento em minutos</p>
+              <p className="mt-1 text-xs text-muted-foreground">Tempo de dura√ß√£o do atendimento em minutos</p>
             </div>
           </div>
 
-          {/* Botıes */}
+          {/* Bot√µes */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/atendimento"

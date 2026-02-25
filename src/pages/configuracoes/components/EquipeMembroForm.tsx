@@ -95,7 +95,7 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
           />
           {!initialData && (
             <p className="mt-1 text-xs text-muted-foreground">
-              Ser· criado usu·rio de acesso com senha padr„o 123456. O membro precisar· alterar no primeiro login.
+              Ser√° criado usu√°rio de acesso com senha padr√£o 123456. O membro precisar√° alterar no primeiro login.
             </p>
           )}
         </div>
@@ -155,7 +155,7 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
           disabled={loading}
           className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
         >
-          {loading ? 'Salvando...' : initialData ? 'Salvar alteraÁıes' : 'Criar membro'}
+          {loading ? 'Salvando...' : initialData ? 'Salvar altera√ß√µes' : 'Criar membro'}
         </button>
         {onCancel && (
           <button

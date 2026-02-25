@@ -11,7 +11,7 @@ export default function TransacaoNovo() {
   const navigate = useNavigate()
   const { create, loading } = useCreateTransacao()
   const { clientes } = useClientes({ autoFetch: true, limit: 1000 })
-  const { servicos } = useServicos(true) // Apenas serviÁos ativos
+  const { servicos } = useServicos(true) // Apenas servi√ßos ativos
   const { alert } = useModal()
 
   const [formData, setFormData] = useState<TransacaoCreateInput>({
@@ -58,10 +58,10 @@ export default function TransacaoNovo() {
         })
         setErrors(zodErrors)
       } else {
-        console.error('Erro ao criar transaÁ„o:', error)
+        console.error('Erro ao criar transa√ß√£o:', error)
         await alert({
           title: 'Erro',
-          message: 'Erro ao criar transaÁ„o. Tente novamente.',
+          message: 'Erro ao criar transa√ß√£o. Tente novamente.',
           variant: 'danger',
         })
       }
@@ -91,9 +91,9 @@ export default function TransacaoNovo() {
         <div className="border-b border-border px-6 py-4">
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <DollarSign className="w-6 h-6 text-primary" />
-            Nova TransaÁ„o
+            Nova Transa√ß√£o
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Cadastre uma nova transaÁ„o financeira</p>
+          <p className="text-sm text-muted-foreground mt-1">Cadastre uma nova transa√ß√£o financeira</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
@@ -149,10 +149,10 @@ export default function TransacaoNovo() {
               {errors.categoria && <p className="mt-1 text-sm text-red-600">{errors.categoria}</p>}
             </div>
 
-            {/* ServiÁo (opcional) */}
+            {/* Servi√ßo (opcional) */}
             <div>
               <label htmlFor="servico_id" className="block text-sm font-medium text-foreground mb-2">
-                ServiÁo (opcional)
+                Servi√ßo (opcional)
               </label>
               <select
                 id="servico_id"
@@ -160,7 +160,7 @@ export default function TransacaoNovo() {
                 onChange={(e) => setFormData((prev) => ({ ...prev, servico_id: e.target.value }))}
                 className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               >
-                <option value="">Nenhum serviÁo</option>
+                <option value="">Nenhum servi√ßo</option>
                 {servicos.map((servico) => (
                   <option key={servico.id} value={servico.id}>
                     {servico.nome}
@@ -190,10 +190,10 @@ export default function TransacaoNovo() {
               {errors.valor && <p className="mt-1 text-sm text-red-600">{errors.valor}</p>}
             </div>
 
-            {/* DescriÁ„o */}
+            {/* Descri√ß√£o */}
             <div>
               <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
-                DescriÁ„o <span className="text-red-500">*</span>
+                Descri√ß√£o <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="descricao"
@@ -203,7 +203,7 @@ export default function TransacaoNovo() {
                 className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.descricao ? 'border-red-500' : 'border-border'
                 }`}
-                placeholder="Descreva a transaÁ„o..."
+                placeholder="Descreva a transa√ß√£o..."
                 required
               />
               {errors.descricao && <p className="mt-1 text-sm text-red-600">{errors.descricao}</p>}
@@ -251,11 +251,11 @@ export default function TransacaoNovo() {
               </select>
             </div>
 
-            {/* MÈtodo de Pagamento */}
+            {/* M√©todo de Pagamento */}
             {formData.status === 'pago' && (
               <div>
                 <label htmlFor="metodo_pagamento" className="block text-sm font-medium text-foreground mb-2">
-                  MÈtodo de Pagamento
+                  M√©todo de Pagamento
                 </label>
                 <select
                   id="metodo_pagamento"
@@ -265,10 +265,10 @@ export default function TransacaoNovo() {
                 >
                   <option value="">Selecione...</option>
                   <option value="PIX">PIX</option>
-                  <option value="Cart„o de CrÈdito">Cart„o de CrÈdito</option>
-                  <option value="Cart„o de DÈbito">Cart„o de DÈbito</option>
+                  <option value="Cart√£o de Cr?dito">Cart√£o de Cr?dito</option>
+                  <option value="Cart√£o de D√©bito">Cart√£o de D√©bito</option>
                   <option value="Boleto">Boleto</option>
-                  <option value="TransferÍncia">TransferÍncia Banc·ria</option>
+                  <option value="Transfer√™ncia">Transfer√™ncia Banc√°ria</option>
                   <option value="Dinheiro">Dinheiro</option>
                 </select>
               </div>
@@ -291,7 +291,7 @@ export default function TransacaoNovo() {
             )}
           </div>
 
-          {/* Botıes */}
+          {/* Bot√µes */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/financeiro"
@@ -306,7 +306,7 @@ export default function TransacaoNovo() {
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar TransaÁ„o
+              Salvar Transa√ß√£o
             </button>
           </div>
         </form>

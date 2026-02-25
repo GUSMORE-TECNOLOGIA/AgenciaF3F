@@ -112,7 +112,7 @@ export default function Clientes() {
     })
   }, [principais])
 
-  // Filtro client-side: busca + responsável; só quando NÃO há filtros inteligentes (esses são aplicados no backend)
+  // Filtro client-side: busca + responsÃ¡vel; sÃ³ quando NÃƒO hÃ¡ filtros inteligentes (esses s?o aplicados no backend)
   const clientes = useMemo(() => {
     if (smartConditions.length > 0) return clientesRaw
     let list = clientesRaw
@@ -181,7 +181,7 @@ export default function Clientes() {
     }
   }
 
-  // Filtro e ordenação da lista de contratos
+  // Filtro e ordenaÃ§Ã£o da lista de contratos
   const contratosFiltrados = useMemo(() => {
     let list = contratosRaw
     if (contratosSearch.trim()) {
@@ -378,7 +378,7 @@ export default function Clientes() {
                       onClick={() => handleContratosSort('numero')}
                     >
                       <span className="inline-flex items-center gap-1">
-                        Nº Contrato
+                        NÂ° Contrato
                         {contratosSortBy === 'numero' &&
                           (contratosSortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
                       </span>
@@ -398,7 +398,7 @@ export default function Clientes() {
                       onClick={() => handleContratosSort('data_inicio')}
                     >
                       <span className="inline-flex items-center gap-1">
-                        Data Início
+                        Data InÃ­cio
                         {contratosSortBy === 'data_inicio' &&
                           (contratosSortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
                       </span>
@@ -434,7 +434,7 @@ export default function Clientes() {
                       </span>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Ações
+                      AÃ§Ãµes
                     </th>
                   </tr>
                 </thead>
@@ -536,9 +536,9 @@ export default function Clientes() {
               value={responsavelFilter}
               onChange={(e) => setResponsavelFilter(e.target.value)}
               className="px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              title="Filtrar por responsável"
+              title="Filtrar por responsÃ¡vel"
             >
-              <option value="">Todos os responsáveis</option>
+              <option value="">Todos os responsÃ¡veis</option>
               {responsaveisUnicos.map((r) => (
                 <option key={r.responsavel_id} value={r.responsavel_id}>
                   {r.responsavel_name || '(sem nome)'}
@@ -613,7 +613,7 @@ export default function Clientes() {
                 onClick={() => handleSort('responsavel')}
               >
                 <span className="inline-flex items-center gap-1">
-                  Responsável
+                  ResponsÃ¡vel
                   {sortBy === 'responsavel' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
                 </span>
               </th>
@@ -627,7 +627,7 @@ export default function Clientes() {
                 </span>
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Ações
+                AÃ§Ãµes
               </th>
             </tr>
           </thead>

@@ -67,10 +67,10 @@ export default function TransacaoEdit() {
         })
         setErrors(zodErrors)
       } else {
-        console.error('Erro ao atualizar transação:', error)
+        console.error('Erro ao atualizar transaÃ§Ã£o:', error)
         await alert({
           title: 'Erro',
-          message: 'Erro ao atualizar transação. Tente novamente.',
+          message: 'Erro ao atualizar transaÃ§Ã£o. Tente novamente.',
           variant: 'danger',
         })
       }
@@ -81,7 +81,7 @@ export default function TransacaoEdit() {
     return (
       <div className="text-center py-12">
         <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-        <p className="text-muted-foreground">Carregando dados da transação...</p>
+        <p className="text-muted-foreground">Carregando dados da transaÃ§Ã£o...</p>
       </div>
     )
   }
@@ -89,7 +89,7 @@ export default function TransacaoEdit() {
   if (!transacao) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">Transação não encontrada</p>
+        <p className="text-muted-foreground mb-4">TransaÃ§Ã£o nÃ£o encontrada</p>
         <Link to="/financeiro" className="text-primary hover:underline">
           Voltar para financeiro
         </Link>
@@ -111,9 +111,9 @@ export default function TransacaoEdit() {
         <div className="border-b border-border px-6 py-4">
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <DollarSign className="w-6 h-6 text-primary" />
-            Editar Transação
+            Editar TransaÃ§Ã£o
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Atualize as informações da transação</p>
+          <p className="text-sm text-muted-foreground mt-1">Atualize as informaÃ§Ãµes da transaÃ§Ã£o</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
@@ -123,7 +123,7 @@ export default function TransacaoEdit() {
               <label className="block text-sm font-medium text-foreground mb-2">Cliente</label>
               <input
                 type="text"
-                value={clientes.find((c) => c.id === transacao.cliente_id)?.nome || 'Cliente não encontrado'}
+                value={clientes.find((c) => c.id === transacao.cliente_id)?.nome || 'Cliente nÃ£o encontrado'}
                 disabled
                 className="w-full px-4 py-2 border border-border rounded-lg bg-muted text-muted-foreground"
               />
@@ -160,10 +160,10 @@ export default function TransacaoEdit() {
               {errors.valor && <p className="mt-1 text-sm text-red-600">{errors.valor}</p>}
             </div>
 
-            {/* Descrição */}
+            {/* DescriÃ§Ã£o */}
             <div>
               <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
-                Descrição <span className="text-red-500">*</span>
+                DescriÃ§Ã£o <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="descricao"
@@ -220,11 +220,11 @@ export default function TransacaoEdit() {
               </select>
             </div>
 
-            {/* Método de Pagamento */}
+            {/* MÃ©todo de Pagamento */}
             {formData.status === 'pago' && (
               <div>
                 <label htmlFor="metodo_pagamento" className="block text-sm font-medium text-foreground mb-2">
-                  Método de Pagamento
+                  MÃ©todo de Pagamento
                 </label>
                 <select
                   id="metodo_pagamento"
@@ -234,10 +234,10 @@ export default function TransacaoEdit() {
                 >
                   <option value="">Selecione...</option>
                   <option value="PIX">PIX</option>
-                  <option value="Cartão de Crédito">Cartão de Crédito</option>
-                  <option value="Cartão de Débito">Cartão de Débito</option>
+                  <option value="CartÃ£o de Cr?dito">CartÃ£o de Cr?dito</option>
+                  <option value="CartÃ£o de DÃ©bito">CartÃ£o de DÃ©bito</option>
                   <option value="Boleto">Boleto</option>
-                  <option value="Transferência">Transferência Bancária</option>
+                  <option value="TransferÃªncia">TransferÃªncia BancÃ¡ria</option>
                   <option value="Dinheiro">Dinheiro</option>
                 </select>
               </div>
@@ -260,7 +260,7 @@ export default function TransacaoEdit() {
             )}
           </div>
 
-          {/* Botões */}
+          {/* BotÃµes */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/financeiro"
@@ -275,7 +275,7 @@ export default function TransacaoEdit() {
             >
               {updating && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar Alterações
+              Salvar AlteraÃ§Ãµes
             </button>
           </div>
         </form>

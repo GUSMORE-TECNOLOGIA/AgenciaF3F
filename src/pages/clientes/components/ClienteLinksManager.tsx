@@ -14,14 +14,14 @@ const tiposSugeridos = [
   'Google Drive',
   'Instagram',
   'Facebook',
-  'Conta de Anúncio - F3F',
-  'Conta de Anúncio - L.T',
+  'Conta de AnÃºncio - F3F',
+  'Conta de AnÃºncio - L.T',
   'Business Suite',
   'Dashboard',
   'Planilha de Dados',
   'UTMify',
   'WordPress',
-  'Página de Vendas - L.T',
+  'PÃ¡gina de Vendas - L.T',
   'Checkout',
   'Google Ads',
   'Meta Ads',
@@ -82,12 +82,12 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
   const handleSave = async () => {
     try {
       if (!formData.url.trim()) {
-        await alert({ message: 'URL é obrigatória' })
+        await alert({ message: 'URL Ã© obrigatÃ³ria' })
         return
       }
 
       if (!formData.tipo.trim()) {
-        await alert({ message: 'Tipo/Classificação é obrigatória' })
+        await alert({ message: 'Tipo/ClassificaÃ§Ã£o Ã© obrigatÃ³ria' })
         return
       }
 
@@ -95,7 +95,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
       try {
         new URL(formData.url.trim())
       } catch {
-        await alert({ message: 'URL inválida' })
+        await alert({ message: 'URL invÃ¡lida' })
         return
       }
 
@@ -170,9 +170,9 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-foreground">Links Úteis</h3>
+          <h3 className="text-lg font-semibold text-foreground">Links Ãºteis</h3>
           <p className="text-sm text-muted-foreground mt-1">
-            Gerencie os links úteis do cliente. Você pode adicionar quantos links quiser de cada tipo.
+            Gerencie os links Ãºteis do cliente. VocÃª pode adicionar quantos links quiser de cada tipo.
           </p>
         </div>
         {!isAdding && !editingId && (
@@ -186,7 +186,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
         )}
       </div>
 
-      {/* Formulário de adicionar/editar */}
+      {/* FormulÃ¡rio de adicionar/editar */}
       {(isAdding || editingId) && (
         <div className="bg-card border border-border rounded-lg p-6 space-y-4">
           <div className="flex items-center justify-between mb-4">
@@ -204,7 +204,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Tipo/Classificação <span className="text-red-500">*</span>
+                Tipo/ClassificaÃ§Ã£o <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -230,7 +230,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                 value={formData.pessoa}
                 onChange={(e) => setFormData({ ...formData, pessoa: e.target.value })}
                 className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="Ex: João Silva, Maria Santos..."
+                placeholder="Ex: JoÃ£o Silva, Maria Santos..."
               />
             </div>
 
@@ -291,7 +291,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
       {Object.keys(linksPorTipo).length === 0 && !isAdding && (
         <div className="text-center py-8 text-muted-foreground">
           <p>Nenhum link cadastrado ainda.</p>
-          <p className="text-sm mt-2">Clique em "Adicionar Link" para começar.</p>
+          <p className="text-sm mt-2">Clique em "Adicionar Link" para comeÃ§ar.</p>
         </div>
       )}
 
@@ -312,12 +312,12 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                 }`}
               >
                 {editingId === link.id ? (
-                  // Formulário de edição inline
+                  // FormulÃ¡rio de ediÃ§Ã£o inline
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-2">
-                          Tipo/Classificação
+                          Tipo/ClassificaÃ§Ã£o
                         </label>
                         <input
                           type="text"
@@ -385,7 +385,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                     </div>
                   </div>
                 ) : (
-                  // Visualização do link
+                  // VisualizaÃ§Ã£o do link
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3">

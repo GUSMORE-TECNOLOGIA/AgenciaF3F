@@ -91,7 +91,7 @@ export default function EditClienteServicoModal({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-foreground">Editar Contrato de Serviço</h2>
+          <h2 className="text-xl font-bold text-foreground">Editar Contrato de ServiÃ§o</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-muted rounded-lg transition-colors"
@@ -103,11 +103,11 @@ export default function EditClienteServicoModal({
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-6">
-            {/* Informações do Serviço */}
+            {/* InformaÃ§Ãµes do ServiÃ§o */}
             <div className="p-4 bg-muted rounded-lg border border-border">
-              <div className="text-sm font-medium text-foreground mb-2">Serviço</div>
+              <div className="text-sm font-medium text-foreground mb-2">ServiÃ§o</div>
               <div className="text-lg font-semibold text-foreground">
-                {contrato.servico?.nome || 'Serviço não encontrado'}
+                {contrato.servico?.nome || 'ServiÃ§o nÃ£o encontrado'}
               </div>
               {contrato.servico?.valor && (
                 <div className="text-sm text-muted-foreground mt-1">
@@ -153,16 +153,16 @@ export default function EditClienteServicoModal({
                 }`}
               >
                 <option value="BRL">BRL - Real Brasileiro</option>
-                <option value="USD">USD - Dólar Americano</option>
+                <option value="USD">USD - DÃ³lar Americano</option>
                 <option value="EUR">EUR - Euro</option>
               </select>
             </div>
 
-            {/* Data Início / Data Fim (apenas Super Edit) */}
+            {/* Data InÃ­cio / Data Fim (apenas Super Edit) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="data_inicio_serv" className="block text-sm font-medium text-foreground mb-2">
-                  Data de Início
+                  Data de InÃ­cio
                 </label>
                 <input
                   id="data_inicio_serv"
@@ -271,10 +271,10 @@ export default function EditClienteServicoModal({
               </select>
             </div>
 
-            {/* Observações */}
+            {/* ObservaÃ§Ãµes */}
             <div>
               <label htmlFor="observacoes" className="block text-sm font-medium text-foreground mb-2">
-                Observações
+                ObservaÃ§Ãµes
               </label>
               <textarea
                 id="observacoes"
@@ -282,12 +282,12 @@ export default function EditClienteServicoModal({
                 onChange={(e) => setFormData((prev) => ({ ...prev, observacoes: e.target.value }))}
                 rows={4}
                 className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                placeholder="Observações sobre o contrato..."
+                placeholder="ObservaÃ§Ãµes sobre o contrato..."
               />
             </div>
           </div>
 
-          {/* Botões */}
+          {/* BotÃµes */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <button
               type="button"
@@ -304,7 +304,7 @@ export default function EditClienteServicoModal({
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar Alterações
+              Salvar AlteraÃ§Ãµes
             </button>
           </div>
         </form>

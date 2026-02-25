@@ -100,8 +100,8 @@ export default function Equipe() {
   const handleSubmit = async (data: EquipeMembroInput) => {
     if (!user) {
       await alert({
-        title: 'Sess„o expirada',
-        message: 'Usu·rio n„o autenticado. FaÁa login novamente.',
+        title: 'Sess√£o expirada',
+        message: 'Usu√°rio n√£o autenticado. Fa√ßa login novamente.',
         variant: 'warning',
       })
       return
@@ -137,8 +137,8 @@ export default function Equipe() {
         const email = (data.email ?? '').trim()
         if (!email) {
           await alert({
-            title: 'Email obrigatÛrio',
-            message: 'Informe o email para criar o acesso do membro (senha padr„o 123456).',
+            title: 'Email obrigat√≥rio',
+            message: 'Informe o email para criar o acesso do membro (senha padr√£o 123456).',
             variant: 'warning',
           })
           return
@@ -182,8 +182,8 @@ export default function Equipe() {
     }
     if (!user) {
       await alert({
-        title: 'Sess„o expirada',
-        message: 'FaÁa login novamente.',
+        title: 'Sess√£o expirada',
+        message: 'Fa√ßa login novamente.',
         variant: 'warning',
       })
       return
@@ -213,19 +213,19 @@ export default function Equipe() {
       if (created) {
         await alert({
           title: 'Acesso criado',
-          message: `Usu·rio de acesso criado para ${membro.nome_completo}. Senha padr„o: 123456. Ele(a) pode alterar em "Alterar senha" ou vocÍ pode definir com "Editar senha".`,
+          message: `Usu√°rio de acesso criado para ${membro.nome_completo}. Senha padr√£o: 123456. Ele(a) pode alterar em "Alterar senha" ou voc√™ pode definir com "Editar senha".`,
           variant: 'success',
         })
       } else {
         await alert({
-          title: 'E-mail j· cadastrado',
-          message: `Este e-mail j· possuÌa acesso. Membro vinculado ao usu·rio existente. Use "Editar senha" para definir uma nova senha.`,
+          title: 'E-mail j√° cadastrado',
+          message: `Este e-mail j√° possu√≠a acesso. Membro vinculado ao usu√°rio existente. Use "Editar senha" para definir uma nova senha.`,
           variant: 'success',
         })
         setEditingPasswordMembro({ ...membro, user_id: userId })
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Erro ao criar usu·rio de acesso.'
+      const msg = err instanceof Error ? err.message : 'Erro ao criar usu√°rio de acesso.'
       await alert({ title: 'Erro', message: msg, variant: 'danger' })
     } finally {
       setCreatingAccessId(null)
@@ -237,7 +237,7 @@ export default function Equipe() {
     if (!emailToUse) {
       await alert({
         title: 'E-mail ausente',
-        message: 'Este membro n„o possui e-mail cadastrado.',
+        message: 'Este membro n√£o possui e-mail cadastrado.',
         variant: 'warning',
       })
       return
@@ -249,14 +249,14 @@ export default function Equipe() {
       if (error) throw error
       await alert({
         title: 'E-mail enviado',
-        message: `Se o e-mail estiver cadastrado, ${membro.nome_completo} receber· um link para redefinir a senha.`,
+        message: `Se o e-mail estiver cadastrado, ${membro.nome_completo} receber√© um link para redefinir a senha.`,
         variant: 'success',
       })
     } catch (err: unknown) {
-      const raw = err instanceof Error ? err.message : 'Erro ao enviar e-mail de redefiniÁ„o.'
+      const raw = err instanceof Error ? err.message : 'Erro ao enviar e-mail de redefini√ß√£o.'
       const isRateLimit = String(raw).toLowerCase().includes('rate limit')
       const msg = isRateLimit
-        ? 'Muitas solicitaÁıes de e-mail no momento. O Supabase limita a quantidade de e-mails de redefiniÁ„o por hora. Tente novamente em alguns minutos.'
+        ? 'Muitas solicita√ß√µes de e-mail no momento. O Supabase limita a quantidade de e-mails de redefini√ß√£o por hora. Tente novamente em alguns minutos.'
         : raw
       await alert({ title: 'Erro', message: msg, variant: 'danger' })
     } finally {
@@ -268,7 +268,7 @@ export default function Equipe() {
     if (!editingPasswordMembro?.user_id) return
     if (!editPasswordNew || editPasswordNew.length < 8) {
       await alert({
-        title: 'Senha inv·lida',
+        title: 'Senha inv√°lida',
         message: 'A nova senha deve ter pelo menos 8 caracteres.',
         variant: 'warning',
       })
@@ -276,7 +276,7 @@ export default function Equipe() {
     }
     if (editPasswordNew !== editPasswordConfirm) {
       await alert({
-        title: 'Senhas n„o conferem',
+        title: 'Senhas n√£o conferem',
         message: 'Digite a mesma senha nos dois campos.',
         variant: 'warning',
       })
@@ -290,7 +290,7 @@ export default function Equipe() {
       setEditPasswordConfirm('')
       await alert({
         title: 'Senha alterada',
-        message: `A senha de ${editingPasswordMembro.nome_completo} foi atualizada. Ele(a) j· pode entrar com a nova senha.`,
+        message: `A senha de .* foi atualizada. Ele(a) j√° pode entrar com a nova senha.`,
         variant: 'success',
       })
     } catch (err: unknown) {
@@ -304,7 +304,7 @@ export default function Equipe() {
   const handleDelete = async (membro: EquipeMembro) => {
     const ok = await confirm({
       title: 'Excluir membro',
-      message: 'Deseja realmente excluir este membro da equipe?\n\nEsta aÁ„o È irreversÌvel.',
+      message: 'Deseja realmente excluir este membro da equipe?\n\nEsta a√ß√£o √© irrevers√≠vel√≠vel.',
       confirmLabel: 'Excluir',
       variant: 'danger',
     })
@@ -367,7 +367,7 @@ export default function Equipe() {
     if (emUso) {
       await alert({
         title: 'Perfil em uso',
-        message: 'N„o È possÌvel excluir: existem usu·rios vinculados a este perfil. Desvincule-os antes de excluir.',
+        message: 'N√£o √© poss√≠vel excluir: existem usu√°rios vinculados a este perfil. Desvincule-os antes de excluir.',
         variant: 'warning',
       })
       return
@@ -435,7 +435,7 @@ export default function Equipe() {
             </div>
             <div className="text-left">
               <h3 className="font-semibold">Perfis</h3>
-              <p className="text-sm text-muted-foreground">Configure perfis e permissıes</p>
+              <p className="text-sm text-muted-foreground">Configure perfis e permiss√µes</p>
             </div>
           </div>
         </button>
@@ -509,7 +509,7 @@ export default function Equipe() {
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <p className="text-muted-foreground">
-              Cadastre perfis e defina o que cada um pode visualizar, editar e excluir em cada mÛdulo.
+              Cadastre perfis e defina o que cada um pode visualizar, editar e excluir em cada m√≥dulo.
             </p>
             <button
               onClick={() => {
@@ -548,15 +548,15 @@ export default function Equipe() {
                 <thead>
                   <tr className="bg-muted border-b border-border">
                     <th className="text-left py-3 px-4 font-medium text-foreground">Nome</th>
-                    <th className="text-left py-3 px-4 font-medium text-foreground">DescriÁ„o</th>
-                    <th className="text-right py-3 px-4 font-medium text-foreground">AÁıes</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Descri√ß√£o</th>
+                    <th className="text-right py-3 px-4 font-medium text-foreground">A√ß√µes</th>
                   </tr>
                 </thead>
                 <tbody>
                   {perfis.map((p) => (
                     <tr key={p.id} className="border-b border-border hover:bg-muted/50">
                       <td className="py-3 px-4 font-medium text-foreground">{p.nome}</td>
-                      <td className="py-3 px-4 text-muted-foreground">{p.descricao ?? 'ó'}</td>
+                      <td className="py-3 px-4 text-muted-foreground">{p.descricao ?? ''}</td>
                       <td className="py-3 px-4 text-right">
                         <button
                           type="button"
@@ -588,10 +588,10 @@ export default function Equipe() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-card rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
             <h3 className="text-lg font-semibold text-foreground">
-              Editar senha ñ {editingPasswordMembro.nome_completo}
+              Editar senha ‚Üí {editingPasswordMembro.nome_completo}
             </h3>
             <p className="text-sm text-muted-foreground">
-              Defina uma nova senha. O usu·rio poder· entrar com ela na prÛxima vez.
+              Defina uma nova senha. O usu√°rio poder√° entrar com ela na pr√≥xima vez.
             </p>
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">Nova senha</label>
@@ -599,7 +599,7 @@ export default function Equipe() {
                 type="password"
                 value={editPasswordNew}
                 onChange={(e) => setEditPasswordNew(e.target.value)}
-                placeholder="MÌnimo 8 caracteres"
+                placeholder="M√≠nimo 8 caracteres"
                 className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 autoComplete="new-password"
               />

@@ -34,7 +34,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
       setResponsaveis(responsaveisData)
       setResponsaveisDisponiveis(listaResponsaveis || [])
     } catch (error) {
-      console.error('Erro ao carregar respons·veis:', error)
+      console.error('Erro ao carregar respons√°veis:', error)
     } finally {
       setLoading(false)
     }
@@ -57,16 +57,16 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
       setSelectedRoles(['principal'])
       setObservacao('')
     } catch (error) {
-      console.error('Erro ao adicionar respons·vel:', error)
-      const msg = error instanceof Error ? error.message : 'Erro ao adicionar respons·vel. Tente novamente ou verifique permissıes.'
-      await alertModal({ title: 'Erro ao adicionar respons·vel', message: msg, variant: 'danger' })
+      console.error('Erro ao adicionar respons√°vel:', error)
+      const msg = error instanceof Error ? error.message : 'Erro ao adicionar respons√°vel. Tente novamente ou verifique permiss√µes.'
+      await alertModal({ title: 'Erro ao adicionar respons√°vel', message: msg, variant: 'danger' })
     }
   }
 
   const handleRemoveResponsavel = async (responsavelId: string) => {
     const ok = await confirm({
-      title: 'Remover respons·vel',
-      message: 'Deseja realmente remover este respons·vel?',
+      title: 'Remover respons√°vel',
+      message: 'Deseja realmente remover este respons√°vel?',
       confirmLabel: 'Remover',
       variant: 'danger',
     })
@@ -76,11 +76,11 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
       await softDeleteClienteResponsavel(responsavelId)
       await loadData()
       await refetch?.()
-      await alertModal({ title: 'Removido', message: 'Respons·vel desvinculado do cliente.', variant: 'success' })
+      await alertModal({ title: 'Removido', message: 'Respons√°vel desvinculado do cliente.', variant: 'success' })
     } catch (error) {
-      console.error('Erro ao remover respons·vel:', error)
-      const msg = error instanceof Error ? error.message : 'Erro ao remover respons·vel. Verifique permissıes.'
-      await alertModal({ title: 'Erro ao remover respons·vel', message: msg, variant: 'danger' })
+      console.error('Erro ao remover respons√°vel:', error)
+      const msg = error instanceof Error ? error.message : 'Erro ao remover respons√°vel. Verifique permiss√µes.'
+      await alertModal({ title: 'Erro ao remover respons√°vel', message: msg, variant: 'danger' })
     }
   }
 
@@ -127,9 +127,9 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-foreground">Respons·veis</h3>
+          <h3 className="text-lg font-semibold text-foreground">Respons√°veis</h3>
           <p className="text-sm text-muted-foreground mt-1">
-            Gerencie os respons·veis atribuÌdos a {cliente.nome}
+            Gerencie os respons√°veis atribu√≠dos a {cliente.nome}
           </p>
         </div>
         <button
@@ -137,11 +137,11 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
           className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
         >
           <Plus className="w-5 h-5" />
-          Adicionar Respons·vel
+          Adicionar Respons√°vel
         </button>
       </div>
 
-      {/* Lista de Respons·veis por Papel */}
+      {/* Lista de Respons√°veis por Papel */}
       <div className="space-y-4">
         {Object.entries(responsaveisPorPapel).map(([papel, responsaveisPapel]) => {
           if (responsaveisPapel.length === 0) return null
@@ -161,10 +161,10 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                       </div>
                       <div>
                         <p className="font-medium text-foreground">
-                          {responsavel.responsavel?.name || 'Respons·vel'}
+                          {responsavel.responsavel?.name || 'Respons√°vel'}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {responsavel.responsavel?.email || 'ó'}
+                          {responsavel.responsavel?.email || ''}
                         </p>
                         {responsavel.observacao && (
                           <p className="text-xs text-muted-foreground mt-1">{responsavel.observacao}</p>
@@ -185,7 +185,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                       <button
                         onClick={() => handleRemoveResponsavel(responsavel.id)}
                         className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
-                        title="Remover respons·vel"
+                        title="Remover respons√°vel"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -200,33 +200,33 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
         {responsaveis.length === 0 && (
           <div className="text-center py-12 bg-card rounded-lg border border-border">
             <User className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">Nenhum respons·vel atribuÌdo ainda</p>
+            <p className="text-muted-foreground">Nenhum respons√°vel atribu√≠do ainda</p>
             <p className="text-sm text-muted-foreground mt-2">
-              Use &quot;Adicionar Respons·vel&quot; para vincular respons·veis a este cliente.
+              Use &quot;Adicionar Respons√°vel&quot; para vincular respons√°veis a este cliente.
             </p>
           </div>
         )}
       </div>
 
-      {/* Modal de Adicionar Respons·vel */}
+      {/* Modal de Adicionar Respons√°vel */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-card rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
             <h3 className="text-xl font-semibold text-foreground mb-4">
-              Adicionar Respons·vel
+              Adicionar Respons√°vel
             </h3>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                  Respons·vel
+                  Respons√°vel
                 </label>
                 <select
                   value={selectedResponsavelId}
                   onChange={(e) => setSelectedResponsavelId(e.target.value)}
                   className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
-                  <option value="">Selecione um respons·vel...</option>
+                  <option value="">Selecione um respons√°vel...</option>
                   {responsaveisDisponiveis
                     .filter((r) => !responsaveis.some((vr) => vr.responsavel_id === r.id))
                     .map((r) => (
@@ -237,14 +237,14 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                 </select>
                 {responsaveisDisponiveis.length === 0 && (
                   <p className="text-amber-600 text-sm mt-1">
-                    Nenhum respons·vel disponÌvel para seleÁ„o. Verifique ConfiguraÁıes ? Equipe e usu·rios.
+                    Nenhum respons√°vel dispon√≠vel para sele√ß√£o. Verifique Configura√ß√µes ? Equipe e usu√°rios.
                   </p>
                 )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                  PapÈis
+                  Pap√©is
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {['principal', 'comercial', 'suporte', 'backup'].map((role) => (
@@ -266,14 +266,14 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                  ObservaÁ„o (opcional)
+                  Observa√ß√£o (opcional)
                 </label>
                 <textarea
                   value={observacao}
                   onChange={(e) => setObservacao(e.target.value)}
                   rows={3}
                   className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="ObservaÁıes sobre este respons·vel..."
+                  placeholder="Observa√ß√µes sobre este respons√°vel..."
                 />
               </div>
             </div>

@@ -36,7 +36,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
   const { clientePlanos, loading: loadingPlanos, refetch: refetchPlanos } = useClientePlanos(cliente.id)
   const { clienteServicos, loading: loadingServicos, refetch: refetchServicos } = useClienteServicos(cliente.id)
   const { planos } = usePlanos(true) // Apenas planos ativos
-  const { servicos } = useServicos(true) // Apenas serviÁos ativos
+  const { servicos } = useServicos(true) // Apenas servi√ßos ativos
   const { create: createClienteContrato, loading: creatingContrato } = useCreateClienteContrato()
   const { create: createClientePlano, loading: creatingPlano } = useCreateClientePlano()
   const { create: createClienteServico, loading: creatingServico } = useCreateClienteServico()
@@ -120,19 +120,19 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
     if (temVinculados) {
       const partes: string[] = []
       if (planosVinculados.length > 0) partes.push(`${planosVinculados.length} plano(s)`)
-      if (servicosVinculados.length > 0) partes.push(`${servicosVinculados.length} serviÁo(s)`)
-      if (totalLancamentos > 0) partes.push(`${totalLancamentos} lanÁamento(s) em aberto`)
+      if (servicosVinculados.length > 0) partes.push(`${servicosVinculados.length} servi√ßo(s)`)
+      if (totalLancamentos > 0) partes.push(`${totalLancamentos} lan√ßamento(s) em aberto`)
       cascata = await confirm({
         title: 'Cancelar contrato',
-        message: `O contrato "${c.nome || 'Sem nome'}" possui: ${partes.join(', ')}.\n\nDeseja cancelar tambÈm os planos, serviÁos e lanÁamentos em cascata?`,
+        message: `O contrato "${c.nome || 'Sem nome'}" possui: ${partes.join(', ')}.\n\nDeseja cancelar tamb√©m os planos, servi√ßos e lan√ßamentos em cascata?`,
         confirmLabel: 'Sim, cancelar tudo em cascata',
-        cancelLabel: 'N„o, apenas o contrato',
+        cancelLabel: 'N√£o, apenas o contrato',
         variant: 'danger',
       })
     } else {
       const ok = await confirm({
         title: 'Cancelar contrato',
-        message: `Deseja cancelar o contrato "${c.nome || 'Sem nome'}"?\n\nA data de cancelamento ser· preenchida com a data de hoje.`,
+        message: `Deseja cancelar o contrato "${c.nome || 'Sem nome'}"?\n\nA data de cancelamento ser√° preenchida com a data de hoje.`,
         confirmLabel: 'Cancelar contrato',
         variant: 'danger',
       })
@@ -171,8 +171,8 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
   const handleAddPlano = async () => {
     if (!selectedPlanoId || (valorPlano !== 0 && !valorPlano) || !dataInicioPlano) {
       await alert({
-        title: 'Campos obrigatÛrios',
-        message: 'Preencha todos os campos obrigatÛrios: plano, valor, status, contrato e data de inÌcio.',
+        title: 'Campos obrigat√≥rios',
+        message: 'Preencha todos os campos obrigat√≥rios: plano, valor, status, contrato e data de in√≠cio.',
         variant: 'warning',
       })
       return
@@ -191,7 +191,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
             // Contract already has data_fim - ask user
             shouldUpdateContractDataFim = await confirm({
               title: 'Atualizar data do contrato',
-              message: `O contrato "${contratoVinculado.nome || 'Sem nome'}" j· possui data de fim (${contratoVinculado.data_fim}).\n\nDeseja atualizar a data de fim do contrato para ${dataFimPlano}?`,
+              message: `O contrato "${contratoVinculado.nome || 'Sem nome'}" j√° possui data de fim (${contratoVinculado.data_fim}).\n\nDeseja atualizar a data de fim do contrato para ${dataFimPlano}?`,
               confirmLabel: 'Atualizar',
             })
           } else {
@@ -231,7 +231,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       } catch (transacaoError) {
         console.error('Erro ao gerar parcelas:', transacaoError)
         await alert({
-          title: 'AtenÁ„o',
+          title: 'Aten√ß√£o',
           message: 'Contrato criado, mas houve erro ao gerar parcelas. Verifique o console.',
           variant: 'warning',
         })
@@ -260,8 +260,8 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
   const handleAddServico = async () => {
     if (!selectedServicoId || (valorServico !== 0 && !valorServico) || !dataInicioServico) {
       await alert({
-        title: 'Campos obrigatÛrios',
-        message: 'Preencha todos os campos obrigatÛrios: serviÁo, valor, status, contrato e data de inÌcio.',
+        title: 'Campos obrigat√≥rios',
+        message: 'Preencha todos os campos obrigat√≥rios: servi√ßo, valor, status, contrato e data de in√≠cio.',
         variant: 'warning',
       })
       return
@@ -292,7 +292,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       } catch (transacaoError) {
         console.error('Erro ao gerar parcelas:', transacaoError)
         await alert({
-          title: 'AtenÁ„o',
+          title: 'Aten√ß√£o',
           message: 'Contrato criado, mas houve erro ao gerar parcelas. Verifique o console.',
           variant: 'warning',
         })
@@ -308,10 +308,10 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       setDataInicioServico('')
       setDataFimServico('')
     } catch (error) {
-      console.error('Erro ao adicionar serviÁo:', error)
+      console.error('Erro ao adicionar servi√ßo:', error)
       await alert({
         title: 'Erro',
-        message: 'Erro ao adicionar serviÁo. Tente novamente.',
+        message: 'Erro ao adicionar servi√ßo. Tente novamente.',
         variant: 'danger',
       })
     }
@@ -324,9 +324,9 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
     if (qtdLancamentos > 0) {
       const okCancelar = await confirm({
         title: 'Excluir plano',
-        message: `O plano "${nomePlano}" possui ${qtdLancamentos} lanÁamento(s) financeiro(s) em aberto.\n\nDeseja excluir o plano e cancelar esses lanÁamentos?`,
-        confirmLabel: 'Sim, excluir e cancelar lanÁamentos',
-        cancelLabel: 'N„o',
+        message: `O plano "${nomePlano}" possui ${qtdLancamentos} lan√ßamento(s) financeiro(s) em aberto.\n\nDeseja excluir o plano e cancelar esses lan√ßamentos?`,
+        confirmLabel: 'Sim, excluir e cancelar lan√ßamentos',
+        cancelLabel: 'N√£o',
         variant: 'danger',
       })
       if (okCancelar) {
@@ -342,7 +342,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       }
       const okApenas = await confirm({
         title: 'Excluir apenas o plano',
-        message: `Excluir apenas o plano "${nomePlano}"?\n\nOs ${qtdLancamentos} lanÁamento(s) em aberto permanecer„o no financeiro (vocÍ pode cancel·-los depois).`,
+        message: `Excluir apenas o plano "${nomePlano}"?\n\nOs ${qtdLancamentos} lan√ßamento(s) em aberto permanecer√£o no financeiro (voc√™ pode cancel√°-los depois).`,
         confirmLabel: 'Excluir apenas o plano',
         variant: 'danger',
       })
@@ -360,7 +360,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
 
     const ok = await confirm({
       title: 'Excluir contrato',
-      message: `Deseja realmente excluir este plano contratado?\n\n${nomePlano}\n\nEsta aÁ„o È irreversÌvel.`,
+      message: `Deseja realmente excluir este plano contratado?\n\n${nomePlano}\n\nEsta a√ß√£o √© irrevers√≠vel√≠vel.`,
       confirmLabel: 'Excluir',
       variant: 'danger',
     })
@@ -381,14 +381,14 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
 
   const handleDeleteServicoContrato = async (contrato: ClienteServico) => {
     const qtdLancamentos = await countTransacoesAbertoByContrato(contrato.id, 'servico')
-    const nomeServico = contrato.servico?.nome || 'ServiÁo'
+    const nomeServico = contrato.servico?.nome || 'Servi√ßo'
 
     if (qtdLancamentos > 0) {
       const okCancelar = await confirm({
-        title: 'Excluir serviÁo',
-        message: `O serviÁo "${nomeServico}" possui ${qtdLancamentos} lanÁamento(s) financeiro(s) em aberto.\n\nDeseja excluir o serviÁo e cancelar esses lanÁamentos?`,
-        confirmLabel: 'Sim, excluir e cancelar lanÁamentos',
-        cancelLabel: 'N„o',
+        title: 'Excluir servi√ßo',
+        message: `O servi√ßo "${nomeServico}" possui ${qtdLancamentos} lan√ßamento(s) financeiro(s) em aberto.\n\nDeseja excluir o servi√ßo e cancelar esses lan√ßamentos?`,
+        confirmLabel: 'Sim, excluir e cancelar lan√ßamentos',
+        cancelLabel: 'N√£o',
         variant: 'danger',
       })
       if (okCancelar) {
@@ -397,15 +397,15 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
           await refetchServicos()
           if (onSave) onSave()
         } catch (error) {
-          console.error('Erro ao excluir contrato de serviÁo:', error)
-          await alert({ title: 'Erro', message: 'Erro ao excluir contrato de serviÁo. Tente novamente.', variant: 'danger' })
+          console.error('Erro ao excluir contrato de servi√ßo:', error)
+          await alert({ title: 'Erro', message: 'Erro ao excluir contrato de servi√ßo. Tente novamente.', variant: 'danger' })
         }
         return
       }
       const okApenas = await confirm({
-        title: 'Excluir apenas o serviÁo',
-        message: `Excluir apenas o serviÁo "${nomeServico}"?\n\nOs ${qtdLancamentos} lanÁamento(s) em aberto permanecer„o no financeiro (vocÍ pode cancel·-los depois).`,
-        confirmLabel: 'Excluir apenas o serviÁo',
+        title: 'Excluir apenas o servi√ßo',
+        message: `Excluir apenas o servi√ßo "${nomeServico}"?\n\nOs ${qtdLancamentos} lan√ßamento(s) em aberto permanecer√£o no financeiro (voc√™ pode cancel√°-los depois).`,
+        confirmLabel: 'Excluir apenas o servi√ßo',
         variant: 'danger',
       })
       if (!okApenas) return
@@ -414,15 +414,15 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
         await refetchServicos()
         if (onSave) onSave()
       } catch (error) {
-        console.error('Erro ao excluir contrato de serviÁo:', error)
-        await alert({ title: 'Erro', message: 'Erro ao excluir contrato de serviÁo. Tente novamente.', variant: 'danger' })
+        console.error('Erro ao excluir contrato de servi√ßo:', error)
+        await alert({ title: 'Erro', message: 'Erro ao excluir contrato de servi√ßo. Tente novamente.', variant: 'danger' })
       }
       return
     }
 
     const ok = await confirm({
       title: 'Excluir contrato',
-      message: `Deseja realmente excluir este serviÁo contratado?\n\n${nomeServico}\n\nEsta aÁ„o È irreversÌvel.`,
+      message: `Deseja realmente excluir este servi√ßo contratado?\n\n${nomeServico}\n\nEsta a√ß√£o √© irrevers√≠vel√≠vel.`,
       confirmLabel: 'Excluir',
       variant: 'danger',
     })
@@ -432,10 +432,10 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       await refetchServicos()
       if (onSave) onSave()
     } catch (error) {
-      console.error('Erro ao excluir contrato de serviÁo:', error)
+      console.error('Erro ao excluir contrato de servi√ßo:', error)
       await alert({
         title: 'Erro',
-        message: 'Erro ao excluir contrato de serviÁo. Tente novamente.',
+        message: 'Erro ao excluir contrato de servi√ßo. Tente novamente.',
         variant: 'danger',
       })
     }
@@ -492,13 +492,13 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
     if (temVinculados) {
       const partes: string[] = []
       if (numPlanos > 0) partes.push(`${numPlanos} plano(s)`)
-      if (numServicos > 0) partes.push(`${numServicos} serviÁo(s)`)
-      if (totalLancamentos > 0) partes.push(`${totalLancamentos} lanÁamento(s) em aberto`)
+      if (numServicos > 0) partes.push(`${numServicos} servi√ßo(s)`)
+      if (totalLancamentos > 0) partes.push(`${totalLancamentos} lan√ßamento(s) em aberto`)
       const okCascata = await confirm({
         title: 'Excluir contrato',
-        message: `O contrato "${c.nome || 'Sem nome'}" possui: ${partes.join(', ')}.\n\nDeseja excluir em cascata (excluir planos, serviÁos e cancelar lanÁamentos)?`,
+        message: `O contrato "${c.nome || 'Sem nome'}" possui: ${partes.join(', ')}.\n\nDeseja excluir em cascata (excluir planos, servi√ßos e cancelar lan√ßamentos)?`,
         confirmLabel: 'Sim, excluir tudo em cascata',
-        cancelLabel: 'N„o',
+        cancelLabel: 'N√£o',
         variant: 'danger',
       })
       if (okCascata) {
@@ -516,7 +516,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       }
       const okApenas = await confirm({
         title: 'Excluir apenas o contrato',
-        message: `Excluir apenas o contrato "${c.nome || 'Sem nome'}"?\n\nOs ${numPlanos} plano(s) e ${numServicos} serviÁo(s) vinculados ficar„o sem contrato.`,
+        message: `Excluir apenas o contrato "${c.nome || 'Sem nome'}"?\n\nOs ${numPlanos} plano(s) e ${numServicos} servi√ßo(s) vinculados ficar√£o sem contrato.`,
         confirmLabel: 'Excluir apenas o contrato',
         variant: 'danger',
       })
@@ -573,7 +573,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
   const getContratoBadge = (contrato: 'assinado' | 'nao_assinado' | 'cancelado') => {
     const configs = {
       assinado: { label: 'Assinado', className: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300' },
-      nao_assinado: { label: 'N„o assinado', className: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300' },
+      nao_assinado: { label: 'N√£o assinado', className: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300' },
       cancelado: { label: 'Cancelado', className: 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300' },
     }
     const c = configs[contrato] ?? configs.nao_assinado
@@ -619,7 +619,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 <button
                   disabled
                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground cursor-not-allowed"
-                  title="Utilize o bot„o no card do contrato"
+                  title="Utilize o bot√£o no card do contrato"
                 >
                   <Ban className="w-4 h-4" />
                   Cancelar Contrato
@@ -627,7 +627,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 <button
                   disabled
                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground cursor-not-allowed"
-                  title="Utilize o bot„o no card do contrato"
+                  title="Utilize o bot√£o no card do contrato"
                 >
                   <Trash2 className="w-4 h-4" />
                   Excluir Contrato
@@ -677,7 +677,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       }}
                       className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
-                      <option value="nao_assinado">N„o assinado</option>
+                      <option value="nao_assinado">N√£o assinado</option>
                       <option value="assinado">Assinado</option>
                       <option value="cancelado">Cancelado</option>
                     </select>
@@ -685,7 +685,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Data de InÌcio (opcional)</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Data de In√≠cio (opcional)</label>
                     <input
                       type="date"
                       value={dataInicioContrato}
@@ -763,7 +763,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
           ) : clienteContratos.length === 0 ? (
-            <p className="text-muted-foreground text-center py-6">Nenhum contrato cadastrado. Adicione um contrato para agrupar planos e serviÁos.</p>
+            <p className="text-muted-foreground text-center py-6">Nenhum contrato cadastrado. Adicione um contrato para agrupar planos e servi√ßos.</p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {clienteContratos.map((c) => (
@@ -778,7 +778,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                   </div>
                   {(c.data_inicio || c.data_fim || c.data_assinatura || c.data_cancelamento) && (
                     <div className="text-sm text-muted-foreground mb-2 space-y-0.5">
-                      {c.data_inicio && <div>InÌcio: {c.data_inicio}</div>}
+                      {c.data_inicio && <div>In√≠cio: {c.data_inicio}</div>}
                       {c.data_fim && <div>Fim: {c.data_fim}</div>}
                       {c.data_assinatura && <div>Assinatura: {c.data_assinatura}</div>}
                       {c.data_cancelamento && <div>Cancelamento: {c.data_cancelamento}</div>}
@@ -864,7 +864,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 <button
                   disabled
                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground cursor-not-allowed"
-                  title="Utilize o bot„o no card do plano"
+                  title="Utilize o bot√£o no card do plano"
                 >
                   <Trash2 className="w-4 h-4" />
                   Excluir Plano
@@ -875,7 +875,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
         </div>
 
         <div className="p-6">
-          {/* Formul·rio de Adicionar Plano */}
+          {/* Formul√°rio de Adicionar Plano */}
           {showAddPlano && (
             <div className="mb-6 p-4 bg-muted rounded-lg border border-border">
               <div className="space-y-3">
@@ -948,7 +948,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
-                      Data de InÌcio *
+                      Data de In√≠cio *
                     </label>
                     <input
                       type="date"
@@ -1024,7 +1024,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
                       <div className="font-medium text-foreground">
-                        {contrato.plano?.nome || 'Plano n„o encontrado'}
+                        {contrato.plano?.nome || 'Plano n√£o encontrado'}
                       </div>
                       {getStatusBadge(contrato.status)}
                       {getContratoBadge((contrato.contrato_assinado ?? 'nao_assinado') as 'assinado' | 'nao_assinado' | 'cancelado')}
@@ -1045,7 +1045,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     <button
                       onClick={() => setHistoricoPlano(contrato)}
                       className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-                      title="Ver histÛrico"
+                      title="Ver hist√≥rico"
                     >
                       <Clock className="w-4 h-4" />
                     </button>
@@ -1072,12 +1072,12 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
         </div>
       </div>
 
-      {/* ServiÁos Avulsos Contratados */}
+      {/* Servi√ßos Avulsos Contratados */}
       <div className="bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow">
         <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-primary" />
-            ServiÁos Avulsos
+            Servi√ßos Avulsos
           </h2>
           <div className="relative" ref={openMenu === 'servicos' ? menuRef : undefined}>
             <button
@@ -1097,7 +1097,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
                 >
                   <Plus className="w-4 h-4" />
-                  Adicionar ServiÁo
+                  Adicionar Servi√ßo
                 </button>
                 <button
                   disabled
@@ -1105,7 +1105,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                   title="Em breve"
                 >
                   <Ban className="w-4 h-4" />
-                  Cancelar ServiÁo
+                  Cancelar Servi√ßo
                 </button>
                 <button
                   disabled
@@ -1113,15 +1113,15 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                   title="Em breve"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  Concluir ServiÁo
+                  Concluir Servi√ßo
                 </button>
                 <button
                   disabled
                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground cursor-not-allowed"
-                  title="Utilize o bot„o no card do serviÁo"
+                  title="Utilize o bot√£o no card do servi√ßo"
                 >
                   <Trash2 className="w-4 h-4" />
-                  Excluir ServiÁo
+                  Excluir Servi√ßo
                 </button>
               </div>
             )}
@@ -1129,14 +1129,14 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
         </div>
 
         <div className="p-6">
-          {/* Formul·rio de Adicionar ServiÁo */}
+          {/* Formul√°rio de Adicionar Servi√ßo */}
           {showAddServico && (
             <div className="mb-6 p-4 bg-muted rounded-lg border border-border">
               <div className="space-y-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
-                      Selecionar ServiÁo
+                      Selecionar Servi√ßo
                     </label>
                     <select
                       value={selectedServicoId}
@@ -1149,7 +1149,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       }}
                       className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
-                      <option value="">Selecione um serviÁo...</option>
+                      <option value="">Selecione um servi√ßo...</option>
                       {servicos.map((servico) => (
                         <option key={servico.id} value={servico.id}>
                           {servico.nome}
@@ -1203,7 +1203,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
-                      Data de InÌcio *
+                      Data de In√≠cio *
                     </label>
                     <input
                       type="date"
@@ -1257,16 +1257,16 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
             </div>
           )}
 
-          {/* Lista de ServiÁos */}
+          {/* Lista de Servi√ßos */}
           {loading ? (
             <div className="text-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">Carregando serviÁos...</p>
+              <p className="text-sm text-muted-foreground">Carregando servi√ßos...</p>
             </div>
           ) : clienteServicos.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Briefcase className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <p>Nenhum serviÁo avulso contratado</p>
+              <p>Nenhum servi√ßo avulso contratado</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -1278,7 +1278,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
                       <div className="font-medium text-foreground">
-                        {contrato.servico?.nome || 'ServiÁo n„o encontrado'}
+                        {contrato.servico?.nome || 'Servi√ßo n√£o encontrado'}
                       </div>
                       {getStatusBadge(contrato.status)}
                       {getContratoBadge((contrato.contrato_assinado ?? 'nao_assinado') as 'assinado' | 'nao_assinado' | 'cancelado')}
@@ -1287,7 +1287,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       Valor: {formatCurrency(contrato.valor)}
                       {contrato.servico?.valor && contrato.valor !== contrato.servico.valor && (
                         <span className="ml-2 text-xs text-muted-foreground">
-                          (ServiÁo: {formatCurrency(contrato.servico.valor)})
+                          (Servi√ßo: {formatCurrency(contrato.servico.valor)})
                         </span>
                       )}
                     </div>
@@ -1299,7 +1299,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     <button
                       onClick={() => setHistoricoServico(contrato)}
                       className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-                      title="Ver histÛrico"
+                      title="Ver hist√≥rico"
                     >
                       <Clock className="w-4 h-4" />
                     </button>
@@ -1326,7 +1326,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
         </div>
       </div>
 
-      {/* Modais de EdiÁ„o */}
+      {/* Modais de Edi√ß√£o */}
       {editingContrato && (
         <EditClienteContratoModal
           contrato={editingContrato}
@@ -1365,7 +1365,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
         />
       )}
 
-      {/* Modais de HistÛrico */}
+      {/* Modais de Hist√≥rico */}
       {historicoPlano && (
         <HistoricoStatusModal
           tipoContrato="plano"
@@ -1380,7 +1380,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
         <HistoricoStatusModal
           tipoContrato="servico"
           contratoId={historicoServico.id}
-          contratoNome={historicoServico.servico?.nome || 'ServiÁo'}
+          contratoNome={historicoServico.servico?.nome || 'Servi√ßo'}
           isOpen={!!historicoServico}
           onClose={() => setHistoricoServico(null)}
         />

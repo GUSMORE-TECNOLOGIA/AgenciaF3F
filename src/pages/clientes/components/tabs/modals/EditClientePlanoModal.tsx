@@ -103,11 +103,11 @@ export default function EditClientePlanoModal({
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-6">
-            {/* Informações do Plano */}
+            {/* InformaÃ§Ãµes do Plano */}
             <div className="p-4 bg-muted rounded-lg border border-border">
               <div className="text-sm font-medium text-foreground mb-2">Plano</div>
               <div className="text-lg font-semibold text-foreground">
-                {contrato.plano?.nome || 'Plano não encontrado'}
+                {contrato.plano?.nome || 'Plano nÃ£o encontrado'}
               </div>
               {contrato.plano && (
                 <div className="text-sm text-muted-foreground mt-1">
@@ -153,16 +153,16 @@ export default function EditClientePlanoModal({
                 }`}
               >
                 <option value="BRL">BRL - Real Brasileiro</option>
-                <option value="USD">USD - Dólar Americano</option>
+                <option value="USD">USD - DÃ³lar Americano</option>
                 <option value="EUR">EUR - Euro</option>
               </select>
             </div>
 
-            {/* Data Início / Data Fim (apenas Super Edit) */}
+            {/* Data InÃ­cio / Data Fim (apenas Super Edit) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="data_inicio" className="block text-sm font-medium text-foreground mb-2">
-                  Data de Início
+                  Data de InÃ­cio
                 </label>
                 <input
                   id="data_inicio"
@@ -271,10 +271,10 @@ export default function EditClientePlanoModal({
               </select>
             </div>
 
-            {/* Observações */}
+            {/* ObservaÃ§Ãµes */}
             <div>
               <label htmlFor="observacoes" className="block text-sm font-medium text-foreground mb-2">
-                Observações
+                ObservaÃ§Ãµes
               </label>
               <textarea
                 id="observacoes"
@@ -282,12 +282,12 @@ export default function EditClientePlanoModal({
                 onChange={(e) => setFormData((prev) => ({ ...prev, observacoes: e.target.value }))}
                 rows={4}
                 className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                placeholder="Observações sobre o contrato..."
+                placeholder="ObservaÃ§Ãµes sobre o contrato..."
               />
             </div>
           </div>
 
-          {/* Botões */}
+          {/* BotÃµes */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <button
               type="button"
@@ -304,7 +304,7 @@ export default function EditClientePlanoModal({
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar Alterações
+              Salvar AlteraÃ§Ãµes
             </button>
           </div>
         </form>

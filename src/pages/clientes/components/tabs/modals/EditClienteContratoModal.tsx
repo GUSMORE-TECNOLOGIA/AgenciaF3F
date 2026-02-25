@@ -152,7 +152,7 @@ export default function EditClienteContratoModal({
                   }}
                   className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 >
-                  <option value="nao_assinado">Não assinado</option>
+                  <option value="nao_assinado">NÃ£o assinado</option>
                   <option value="assinado">Assinado</option>
                   <option value="cancelado">Cancelado</option>
                 </select>
@@ -162,7 +162,7 @@ export default function EditClienteContratoModal({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="data_inicio_contrato" className="block text-sm font-medium text-foreground mb-2">
-                  Data de Início
+                  Data de InÃ­cio
                 </label>
                 <input
                   id="data_inicio_contrato"
@@ -228,7 +228,7 @@ export default function EditClienteContratoModal({
 
             <div>
               <label htmlFor="observacoes_contrato" className="block text-sm font-medium text-foreground mb-2">
-                Observações
+                ObservaÃ§Ãµes
               </label>
               <textarea
                 id="observacoes_contrato"
@@ -236,7 +236,7 @@ export default function EditClienteContratoModal({
                 onChange={(e) => setFormData((prev) => ({ ...prev, observacoes: e.target.value }))}
                 rows={4}
                 className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                placeholder="Observações sobre o contrato..."
+                placeholder="ObservaÃ§Ãµes sobre o contrato..."
               />
             </div>
           </div>
@@ -257,7 +257,7 @@ export default function EditClienteContratoModal({
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar Alterações
+              Salvar AlteraÃ§Ãµes
             </button>
           </div>
         </form>
