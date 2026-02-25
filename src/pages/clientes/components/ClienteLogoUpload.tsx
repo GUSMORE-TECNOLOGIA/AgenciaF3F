@@ -130,7 +130,7 @@ export default function ClienteLogoUpload({
   return (
     <div className="flex flex-col items-center space-y-3">
       {/* Preview da Logo */}
-      <div className="w-[120px] h-[120px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 overflow-hidden">
+      <div className="w-[120px] h-[120px] border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted overflow-hidden">
         {preview ? (
           <div className="relative w-full h-full">
             <img
@@ -145,7 +145,7 @@ export default function ClienteLogoUpload({
             )}
           </div>
         ) : (
-          <Camera className="h-8 w-8 text-gray-400" />
+          <Camera className="h-8 w-8 text-muted-foreground" />
         )}
       </div>
 
@@ -163,7 +163,7 @@ export default function ClienteLogoUpload({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="h-9 w-9 flex items-center justify-center border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-9 w-9 flex items-center justify-center border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Upload"
         >
           {uploading ? (
@@ -177,7 +177,7 @@ export default function ClienteLogoUpload({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="h-9 w-9 flex items-center justify-center border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-9 w-9 flex items-center justify-center border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Câmera"
         >
           <Camera className="h-4 w-4" />
@@ -188,7 +188,7 @@ export default function ClienteLogoUpload({
             <button
               type="button"
               onClick={handleRemove}
-              className="h-9 w-9 flex items-center justify-center border border-gray-300 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
+              className="h-9 w-9 flex items-center justify-center border border-border rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
               title="Excluir logo"
             >
               <X className="h-4 w-4" />
@@ -198,7 +198,7 @@ export default function ClienteLogoUpload({
       </div>
 
       {/* Informações de formato */}
-      <div className="text-xs text-gray-500 text-center space-y-1">
+      <div className="text-xs text-muted-foreground text-center space-y-1">
         <p>Formatos: JPG, PNG, WEBP (máx. 5MB)</p>
       </div>
     </div>

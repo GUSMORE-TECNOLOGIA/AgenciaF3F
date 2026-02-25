@@ -23,20 +23,20 @@ export default function ClienteNovo() {
     <div>
       <Link
         to="/clientes"
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-5 h-5" />
         Voltar para lista
       </Link>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-6">
         <h1 className="text-3xl font-bold text-foreground mb-2">Novo Cliente</h1>
-        <p className="text-gray-600">Preencha os dados para criar um novo cliente</p>
+        <p className="text-muted-foreground">Preencha os dados para criar um novo cliente</p>
       </div>
 
       <div className="space-y-6">
         {/* Formulário Principal */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-6">
           <h2 className="text-xl font-semibold text-foreground mb-4">Dados do Cliente</h2>
           <ClienteForm
             mode="create"

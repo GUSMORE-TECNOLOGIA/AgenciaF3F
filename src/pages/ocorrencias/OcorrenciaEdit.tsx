@@ -101,7 +101,7 @@ export default function OcorrenciaEdit() {
     return (
       <div className="text-center py-12">
         <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-        <p className="text-gray-500">Carregando dados da ocorrência...</p>
+        <p className="text-muted-foreground">Carregando dados da ocorrência...</p>
       </div>
     )
   }
@@ -109,7 +109,7 @@ export default function OcorrenciaEdit() {
   if (!ocorrencia) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 mb-4">Ocorrência não encontrada</p>
+        <p className="text-muted-foreground mb-4">Ocorrência não encontrada</p>
         <Link to="/ocorrencias" className="text-primary hover:underline">
           Voltar para ocorrências
         </Link>
@@ -121,26 +121,26 @@ export default function OcorrenciaEdit() {
     <div>
       <Link
         to="/ocorrencias"
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-5 h-5" />
         Voltar para ocorrências
       </Link>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="border-b border-gray-200 px-6 py-4">
+      <div className="bg-card rounded-lg shadow-sm border border-border">
+        <div className="border-b border-border px-6 py-4">
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <AlertCircle className="w-6 h-6 text-primary" />
             Editar Ocorrência
           </h1>
-          <p className="text-sm text-gray-600 mt-1">Atualize as informações da ocorrência</p>
+          <p className="text-sm text-muted-foreground mt-1">Atualize as informações da ocorrência</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-6">
             {/* Grupo */}
             <div>
-              <label htmlFor="grupo_id" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="grupo_id" className="block text-sm font-medium text-foreground mb-2">
                 Grupo <span className="text-red-500">*</span>
               </label>
               <select
@@ -151,7 +151,7 @@ export default function OcorrenciaEdit() {
                   setFormData((prev) => ({ ...prev, grupo_id: e.target.value, tipo_id: '' }))
                 }}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.grupo_id ? 'border-red-500' : 'border-gray-300'
+                  errors.grupo_id ? 'border-red-500' : 'border-border'
                 }`}
                 required
               >
@@ -167,7 +167,7 @@ export default function OcorrenciaEdit() {
 
             {/* Tipo */}
             <div>
-              <label htmlFor="tipo_id" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="tipo_id" className="block text-sm font-medium text-foreground mb-2">
                 Tipo <span className="text-red-500">*</span>
               </label>
               <select
@@ -176,8 +176,8 @@ export default function OcorrenciaEdit() {
                 onChange={(e) => setFormData((prev) => ({ ...prev, tipo_id: e.target.value }))}
                 disabled={!selectedGrupoId}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.tipo_id ? 'border-red-500' : 'border-gray-300'
-                } ${!selectedGrupoId ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+                  errors.tipo_id ? 'border-red-500' : 'border-border'
+                } ${!selectedGrupoId ? 'bg-muted cursor-not-allowed' : ''}`}
                 required
               >
                 <option value="">{selectedGrupoId ? 'Selecione um tipo...' : 'Selecione um grupo primeiro'}</option>
@@ -192,7 +192,7 @@ export default function OcorrenciaEdit() {
 
             {/* Data */}
             <div>
-              <label htmlFor="ocorreu_em" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="ocorreu_em" className="block text-sm font-medium text-foreground mb-2">
                 Data da Ocorrência <span className="text-red-500">*</span>
               </label>
               <input
@@ -202,7 +202,7 @@ export default function OcorrenciaEdit() {
                 onChange={(e) => setFormData((prev) => ({ ...prev, ocorreu_em: e.target.value }))}
                 max={new Date().toISOString().split('T')[0]}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.ocorreu_em ? 'border-red-500' : 'border-gray-300'
+                  errors.ocorreu_em ? 'border-red-500' : 'border-border'
                 }`}
                 required
               />
@@ -211,7 +211,7 @@ export default function OcorrenciaEdit() {
 
             {/* Notas */}
             <div>
-              <label htmlFor="notas" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="notas" className="block text-sm font-medium text-foreground mb-2">
                 {isCancelamento ? 'Motivo/Causa (obrigatório)' : 'Notas'} <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -220,7 +220,7 @@ export default function OcorrenciaEdit() {
                 onChange={(e) => setFormData((prev) => ({ ...prev, notas: e.target.value }))}
                 rows={6}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.notas ? 'border-red-500' : 'border-gray-300'
+                  errors.notas ? 'border-red-500' : 'border-border'
                 }`}
                 required
               />
@@ -229,7 +229,7 @@ export default function OcorrenciaEdit() {
 
             {/* Responsável */}
             <div>
-              <label htmlFor="responsavel_id" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="responsavel_id" className="block text-sm font-medium text-foreground mb-2">
                 Responsável <span className="text-red-500">*</span>
               </label>
               <select
@@ -237,7 +237,7 @@ export default function OcorrenciaEdit() {
                 value={formData.responsavel_id}
                 onChange={(e) => setFormData((prev) => ({ ...prev, responsavel_id: e.target.value }))}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.responsavel_id ? 'border-red-500' : 'border-gray-300'
+                  errors.responsavel_id ? 'border-red-500' : 'border-border'
                 }`}
                 required
               >
@@ -253,7 +253,7 @@ export default function OcorrenciaEdit() {
 
             {/* Prioridade */}
             <div>
-              <label htmlFor="prioridade" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="prioridade" className="block text-sm font-medium text-foreground mb-2">
                 Prioridade
               </label>
               <select
@@ -265,7 +265,7 @@ export default function OcorrenciaEdit() {
                     prioridade: e.target.value as 'baixa' | 'media' | 'alta' | 'urgente',
                   }))
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               >
                 <option value="baixa">Baixa</option>
                 <option value="media">Média</option>
@@ -276,7 +276,7 @@ export default function OcorrenciaEdit() {
 
             {/* Status */}
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="status" className="block text-sm font-medium text-foreground mb-2">
                 Status
               </label>
               <select
@@ -288,7 +288,7 @@ export default function OcorrenciaEdit() {
                     status: e.target.value as 'aberta' | 'em_andamento' | 'resolvida' | 'cancelada',
                   }))
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               >
                 <option value="aberta">Aberta</option>
                 <option value="em_andamento">Em Andamento</option>
@@ -299,7 +299,7 @@ export default function OcorrenciaEdit() {
 
             {/* Lembrete */}
             <div>
-              <label htmlFor="reminder_at" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="reminder_at" className="block text-sm font-medium text-foreground mb-2">
                 Lembrete (opcional)
               </label>
               <input
@@ -307,12 +307,12 @@ export default function OcorrenciaEdit() {
                 type="datetime-local"
                 value={formData.reminder_at || ''}
                 onChange={(e) => setFormData((prev) => ({ ...prev, reminder_at: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               />
             </div>
 
             <div>
-              <label htmlFor="reminder_status" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="reminder_status" className="block text-sm font-medium text-foreground mb-2">
                 Status do lembrete
               </label>
               <select
@@ -326,7 +326,7 @@ export default function OcorrenciaEdit() {
                 }
                 disabled={!formData.reminder_at}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  !formData.reminder_at ? 'bg-gray-50 cursor-not-allowed' : 'border-gray-300'
+                  !formData.reminder_at ? 'bg-muted cursor-not-allowed' : 'border-border'
                 }`}
               >
                 <option value="pendente">Pendente</option>
@@ -342,18 +342,18 @@ export default function OcorrenciaEdit() {
                   type="checkbox"
                   checked={formData.is_sensitive}
                   onChange={(e) => setFormData((prev) => ({ ...prev, is_sensitive: e.target.checked }))}
-                  className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary/20"
+                  className="w-5 h-5 text-primary border-border rounded focus:ring-primary/20"
                 />
-                <span className="text-sm font-medium text-gray-700">Ocorrência sensível</span>
+                <span className="text-sm font-medium text-foreground">Ocorrência sensível</span>
               </label>
             </div>
           </div>
 
           {/* Botões */}
-          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/ocorrencias"
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
             >
               Cancelar
             </Link>

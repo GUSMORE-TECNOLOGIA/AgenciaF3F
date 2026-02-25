@@ -81,7 +81,7 @@ export default function TransacaoEdit() {
     return (
       <div className="text-center py-12">
         <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-        <p className="text-gray-500">Carregando dados da transação...</p>
+        <p className="text-muted-foreground">Carregando dados da transação...</p>
       </div>
     )
   }
@@ -89,7 +89,7 @@ export default function TransacaoEdit() {
   if (!transacao) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 mb-4">Transação não encontrada</p>
+        <p className="text-muted-foreground mb-4">Transação não encontrada</p>
         <Link to="/financeiro" className="text-primary hover:underline">
           Voltar para financeiro
         </Link>
@@ -101,48 +101,48 @@ export default function TransacaoEdit() {
     <div>
       <Link
         to="/financeiro"
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-5 h-5" />
         Voltar para financeiro
       </Link>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="border-b border-gray-200 px-6 py-4">
+      <div className="bg-card rounded-lg shadow-sm border border-border">
+        <div className="border-b border-border px-6 py-4">
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <DollarSign className="w-6 h-6 text-primary" />
             Editar Transação
           </h1>
-          <p className="text-sm text-gray-600 mt-1">Atualize as informações da transação</p>
+          <p className="text-sm text-muted-foreground mt-1">Atualize as informações da transação</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-6">
             {/* Cliente (readonly) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Cliente</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Cliente</label>
               <input
                 type="text"
                 value={clientes.find((c) => c.id === transacao.cliente_id)?.nome || 'Cliente não encontrado'}
                 disabled
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+                className="w-full px-4 py-2 border border-border rounded-lg bg-muted text-muted-foreground"
               />
             </div>
 
             {/* Tipo (readonly) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Tipo</label>
               <input
                 type="text"
                 value={transacao.tipo === 'receita' ? 'Receita' : 'Despesa'}
                 disabled
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+                className="w-full px-4 py-2 border border-border rounded-lg bg-muted text-muted-foreground"
               />
             </div>
 
             {/* Valor */}
             <div>
-              <label htmlFor="valor" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="valor" className="block text-sm font-medium text-foreground mb-2">
                 Valor (R$) <span className="text-red-500">*</span>
               </label>
               <input
@@ -153,7 +153,7 @@ export default function TransacaoEdit() {
                 value={formData.valor}
                 onChange={(e) => setFormData((prev) => ({ ...prev, valor: Number(e.target.value) }))}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.valor ? 'border-red-500' : 'border-gray-300'
+                  errors.valor ? 'border-red-500' : 'border-border'
                 }`}
                 required
               />
@@ -162,7 +162,7 @@ export default function TransacaoEdit() {
 
             {/* Descrição */}
             <div>
-              <label htmlFor="descricao" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
                 Descrição <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -171,7 +171,7 @@ export default function TransacaoEdit() {
                 onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))}
                 rows={3}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.descricao ? 'border-red-500' : 'border-gray-300'
+                  errors.descricao ? 'border-red-500' : 'border-border'
                 }`}
                 required
               />
@@ -180,7 +180,7 @@ export default function TransacaoEdit() {
 
             {/* Data de Vencimento */}
             <div>
-              <label htmlFor="data_vencimento" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="data_vencimento" className="block text-sm font-medium text-foreground mb-2">
                 Data de Vencimento <span className="text-red-500">*</span>
               </label>
               <input
@@ -189,7 +189,7 @@ export default function TransacaoEdit() {
                 value={formData.data_vencimento}
                 onChange={(e) => setFormData((prev) => ({ ...prev, data_vencimento: e.target.value }))}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.data_vencimento ? 'border-red-500' : 'border-gray-300'
+                  errors.data_vencimento ? 'border-red-500' : 'border-border'
                 }`}
                 required
               />
@@ -198,7 +198,7 @@ export default function TransacaoEdit() {
 
             {/* Status */}
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="status" className="block text-sm font-medium text-foreground mb-2">
                 Status
               </label>
               <select
@@ -210,7 +210,7 @@ export default function TransacaoEdit() {
                     status: e.target.value as 'pendente' | 'pago' | 'vencido' | 'cancelado' | 'reembolsado',
                   }))
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               >
                 <option value="pendente">Pendente</option>
                 <option value="pago">Pago</option>
@@ -223,14 +223,14 @@ export default function TransacaoEdit() {
             {/* Método de Pagamento */}
             {formData.status === 'pago' && (
               <div>
-                <label htmlFor="metodo_pagamento" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="metodo_pagamento" className="block text-sm font-medium text-foreground mb-2">
                   Método de Pagamento
                 </label>
                 <select
                   id="metodo_pagamento"
                   value={formData.metodo_pagamento ?? ''}
                   onChange={(e) => setFormData((prev) => ({ ...prev, metodo_pagamento: e.target.value }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 >
                   <option value="">Selecione...</option>
                   <option value="PIX">PIX</option>
@@ -246,7 +246,7 @@ export default function TransacaoEdit() {
             {/* Data de Pagamento */}
             {formData.status === 'pago' && (
               <div>
-                <label htmlFor="data_pagamento" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="data_pagamento" className="block text-sm font-medium text-foreground mb-2">
                   Data de Pagamento
                 </label>
                 <input
@@ -254,17 +254,17 @@ export default function TransacaoEdit() {
                   type="date"
                   value={formData.data_pagamento}
                   onChange={(e) => setFormData((prev) => ({ ...prev, data_pagamento: e.target.value }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 />
               </div>
             )}
           </div>
 
           {/* Botões */}
-          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/financeiro"
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
             >
               Cancelar
             </Link>

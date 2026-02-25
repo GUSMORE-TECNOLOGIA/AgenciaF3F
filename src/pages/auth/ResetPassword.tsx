@@ -58,12 +58,12 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
+      <div className="w-full max-w-md p-8 bg-card rounded-lg shadow-lg">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-primary mb-2">
             {mustResetPassword ? 'Atualize sua senha' : 'Alterar senha'}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             {mustResetPassword
               ? 'Primeiro acesso detectado. Por segurança, defina uma nova senha.'
               : 'Defina uma nova senha para sua conta.'}
@@ -78,7 +78,7 @@ export default function ResetPassword() {
           )}
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
               Nova senha
             </label>
             <input
@@ -87,13 +87,13 @@ export default function ResetPassword() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="••••••••"
             />
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-2">
               Confirmar nova senha
             </label>
             <input
@@ -102,7 +102,7 @@ export default function ResetPassword() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="••••••••"
             />
           </div>

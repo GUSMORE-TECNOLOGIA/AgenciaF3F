@@ -392,7 +392,7 @@ export default function Equipe() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Equipe</h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-muted-foreground mt-2">
           Gerencie membros da equipe e perfis de acesso
         </p>
       </div>
@@ -403,18 +403,18 @@ export default function Equipe() {
           className={`p-4 rounded-lg border-2 transition-all ${
             activeTab === 'membros'
               ? 'border-primary bg-primary/5 shadow-md'
-              : 'border-gray-200 hover:border-primary/50'
+              : 'border-border hover:border-primary/50'
           }`}
         >
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-              activeTab === 'membros' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'
+              activeTab === 'membros' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
             }`}>
               <Users className="w-5 h-5" />
             </div>
             <div className="text-left">
               <h3 className="font-semibold">Membros</h3>
-              <p className="text-sm text-gray-600">Gerencie membros da equipe</p>
+              <p className="text-sm text-muted-foreground">Gerencie membros da equipe</p>
             </div>
           </div>
         </button>
@@ -424,18 +424,18 @@ export default function Equipe() {
           className={`p-4 rounded-lg border-2 transition-all ${
             activeTab === 'perfis'
               ? 'border-primary bg-primary/5 shadow-md'
-              : 'border-gray-200 hover:border-primary/50'
+              : 'border-border hover:border-primary/50'
           }`}
         >
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-              activeTab === 'perfis' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'
+              activeTab === 'perfis' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
             }`}>
               <Shield className="w-5 h-5" />
             </div>
             <div className="text-left">
               <h3 className="font-semibold">Perfis</h3>
-              <p className="text-sm text-gray-600">Configure perfis e permissões</p>
+              <p className="text-sm text-muted-foreground">Configure perfis e permissões</p>
             </div>
           </div>
         </button>
@@ -445,13 +445,13 @@ export default function Equipe() {
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <input
                 type="text"
                 placeholder="Buscar membros..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
             <button
@@ -481,7 +481,7 @@ export default function Equipe() {
           )}
 
           {loading ? (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-600">
+            <div className="bg-card rounded-lg shadow-sm border border-border p-12 text-center text-muted-foreground">
               Carregando...
             </div>
           ) : (
@@ -508,7 +508,7 @@ export default function Equipe() {
       {activeTab === 'perfis' && (
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Cadastre perfis e defina o que cada um pode visualizar, editar e excluir em cada módulo.
             </p>
             <button
@@ -539,29 +539,29 @@ export default function Equipe() {
           )}
 
           {perfisLoading ? (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-600">
+            <div className="bg-card rounded-lg shadow-sm border border-border p-12 text-center text-muted-foreground">
               Carregando perfis...
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Nome</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Descrição</th>
-                    <th className="text-right py-3 px-4 font-medium text-gray-700">Ações</th>
+                  <tr className="bg-muted border-b border-border">
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Nome</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Descrição</th>
+                    <th className="text-right py-3 px-4 font-medium text-foreground">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {perfis.map((p) => (
-                    <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50/50">
+                    <tr key={p.id} className="border-b border-border hover:bg-muted/50">
                       <td className="py-3 px-4 font-medium text-foreground">{p.nome}</td>
-                      <td className="py-3 px-4 text-gray-600">{p.descricao ?? '—'}</td>
+                      <td className="py-3 px-4 text-muted-foreground">{p.descricao ?? '—'}</td>
                       <td className="py-3 px-4 text-right">
                         <button
                           type="button"
                           onClick={() => handleEditPerfil(p)}
-                          className="p-2 text-gray-600 hover:text-primary hover:bg-primary/10 rounded-lg"
+                          className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg"
                           title="Editar"
                         >
                           <Pencil className="w-4 h-4" />
@@ -569,7 +569,7 @@ export default function Equipe() {
                         <button
                           type="button"
                           onClick={() => handleDeletePerfil(p)}
-                          className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                          className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-lg"
                           title="Excluir"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -586,32 +586,32 @@ export default function Equipe() {
 
       {editingPasswordMembro && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">
+          <div className="bg-card rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
+            <h3 className="text-lg font-semibold text-foreground">
               Editar senha – {editingPasswordMembro.nome_completo}
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               Defina uma nova senha. O usuário poderá entrar com ela na próxima vez.
             </p>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nova senha</label>
+              <label className="block text-sm font-medium text-foreground mb-1">Nova senha</label>
               <input
                 type="password"
                 value={editPasswordNew}
                 onChange={(e) => setEditPasswordNew(e.target.value)}
                 placeholder="Mínimo 8 caracteres"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 autoComplete="new-password"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar senha</label>
+              <label className="block text-sm font-medium text-foreground mb-1">Confirmar senha</label>
               <input
                 type="password"
                 value={editPasswordConfirm}
                 onChange={(e) => setEditPasswordConfirm(e.target.value)}
                 placeholder="Repita a senha"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 autoComplete="new-password"
               />
             </div>
@@ -623,7 +623,7 @@ export default function Equipe() {
                   setEditPasswordNew('')
                   setEditPasswordConfirm('')
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-border rounded-lg hover:bg-muted"
               >
                 Cancelar
               </button>

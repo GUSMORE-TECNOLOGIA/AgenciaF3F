@@ -8,7 +8,7 @@ interface LinksUteisTabProps {
 
 export default function LinksUteisTab({ cliente, onSave }: LinksUteisTabProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div className="bg-card rounded-lg border border-border shadow-sm">
       <div className="p-6">
         <ClienteLinksManager clienteId={cliente.id} onSave={onSave} />
       </div>

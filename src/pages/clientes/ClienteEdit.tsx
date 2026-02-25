@@ -59,7 +59,7 @@ export default function ClienteEdit() {
   if (loadingCliente) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Carregando dados do cliente...</p>
+        <p className="text-muted-foreground">Carregando dados do cliente...</p>
       </div>
     )
   }
@@ -68,7 +68,7 @@ export default function ClienteEdit() {
     return (
       <div className="text-center py-12">
         <p className="text-red-600 mb-2">Erro ao carregar cliente</p>
-        <p className="text-gray-600 text-sm mb-4">{errorCliente.message}</p>
+        <p className="text-muted-foreground text-sm mb-4">{errorCliente.message}</p>
         <div className="flex flex-wrap gap-3 justify-center">
           <button
             type="button"
@@ -79,7 +79,7 @@ export default function ClienteEdit() {
           </button>
           <Link
             to="/clientes"
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 border border-border rounded-lg hover:bg-muted"
           >
             Voltar para lista
           </Link>
@@ -91,7 +91,7 @@ export default function ClienteEdit() {
   if (!cliente) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 mb-4">Cliente não encontrado</p>
+        <p className="text-muted-foreground mb-4">Cliente não encontrado</p>
         <Link to="/clientes" className="text-primary hover:underline">
           Voltar para lista de clientes
         </Link>
@@ -110,7 +110,7 @@ export default function ClienteEdit() {
       <div className="flex items-center justify-between mb-6">
         <Link
           to="/clientes"
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm">Voltar para lista</span>
@@ -126,8 +126,8 @@ export default function ClienteEdit() {
       </div>
 
       {/* Tabs compactas */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="border-b border-gray-200">
+      <div className="bg-card rounded-lg shadow-sm border border-border">
+        <div className="border-b border-border">
           <nav className="flex -mb-px overflow-x-auto">
             {tabs.map((tab) => {
               const Icon = tab.icon
@@ -138,7 +138,7 @@ export default function ClienteEdit() {
                   className={`flex items-center gap-2 px-4 py-2 h-9 text-sm border-b-2 transition-colors whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'border-primary text-primary font-medium'
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -168,19 +168,19 @@ export default function ClienteEdit() {
           )}
 
           {podeFinanceiro && activeTab === 'financeiro' && (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-muted-foreground">
               Módulo Financeiro em desenvolvimento
             </div>
           )}
 
           {activeTab === 'ocorrencias' && (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-muted-foreground">
               Módulo de Ocorrências em desenvolvimento
             </div>
           )}
 
           {activeTab === 'atendimento' && (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-muted-foreground">
               Módulo de Atendimento em desenvolvimento
             </div>
           )}

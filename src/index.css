@@ -3,24 +3,79 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: #F8FAFC;
+    --foreground: #0F172A;
+    --card: #FFFFFF;
+    --card-foreground: #0F172A;
+    --border: #E2E8F0;
+    --input: #E2E8F0;
+    --muted: #F1F5F9;
+    --muted-foreground: #64748B;
+    --primary: #5B7CFA;
+    --primary-foreground: #FFFFFF;
+    --accent: #22D3EE;
+    --sidebar: #FFFFFF;
+    --sidebar-foreground: #0F172A;
+    --sidebar-border: #E2E8F0;
+    --sidebar-active: #5B7CFA;
+    --sidebar-active-foreground: #FFFFFF;
+    --sidebar-hover: #F1F5F9;
+  }
+
+  .dark {
+    --background: #0F172A;
+    --foreground: #F1F5F9;
+    --card: #1E293B;
+    --card-foreground: #F1F5F9;
+    --border: #334155;
+    --input: #334155;
+    --muted: #1E293B;
+    --muted-foreground: #94A3B8;
+    --primary: #6B8EFF;
+    --primary-foreground: #0F172A;
+    --accent: #22D3EE;
+    --sidebar: #1E293B;
+    --sidebar-foreground: #F1F5F9;
+    --sidebar-border: #334155;
+    --sidebar-active: #6B8EFF;
+    --sidebar-active-foreground: #0F172A;
+    --sidebar-hover: #334155;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
 }
 
-/* DateRangePicker: estilo do print – azul claro/transparente; primeiro e último dia mais fortes (borda escura) */
+/* DateRangePicker: range highlight */
 .rdp-date-range-picker-root .rdp-day_range_middle {
   background-color: rgba(91, 124, 250, 0.12);
-  color: #0F172A;
+  color: var(--foreground);
 }
 .rdp-date-range-picker-root .rdp-day_range_start,
 .rdp-date-range-picker-root .rdp-day_range_end {
   background-color: rgba(91, 124, 250, 0.2);
   border: 2px solid #4a6ae8;
-  color: #0F172A;
+  color: var(--foreground);
 }
 .rdp-date-range-picker-root .rdp-day_range_end.rdp-day_range_start {
   background-color: rgba(91, 124, 250, 0.2);
   border: 2px solid #4a6ae8;
-  color: #0F172A;
+  color: var(--foreground);
+}
+
+/* Dark mode: DateRangePicker calendar text */
+.dark .rdp-day {
+  color: var(--foreground);
+}
+.dark .rdp-caption_label,
+.dark .rdp-head_cell {
+  color: var(--muted-foreground);
+}
+.dark .rdp-nav_button {
+  color: var(--foreground);
+}
+.dark .rdp-day:hover:not([disabled]) {
+  background-color: var(--muted);
 }

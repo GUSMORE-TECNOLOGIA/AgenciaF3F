@@ -66,10 +66,10 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
+      <div className="w-full max-w-md p-8 bg-card rounded-lg shadow-lg">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-primary mb-2">Agência F3F</h1>
-          <p className="text-gray-600">Gestão de Clientes e Serviços</p>
+          <p className="text-muted-foreground">Gestão de Clientes e Serviços</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -80,7 +80,7 @@ export default function Login() {
           )}
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
               E-mail
             </label>
             <input
@@ -89,7 +89,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="seu@email.com"
             />
           </div>
@@ -97,7 +97,7 @@ export default function Login() {
           {!forgotPassword && (
             <>
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
                   Senha
                 </label>
                 <input
@@ -106,7 +106,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="••••••••"
                 />
               </div>
@@ -124,10 +124,10 @@ export default function Login() {
           )}
 
           {forgotPassword && (
-            <div className="rounded-lg bg-gray-50 border border-gray-200 p-4 space-y-3">
+            <div className="rounded-lg bg-muted border border-border p-4 space-y-3">
               {!forgotSent ? (
                 <>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-sm text-foreground">
                     Informe seu e-mail. Enviaremos um link para você redefinir sua senha.
                   </p>
                   <div className="flex gap-2">
@@ -136,7 +136,7 @@ export default function Login() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="seu@email.com"
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     />
                     <button
                       type="button"
@@ -150,7 +150,7 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={() => { setForgotPassword(false); setError(''); }}
-                    className="text-sm text-gray-600 hover:underline"
+                    className="text-sm text-muted-foreground hover:underline"
                   >
                     Voltar ao login
                   </button>

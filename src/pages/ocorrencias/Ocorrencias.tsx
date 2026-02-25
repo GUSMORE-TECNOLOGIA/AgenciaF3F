@@ -19,8 +19,8 @@ export default function Ocorrencias() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="border-b border-gray-200">
+      <div className="bg-card rounded-lg shadow-sm border border-border">
+        <div className="border-b border-border">
           <nav className="flex flex-wrap">
             {tabs.map((tab) => {
               const Icon = tab.icon
@@ -31,7 +31,7 @@ export default function Ocorrencias() {
                   className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'border-primary text-primary font-medium'
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                   }`}
                 >
                   <Icon className="w-5 h-5" />

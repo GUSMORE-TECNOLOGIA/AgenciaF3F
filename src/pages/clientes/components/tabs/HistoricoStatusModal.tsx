@@ -48,7 +48,7 @@ export default function HistoricoStatusModal({
       ativo: { bg: 'bg-green-100', text: 'text-green-800' },
       pausado: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
       cancelado: { bg: 'bg-red-100', text: 'text-red-800' },
-      finalizado: { bg: 'bg-gray-100', text: 'text-gray-800' },
+      finalizado: { bg: 'bg-muted', text: 'text-foreground' },
     }
 
     const config = statusConfig[status] || statusConfig.ativo
@@ -64,15 +64,15 @@ export default function HistoricoStatusModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-card rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-foreground">Histórico de Status</h2>
-            <p className="text-sm text-gray-600 mt-1">{contratoNome}</p>
+            <p className="text-sm text-muted-foreground mt-1">{contratoNome}</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -82,7 +82,7 @@ export default function HistoricoStatusModal({
           {loading ? (
             <div className="text-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-              <p className="text-gray-500">Carregando histórico...</p>
+              <p className="text-muted-foreground">Carregando histórico...</p>
             </div>
           ) : error ? (
             <div className="text-center py-12">
@@ -95,8 +95,8 @@ export default function HistoricoStatusModal({
               </button>
             </div>
           ) : historico.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <div className="text-center py-12 text-muted-foreground">
+              <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <p>Nenhuma mudança de status registrada</p>
             </div>
           ) : (
@@ -104,13 +104,13 @@ export default function HistoricoStatusModal({
               {historico.map((item, index) => (
                 <div
                   key={item.id}
-                  className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex gap-4 p-4 border border-border rounded-lg hover:bg-muted transition-colors"
                 >
                   {/* Timeline */}
                   <div className="flex flex-col items-center">
                     <div className="w-3 h-3 rounded-full bg-primary"></div>
                     {index < historico.length - 1 && (
-                      <div className="w-0.5 h-full bg-gray-300 mt-2"></div>
+                      <div className="w-0.5 h-full bg-border mt-2"></div>
                     )}
                   </div>
 
@@ -120,23 +120,23 @@ export default function HistoricoStatusModal({
                       {item.status_anterior && (
                         <>
                           {getStatusBadge(item.status_anterior)}
-                          <span className="text-gray-400">→</span>
+                          <span className="text-muted-foreground">→</span>
                         </>
                       )}
                       {getStatusBadge(item.status_novo)}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-muted-foreground">
                       {format(new Date(item.created_at), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", {
                         locale: ptBR,
                       })}
                     </div>
                     {item.observacoes && (
-                      <div className="text-sm text-gray-500 mt-2 p-2 bg-gray-50 rounded">
+                      <div className="text-sm text-muted-foreground mt-2 p-2 bg-muted rounded">
                         {item.observacoes}
                       </div>
                     )}
                     {item.metadata && (
-                      <div className="text-xs text-gray-400 mt-1">
+                      <div className="text-xs text-muted-foreground mt-1">
                         {item.metadata.valor_anterior !== item.metadata.valor_novo && (
                           <span>
                             Valor: R${' '}

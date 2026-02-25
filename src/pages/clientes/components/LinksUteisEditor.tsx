@@ -120,7 +120,7 @@ export default function LinksUteisEditor({ links: initialLinks, onSave, loading:
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors"
+                className="flex items-center gap-3 p-4 border border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-colors"
               >
                 <ExternalLink className="w-5 h-5 text-primary flex-shrink-0" />
                 <span className="font-medium text-foreground">{label}</span>
@@ -128,7 +128,7 @@ export default function LinksUteisEditor({ links: initialLinks, onSave, loading:
             )
           })}
           {Object.values(links).filter(Boolean).length === 0 && (
-            <p className="text-gray-500 col-span-full">Nenhum link configurado</p>
+            <p className="text-muted-foreground col-span-full">Nenhum link configurado</p>
           )}
         </div>
       </div>
@@ -140,7 +140,7 @@ export default function LinksUteisEditor({ links: initialLinks, onSave, loading:
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-foreground">Links Úteis</h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Configure os links úteis para este cliente. Deixe em branco para remover.
           </p>
         </div>
@@ -168,7 +168,7 @@ export default function LinksUteisEditor({ links: initialLinks, onSave, loading:
 
           return (
             <div key={key}>
-              <label htmlFor={key} className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor={key} className="block text-sm font-medium text-foreground mb-2">
                 {label}
               </label>
               <div className="relative">
@@ -178,7 +178,7 @@ export default function LinksUteisEditor({ links: initialLinks, onSave, loading:
                   value={value}
                   onChange={(e) => handleLinkChange(fieldKey, e.target.value)}
                   className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-                    error ? 'border-red-500' : 'border-gray-300'
+                    error ? 'border-red-500' : 'border-border'
                   }`}
                   placeholder="https://..."
                 />

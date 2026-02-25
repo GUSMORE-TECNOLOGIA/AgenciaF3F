@@ -33,36 +33,36 @@ interface EquipeMembrosTableProps {
 export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, onSendPasswordReset, onEditPassword, onCreateAccess, deletingId, sendingResetEmailId, updatingPasswordId, creatingAccessId }: EquipeMembrosTableProps) {
   if (membros.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-600">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-12 text-center text-muted-foreground">
         Nenhum membro encontrado
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
       <table className="w-full">
-        <thead className="bg-gray-50">
+        <thead className="bg-muted">
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perfil</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Nome</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Perfil</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+            <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Ações</th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="bg-card divide-y divide-border">
           {membros.map((membro) => (
-            <tr key={membro.id} className="hover:bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{membro.nome_completo}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{membro.email || '-'}</td>
+            <tr key={membro.id} className="hover:bg-muted">
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">{membro.nome_completo}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{membro.email || '-'}</td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <PerfilCell membro={membro} perfis={perfis} />
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span
                   className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                    membro.status === 'ativo' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                    membro.status === 'ativo' ? 'bg-green-100 text-green-800' : 'bg-muted text-foreground'
                   }`}
                 >
                   {membro.status}
@@ -83,7 +83,7 @@ export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, 
                   {onEditPassword && membro.user_id && (
                     <button
                       onClick={() => onEditPassword(membro)}
-                      className="text-gray-600 hover:text-primary disabled:opacity-50"
+                      className="text-muted-foreground hover:text-primary disabled:opacity-50"
                       title="Editar senha"
                       disabled={updatingPasswordId === membro.id}
                     >
@@ -93,7 +93,7 @@ export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, 
                   {onSendPasswordReset && membro.email && (
                     <button
                       onClick={() => onSendPasswordReset(membro)}
-                      className="text-gray-600 hover:text-primary disabled:opacity-50"
+                      className="text-muted-foreground hover:text-primary disabled:opacity-50"
                       title="Enviar link para redefinir senha"
                       disabled={sendingResetEmailId === membro.id}
                     >

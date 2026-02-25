@@ -76,7 +76,7 @@ export default function ClienteDetail() {
   if (!cliente) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 mb-4">Cliente não encontrado</p>
+        <p className="text-muted-foreground mb-4">Cliente não encontrado</p>
         <Link to="/clientes" className="text-primary hover:underline">
           Voltar para lista de clientes
         </Link>
@@ -103,25 +103,25 @@ export default function ClienteDetail() {
     <div>
       <Link
         to="/clientes"
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-5 h-5" />
         Voltar
       </Link>
 
       {/* Header do Cliente */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-6 mb-6">
         <div className="flex items-start gap-6">
           {/* Logo */}
           {cliente.logo_url ? (
             <img
               src={cliente.logo_url}
               alt={`Logo de ${cliente.nome}`}
-              className="w-20 h-20 object-contain border border-gray-200 rounded-lg bg-white p-2 flex-shrink-0"
+              className="w-20 h-20 object-contain border border-border rounded-lg bg-card p-2 flex-shrink-0"
             />
           ) : (
-            <div className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 flex-shrink-0">
-              <Briefcase className="w-8 h-8 text-gray-400" />
+            <div className="w-20 h-20 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted flex-shrink-0">
+              <Briefcase className="w-8 h-8 text-muted-foreground" />
             </div>
           )}
 
@@ -130,7 +130,7 @@ export default function ClienteDetail() {
             <div className="flex items-start justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-foreground mb-2">{cliente.nome}</h1>
-                <div className="flex items-center gap-4 text-gray-600">
+                <div className="flex items-center gap-4 text-muted-foreground">
                   {cliente.email && <span>{cliente.email}</span>}
                   {cliente.telefone && <span>{cliente.telefone}</span>}
                   <span
@@ -139,7 +139,7 @@ export default function ClienteDetail() {
                         ? 'bg-green-100 text-green-800'
                         : cliente.status === 'pausado'
                         ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-gray-100 text-gray-800'
+                        : 'bg-muted text-foreground'
                     }`}
                   >
                     {cliente.status}
@@ -165,7 +165,7 @@ export default function ClienteDetail() {
                 {cliente.status === 'ativo' && (
                   <button
                     onClick={() => handleStatusChange('inativo')}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
                   >
                     Inativar
                   </button>
@@ -185,8 +185,8 @@ export default function ClienteDetail() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-        <div className="border-b border-gray-200">
+      <div className="bg-card rounded-lg shadow-sm border border-border mb-6">
+        <div className="border-b border-border">
           <nav className="flex -mb-px overflow-x-auto">
             {tabs.map((tab) => {
               const Icon = tab.icon
@@ -197,7 +197,7 @@ export default function ClienteDetail() {
                   className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'border-primary text-primary font-medium'
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                   }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -235,7 +235,7 @@ export default function ClienteDetail() {
           )}
 
           {activeTab === 'atendimento' && (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-muted-foreground">
               Módulo de Atendimento em desenvolvimento
             </div>
           )}

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { ModalProvider } from './contexts/ModalContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
@@ -31,6 +32,7 @@ import Layout from './components/layout/Layout'
 function App() {
   return (
     <BrowserRouter>
+      <ThemeProvider>
       <AuthProvider>
         <ModalProvider>
           <Routes>
@@ -92,6 +94,7 @@ function App() {
           </Routes>
         </ModalProvider>
       </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }

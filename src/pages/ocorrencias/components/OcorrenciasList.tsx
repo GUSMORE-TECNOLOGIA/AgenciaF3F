@@ -70,7 +70,7 @@ export default function OcorrenciasList() {
       aberta: { className: 'bg-blue-100 text-blue-800', label: 'Aberta' },
       em_andamento: { className: 'bg-yellow-100 text-yellow-800', label: 'Em Andamento' },
       resolvida: { className: 'bg-green-100 text-green-800', label: 'Resolvida' },
-      cancelada: { className: 'bg-gray-100 text-gray-800', label: 'Cancelada' },
+      cancelada: { className: 'bg-muted text-foreground', label: 'Cancelada' },
     }
 
     const badge = badges[status]
@@ -84,7 +84,7 @@ export default function OcorrenciasList() {
 
   const getPrioridadeBadge = (prioridade: Ocorrencia['prioridade']) => {
     const badges = {
-      baixa: { className: 'bg-gray-100 text-gray-800', label: 'Baixa' },
+      baixa: { className: 'bg-muted text-foreground', label: 'Baixa' },
       media: { className: 'bg-blue-100 text-blue-800', label: 'Média' },
       alta: { className: 'bg-orange-100 text-orange-800', label: 'Alta' },
       urgente: { className: 'bg-red-100 text-red-800', label: 'Urgente' },
@@ -101,12 +101,12 @@ export default function OcorrenciasList() {
 
   const getReminderBadge = (status?: Ocorrencia['reminder_status']) => {
     if (!status) {
-      return <span className="text-xs text-gray-500">—</span>
+      return <span className="text-xs text-muted-foreground">—</span>
     }
     const badges = {
       pendente: { className: 'bg-yellow-100 text-yellow-800', label: 'Pendente' },
       feito: { className: 'bg-green-100 text-green-800', label: 'Feito' },
-      cancelado: { className: 'bg-gray-100 text-gray-800', label: 'Cancelado' },
+      cancelado: { className: 'bg-muted text-foreground', label: 'Cancelado' },
     }
 
     const badge = badges[status]
@@ -142,7 +142,7 @@ export default function OcorrenciasList() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Ocorrências</h1>
-          <p className="text-gray-600 mt-1">Gestão de ocorrências e tickets</p>
+          <p className="text-muted-foreground mt-1">Gestão de ocorrências e tickets</p>
         </div>
         <Link
           to="/ocorrencias/nova"
@@ -153,22 +153,22 @@ export default function OcorrenciasList() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <input
               type="text"
               placeholder="Buscar ocorrências..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todos os status</option>
             <option value="aberta">Aberta</option>
@@ -179,7 +179,7 @@ export default function OcorrenciasList() {
           <select
             value={prioridadeFilter}
             onChange={(e) => setPrioridadeFilter(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todas as prioridades</option>
             <option value="baixa">Baixa</option>
@@ -190,7 +190,7 @@ export default function OcorrenciasList() {
           <select
             value={clienteFilter}
             onChange={(e) => setClienteFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todos os clientes</option>
             {clientes.map((cliente) => (
@@ -205,7 +205,7 @@ export default function OcorrenciasList() {
               setGrupoFilter(e.target.value)
               setTipoFilter('')
             }}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todos os grupos</option>
             {grupos.map((grupo) => (
@@ -217,7 +217,7 @@ export default function OcorrenciasList() {
           <select
             value={tipoFilter}
             onChange={(e) => setTipoFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
             disabled={!grupoFilter}
           >
             <option value="">{grupoFilter ? 'Todos os tipos' : 'Selecione um grupo'}</option>
@@ -230,7 +230,7 @@ export default function OcorrenciasList() {
           <select
             value={reminderFilter}
             onChange={(e) => setReminderFilter(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todos os lembretes</option>
             <option value="pendente">Pendente</option>
@@ -241,58 +241,58 @@ export default function OcorrenciasList() {
       </div>
 
       {loading ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-12">
           <div className="flex items-center justify-center">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="ml-3 text-gray-600">Carregando ocorrências...</span>
+            <span className="ml-3 text-muted-foreground">Carregando ocorrências...</span>
           </div>
         </div>
       ) : filteredOcorrencias.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-          <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 text-lg">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-12 text-center">
+          <AlertCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground text-lg">
             {searchTerm || statusFilter || prioridadeFilter || clienteFilter || grupoFilter || tipoFilter || reminderFilter
               ? 'Nenhuma ocorrência encontrada com os filtros aplicados'
               : 'Nenhuma ocorrência cadastrada'}
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-muted border-b border-border">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Cliente
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Grupo
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Tipo
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Data
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Prioridade
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Lembrete
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Ações
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {filteredOcorrencias.map((ocorrencia) => {
                   const cliente = clientes.find((c) => c.id === ocorrencia.cliente_id)
                   return (
-                    <tr key={ocorrencia.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={ocorrencia.id} className="hover:bg-muted transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <Link
                           to={`/clientes/${ocorrencia.cliente_id}/editar`}
@@ -301,20 +301,20 @@ export default function OcorrenciasList() {
                           {cliente?.nome || 'Cliente não encontrado'}
                         </Link>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
                         {grupoMap.get(ocorrencia.grupo_id) || '—'}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
                         {tipoMap.get(ocorrencia.tipo_id) || '—'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                         {formatDate(ocorrencia.ocorreu_em)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">{getPrioridadeBadge(ocorrencia.prioridade)}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(ocorrencia.status)}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="space-y-1">
-                          <div className="text-xs text-gray-600">
+                          <div className="text-xs text-muted-foreground">
                             {ocorrencia.reminder_at ? formatDateTime(ocorrencia.reminder_at) : '—'}
                           </div>
                           {getReminderBadge(ocorrencia.reminder_status)}

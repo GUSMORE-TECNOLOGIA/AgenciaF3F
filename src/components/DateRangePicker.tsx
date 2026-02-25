@@ -154,18 +154,18 @@ export default function DateRangePicker({ value, onChange, placeholder = 'Seleci
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 w-full min-w-[280px] px-4 py-2.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-left"
+        className="flex items-center gap-2 w-full min-w-[280px] px-4 py-2.5 rounded-lg border border-border bg-card hover:bg-muted focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-left"
       >
-        <Calendar className="w-5 h-5 text-gray-500 shrink-0" />
-        <span className="flex-1 truncate text-gray-700">{displayText}</span>
-        <ChevronDown className={`w-5 h-5 text-gray-400 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <Calendar className="w-5 h-5 text-muted-foreground shrink-0" />
+        <span className="flex-1 truncate text-foreground">{displayText}</span>
+        <ChevronDown className={`w-5 h-5 text-muted-foreground shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-1 z-50 flex bg-white rounded-xl border border-gray-200 shadow-xl overflow-hidden">
+        <div className="absolute left-0 top-full mt-1 z-50 flex bg-card rounded-xl border border-border shadow-xl overflow-hidden">
           {/* Left: Usados recentemente / Presets */}
-          <div className="w-56 border-r border-gray-200 bg-gray-50/80 overflow-y-auto max-h-[420px]">
-            <p className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Usados recentemente</p>
+          <div className="w-56 border-r border-border bg-muted/80 overflow-y-auto max-h-[420px]">
+            <p className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Usados recentemente</p>
             <div className="py-2 pb-4">
               {[...new Set(recent)]
                 .map((id) => PRESETS.find((p) => p.id === id))
@@ -173,7 +173,7 @@ export default function DateRangePicker({ value, onChange, placeholder = 'Seleci
                 .map((p) => (
                   <label
                     key={p!.id}
-                    className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    className="flex items-center gap-3 px-4 py-2 hover:bg-muted cursor-pointer"
                   >
                     <input
                       type="radio"
@@ -182,16 +182,16 @@ export default function DateRangePicker({ value, onChange, placeholder = 'Seleci
                       onChange={() => applyPreset(p!.id)}
                       className="text-primary focus:ring-primary"
                     />
-                    <span className="text-sm text-gray-800">{p!.label}</span>
+                    <span className="text-sm text-foreground">{p!.label}</span>
                   </label>
                 ))}
             </div>
-            <p className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-t border-gray-200 mt-2">Outros</p>
+            <p className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-t border-border mt-2">Outros</p>
             <div className="py-2 pb-4">
               {PRESETS.filter((p) => !recent.includes(p.id)).map((p) => (
                 <label
                   key={p.id}
-                  className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  className="flex items-center gap-3 px-4 py-2 hover:bg-muted cursor-pointer"
                 >
                   <input
                     type="radio"
@@ -200,7 +200,7 @@ export default function DateRangePicker({ value, onChange, placeholder = 'Seleci
                     onChange={() => applyPreset(p.id)}
                     className="text-primary focus:ring-primary"
                   />
-                  <span className="text-sm text-gray-800">{p.label}</span>
+                  <span className="text-sm text-foreground">{p.label}</span>
                 </label>
               ))}
             </div>
@@ -228,7 +228,7 @@ export default function DateRangePicker({ value, onChange, placeholder = 'Seleci
               className="rdp-date-range-picker-root border-0 p-0 mb-4"
             />
 
-            <div className="border-t border-gray-200 pt-4 space-y-3">
+            <div className="border-t border-border pt-4 space-y-3">
               <div className="flex items-center gap-2">
                 <input
                   type="radio"
@@ -238,7 +238,7 @@ export default function DateRangePicker({ value, onChange, placeholder = 'Seleci
                   onChange={() => setActivePreset('custom')}
                   className="text-primary focus:ring-primary"
                 />
-                <label htmlFor="custom-range" className="text-sm font-medium text-gray-700">Intervalo personalizado</label>
+                <label htmlFor="custom-range" className="text-sm font-medium text-foreground">Intervalo personalizado</label>
               </div>
               <div className="flex gap-2">
                 <input
@@ -249,7 +249,7 @@ export default function DateRangePicker({ value, onChange, placeholder = 'Seleci
                     setActivePreset('custom')
                     if (e.target.value && customTo && e.target.value <= customTo) setDraft({ from: e.target.value, to: customTo })
                   }}
-                  className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  className="flex-1 px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
                 <input
                   type="date"
@@ -259,18 +259,18 @@ export default function DateRangePicker({ value, onChange, placeholder = 'Seleci
                     setActivePreset('custom')
                     if (customFrom && e.target.value && customFrom <= e.target.value) setDraft({ from: customFrom, to: e.target.value })
                   }}
-                  className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  className="flex-1 px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
             </div>
 
-            <p className="text-xs text-gray-500 mt-4">Fuso horário das datas: Horário de São Paulo</p>
+            <p className="text-xs text-muted-foreground mt-4">Fuso horário das datas: Horário de São Paulo</p>
 
             <div className="flex justify-end gap-2 mt-4">
               <button
                 type="button"
                 onClick={handleCancelar}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium"
+                className="px-4 py-2 rounded-lg border border-border text-foreground hover:bg-muted text-sm font-medium"
               >
                 Cancelar
               </button>

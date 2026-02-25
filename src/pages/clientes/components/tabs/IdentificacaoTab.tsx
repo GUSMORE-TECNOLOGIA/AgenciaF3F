@@ -79,8 +79,8 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Dados Pessoais - Coluna Esquerda (2/3) */}
       <div className="lg:col-span-2">
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <div className="border-b border-gray-200 px-6 py-3">
+        <div className="bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow">
+          <div className="border-b border-border px-6 py-3">
             <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
               <User2 className="h-5 w-5 text-primary" />
               Dados Pessoais
@@ -89,7 +89,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
           <div className="p-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="nome" className="block text-sm font-medium text-foreground mb-2">
                   Nome do Cliente <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -97,13 +97,13 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
                   type="text"
                   value={formData.nome}
                   onChange={(e) => setFormData((prev) => ({ ...prev, nome: e.target.value }))}
-                  className="w-full h-9 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full h-9 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
                   E-mail
                 </label>
                 <input
@@ -111,13 +111,13 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                  className="w-full h-9 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full h-9 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                   placeholder="email@exemplo.com"
                 />
               </div>
 
               <div>
-                <label htmlFor="telefone" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="telefone" className="block text-sm font-medium text-foreground mb-2">
                   Telefone
                 </label>
                 <input
@@ -125,13 +125,13 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
                   type="tel"
                   value={formData.telefone}
                   onChange={(e) => setFormData((prev) => ({ ...prev, telefone: e.target.value }))}
-                  className="w-full h-9 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full h-9 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                   placeholder="(11) 99999-9999"
                 />
               </div>
 
               <div>
-                <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="status" className="block text-sm font-medium text-foreground mb-2">
                   Status <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -140,7 +140,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, status: e.target.value as 'ativo' | 'inativo' | 'pausado' }))
                   }
-                  className="w-full h-9 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full h-9 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                   required
                 >
                   <option value="ativo">Ativo</option>
@@ -168,8 +168,8 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
       {/* Logo e Sistema - Coluna Direita (1/3) */}
       <div className="space-y-6">
         {/* Logo do Cliente */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <div className="border-b border-gray-200 px-6 py-3">
+        <div className="bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow">
+          <div className="border-b border-border px-6 py-3">
             <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
               <Image className="h-5 w-5 text-primary" />
               Logo do Cliente
@@ -187,15 +187,15 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
         </div>
 
         {/* Informações do Sistema */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <div className="border-b border-gray-200 px-6 py-3">
+        <div className="bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow">
+          <div className="border-b border-border px-6 py-3">
             <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
               <Settings className="h-5 w-5 text-primary" />
               Sistema
             </h2>
           </div>
           <div className="p-6 space-y-3">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
               <span>
                 Criado em{' '}
@@ -204,7 +204,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
                   : 'Data não disponível'}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <User2 className="h-4 w-4" />
               <span>ID: {cliente.id ? cliente.id.slice(0, 8) + '...' : 'N/A'}</span>
             </div>

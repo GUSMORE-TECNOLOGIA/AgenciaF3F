@@ -171,7 +171,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-foreground">Links Úteis</h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Gerencie os links úteis do cliente. Você pode adicionar quantos links quiser de cada tipo.
           </p>
         </div>
@@ -188,22 +188,22 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
 
       {/* Formulário de adicionar/editar */}
       {(isAdding || editingId) && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
+        <div className="bg-card border border-border rounded-lg p-6 space-y-4">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-semibold text-foreground">
               {isAdding ? 'Adicionar Novo Link' : 'Editar Link'}
             </h4>
             <button
               onClick={handleCancel}
-              className="p-1 rounded-md hover:bg-gray-100"
+              className="p-1 rounded-md hover:bg-muted"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-5 h-5 text-muted-foreground" />
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Tipo/Classificação <span className="text-red-500">*</span>
               </label>
               <input
@@ -211,7 +211,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                 list="tipos-sugeridos"
                 value={formData.tipo}
                 onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="Ex: Instagram, Facebook, Dashboard..."
               />
               <datalist id="tipos-sugeridos">
@@ -222,33 +222,33 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Pessoa (opcional)
               </label>
               <input
                 type="text"
                 value={formData.pessoa}
                 onChange={(e) => setFormData({ ...formData, pessoa: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="Ex: João Silva, Maria Santos..."
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 URL <span className="text-red-500">*</span>
               </label>
               <input
                 type="url"
                 value={formData.url}
                 onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="https://..."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Status
               </label>
               <select
@@ -256,7 +256,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                 onChange={(e) =>
                   setFormData({ ...formData, status: e.target.value as 'ativo' | 'inativo' })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               >
                 <option value="ativo">Ativo</option>
                 <option value="inativo">Inativo</option>
@@ -264,10 +264,10 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-gray-200">
+          <div className="flex justify-end gap-2 pt-4 border-t border-border">
             <button
               onClick={handleCancel}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-foreground bg-muted rounded-lg hover:bg-muted transition-colors"
             >
               Cancelar
             </button>
@@ -289,25 +289,25 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
 
       {/* Lista de links agrupados por tipo */}
       {Object.keys(linksPorTipo).length === 0 && !isAdding && (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-muted-foreground">
           <p>Nenhum link cadastrado ainda.</p>
           <p className="text-sm mt-2">Clique em "Adicionar Link" para começar.</p>
         </div>
       )}
 
       {Object.entries(linksPorTipo).map(([tipo, linksDoTipo]) => (
-        <div key={tipo} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-          <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
+        <div key={tipo} className="bg-card border border-border rounded-lg overflow-hidden">
+          <div className="bg-muted px-6 py-3 border-b border-border">
             <h4 className="font-semibold text-foreground">{tipo}</h4>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {linksDoTipo.length} {linksDoTipo.length === 1 ? 'link' : 'links'}
             </p>
           </div>
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-border">
             {linksDoTipo.map((link) => (
               <div
                 key={link.id}
-                className={`px-6 py-4 hover:bg-gray-50 transition-colors ${
+                className={`px-6 py-4 hover:bg-muted transition-colors ${
                   link.status === 'inativo' ? 'opacity-60' : ''
                 }`}
               >
@@ -316,7 +316,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                           Tipo/Classificação
                         </label>
                         <input
@@ -324,31 +324,31 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                           list="tipos-sugeridos"
                           value={formData.tipo}
                           onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+                          className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                           Pessoa
                         </label>
                         <input
                           type="text"
                           value={formData.pessoa}
                           onChange={(e) => setFormData({ ...formData, pessoa: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+                          className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
                         />
                       </div>
                       <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">URL</label>
+                        <label className="block text-sm font-medium text-foreground mb-2">URL</label>
                         <input
                           type="url"
                           value={formData.url}
                           onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+                          className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                           Status
                         </label>
                         <select
@@ -356,7 +356,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                           onChange={(e) =>
                             setFormData({ ...formData, status: e.target.value as 'ativo' | 'inativo' })
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+                          className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
                         >
                           <option value="ativo">Ativo</option>
                           <option value="inativo">Inativo</option>
@@ -366,7 +366,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={handleCancel}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                        className="px-4 py-2 text-sm font-medium text-foreground bg-muted rounded-lg hover:bg-muted"
                       >
                         Cancelar
                       </button>
@@ -407,13 +407,13 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                               {link.url}
                             </a>
                             {link.status === 'inativo' && (
-                              <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded">
+                              <span className="px-2 py-0.5 text-xs bg-muted text-muted-foreground rounded">
                                 Inativo
                               </span>
                             )}
                           </div>
                           {link.pessoa && (
-                            <p className="text-xs text-gray-500 mt-1">Pessoa: {link.pessoa}</p>
+                            <p className="text-xs text-muted-foreground mt-1">Pessoa: {link.pessoa}</p>
                           )}
                         </div>
                       </div>
@@ -421,14 +421,14 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                     <div className="flex items-center gap-2 ml-4">
                       <button
                         onClick={() => handleEdit(link)}
-                        className="p-2 text-gray-600 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                        className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
                         title="Editar link"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(link)}
-                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         title="Excluir link"
                       >
                         <Trash2 className="w-4 h-4" />

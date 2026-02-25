@@ -107,9 +107,9 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
       principal: 'bg-blue-100 text-blue-800',
       comercial: 'bg-green-100 text-green-800',
       suporte: 'bg-yellow-100 text-yellow-800',
-      backup: 'bg-gray-100 text-gray-800',
+      backup: 'bg-muted text-foreground',
     }
-    return colors[role] || 'bg-gray-100 text-gray-800'
+    return colors[role] || 'bg-muted text-foreground'
   }
 
   const responsaveisPorPapel = {
@@ -128,7 +128,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-foreground">Responsáveis</h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Gerencie os responsáveis atribuídos a {cliente.nome}
           </p>
         </div>
@@ -147,13 +147,13 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
           if (responsaveisPapel.length === 0) return null
 
           return (
-            <div key={papel} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div key={papel} className="bg-card rounded-lg shadow-sm border border-border p-4">
               <h4 className="font-semibold text-foreground mb-3 capitalize">{papel}</h4>
               <div className="space-y-2">
                 {responsaveisPapel.map((responsavel) => (
                   <div
                     key={responsavel.id}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    className="flex items-center justify-between p-3 bg-muted rounded-lg"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -163,11 +163,11 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                         <p className="font-medium text-foreground">
                           {responsavel.responsavel?.name || 'Responsável'}
                         </p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-muted-foreground">
                           {responsavel.responsavel?.email || '—'}
                         </p>
                         {responsavel.observacao && (
-                          <p className="text-xs text-gray-500 mt-1">{responsavel.observacao}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{responsavel.observacao}</p>
                         )}
                       </div>
                     </div>
@@ -198,10 +198,10 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
         })}
 
         {responsaveis.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-            <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">Nenhum responsável atribuído ainda</p>
-            <p className="text-sm text-gray-500 mt-2">
+          <div className="text-center py-12 bg-card rounded-lg border border-border">
+            <User className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">Nenhum responsável atribuído ainda</p>
+            <p className="text-sm text-muted-foreground mt-2">
               Use &quot;Adicionar Responsável&quot; para vincular responsáveis a este cliente.
             </p>
           </div>
@@ -211,20 +211,20 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
       {/* Modal de Adicionar Responsável */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+          <div className="bg-card rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
             <h3 className="text-xl font-semibold text-foreground mb-4">
               Adicionar Responsável
             </h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Responsável
                 </label>
                 <select
                   value={selectedResponsavelId}
                   onChange={(e) => setSelectedResponsavelId(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value="">Selecione um responsável...</option>
                   {responsaveisDisponiveis
@@ -243,7 +243,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Papéis
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -255,7 +255,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                       className={`px-3 py-1 text-sm rounded-full transition-colors ${
                         selectedRoles.includes(role)
                           ? getRoleColor(role)
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          : 'bg-muted text-muted-foreground hover:bg-muted'
                       }`}
                     >
                       {getRoleLabel(role)}
@@ -265,14 +265,14 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Observação (opcional)
                 </label>
                 <textarea
                   value={observacao}
                   onChange={(e) => setObservacao(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="Observações sobre este responsável..."
                 />
               </div>
@@ -286,7 +286,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                   setSelectedRoles(['principal'])
                   setObservacao('')
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
               >
                 Cancelar
               </button>

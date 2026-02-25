@@ -224,23 +224,23 @@ export default function ExportClientesModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="flex-shrink-0 border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-card rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="flex-shrink-0 border-b border-border px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FileSpreadsheet className="w-5 h-5 text-green-600" />
-            <h2 className="text-xl font-bold text-gray-900">Exportar para Excel</h2>
+            <h2 className="text-xl font-bold text-foreground">Exportar para Excel</h2>
           </div>
           <button
             onClick={onClose}
             disabled={exporting}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+            className="p-2 hover:bg-muted rounded-lg transition-colors disabled:opacity-50"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Exportar <strong>{clientes.length}</strong> cliente(s) filtrado(s). Selecione as informações a incluir:
           </p>
 
@@ -248,15 +248,15 @@ export default function ExportClientesModal({
             {sectionsToShow.map((s) => (
               <label
                 key={s.id}
-                className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                className="flex items-start gap-3 p-3 border border-border rounded-lg hover:bg-muted cursor-pointer"
               >
                 <input
                   type="checkbox"
                   checked={selected.has(s.id)}
                   onChange={() => toggle(s.id)}
-                  className="mt-1 w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary"
+                  className="mt-1 w-4 h-4 text-primary rounded border-border focus:ring-primary"
                 />
-                <span className="text-sm text-gray-700">{s.label}</span>
+                <span className="text-sm text-foreground">{s.label}</span>
               </label>
             ))}
           </div>
@@ -266,12 +266,12 @@ export default function ExportClientesModal({
           )}
         </div>
 
-        <div className="flex-shrink-0 border-t border-gray-200 px-6 py-4 flex justify-end gap-2">
+        <div className="flex-shrink-0 border-t border-border px-6 py-4 flex justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
             disabled={exporting}
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+            className="px-4 py-2 border border-border rounded-lg hover:bg-muted disabled:opacity-50"
           >
             Cancelar
           </button>

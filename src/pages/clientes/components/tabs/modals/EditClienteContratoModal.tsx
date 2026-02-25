@@ -82,12 +82,12 @@ export default function EditClienteContratoModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-foreground">Editar Contrato</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
             disabled={loading}
           >
             <X className="w-5 h-5" />
@@ -97,7 +97,7 @@ export default function EditClienteContratoModal({
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-6">
             <div>
-              <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="nome" className="block text-sm font-medium text-foreground mb-2">
                 Nome / Identificador
               </label>
               <input
@@ -105,14 +105,14 @@ export default function EditClienteContratoModal({
                 type="text"
                 value={formData.nome ?? ''}
                 onChange={(e) => setFormData((prev) => ({ ...prev, nome: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 placeholder="Ex.: Contrato 2025-01"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="status_contrato" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="status_contrato" className="block text-sm font-medium text-foreground mb-2">
                   Status <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -124,7 +124,7 @@ export default function EditClienteContratoModal({
                       status: e.target.value as 'ativo' | 'pausado' | 'cancelado' | 'finalizado',
                     }))
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                   required
                 >
                   <option value="ativo">Ativo</option>
@@ -134,7 +134,7 @@ export default function EditClienteContratoModal({
                 </select>
               </div>
               <div>
-                <label htmlFor="contrato_assinado_edit" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="contrato_assinado_edit" className="block text-sm font-medium text-foreground mb-2">
                   Contrato
                 </label>
                 <select
@@ -150,7 +150,7 @@ export default function EditClienteContratoModal({
                       return next
                     })
                   }}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 >
                   <option value="nao_assinado">Não assinado</option>
                   <option value="assinado">Assinado</option>
@@ -161,7 +161,7 @@ export default function EditClienteContratoModal({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="data_inicio_contrato" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="data_inicio_contrato" className="block text-sm font-medium text-foreground mb-2">
                   Data de Início
                 </label>
                 <input
@@ -173,11 +173,11 @@ export default function EditClienteContratoModal({
                   }
                   min={DATE_MIN}
                   max={DATE_MAX}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 />
               </div>
               <div>
-                <label htmlFor="data_fim_contrato" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="data_fim_contrato" className="block text-sm font-medium text-foreground mb-2">
                   Data de Fim
                 </label>
                 <input
@@ -189,11 +189,11 @@ export default function EditClienteContratoModal({
                   }
                   min={formData.data_inicio ?? DATE_MIN}
                   max={DATE_MAX}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 />
               </div>
               <div>
-                <label htmlFor="data_assinatura_contrato" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="data_assinatura_contrato" className="block text-sm font-medium text-foreground mb-2">
                   Data de Assinatura
                 </label>
                 <input
@@ -205,11 +205,11 @@ export default function EditClienteContratoModal({
                   }
                   min={DATE_MIN}
                   max={DATE_MAX}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 />
               </div>
               <div>
-                <label htmlFor="data_cancelamento_contrato" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="data_cancelamento_contrato" className="block text-sm font-medium text-foreground mb-2">
                   Data de Cancelamento
                 </label>
                 <input
@@ -221,13 +221,13 @@ export default function EditClienteContratoModal({
                   }
                   min={DATE_MIN}
                   max={DATE_MAX}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="observacoes_contrato" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="observacoes_contrato" className="block text-sm font-medium text-foreground mb-2">
                 Observações
               </label>
               <textarea
@@ -235,18 +235,18 @@ export default function EditClienteContratoModal({
                 value={formData.observacoes ?? ''}
                 onChange={(e) => setFormData((prev) => ({ ...prev, observacoes: e.target.value }))}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 placeholder="Observações sobre o contrato..."
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
             >
               Cancelar
             </button>

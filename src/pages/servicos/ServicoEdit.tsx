@@ -65,7 +65,7 @@ export default function ServicoEdit() {
     return (
       <div className="text-center py-12">
         <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-        <p className="text-gray-500">Carregando dados do serviço...</p>
+        <p className="text-muted-foreground">Carregando dados do serviço...</p>
       </div>
     )
   }
@@ -73,7 +73,7 @@ export default function ServicoEdit() {
   if (!servico) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 mb-4">Serviço não encontrado</p>
+        <p className="text-muted-foreground mb-4">Serviço não encontrado</p>
         <Link to="/servicos" className="text-primary hover:underline">
           Voltar para lista de serviços
         </Link>
@@ -85,23 +85,23 @@ export default function ServicoEdit() {
     <div>
       <Link
         to="/servicos"
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-5 h-5" />
         Voltar para serviços
       </Link>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="border-b border-gray-200 px-6 py-4">
+      <div className="bg-card rounded-lg shadow-sm border border-border">
+        <div className="border-b border-border px-6 py-4">
           <h1 className="text-2xl font-bold text-foreground">Editar Serviço</h1>
-          <p className="text-sm text-gray-600 mt-1">Atualize as informações do serviço</p>
+          <p className="text-sm text-muted-foreground mt-1">Atualize as informações do serviço</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-6">
             {/* Nome */}
             <div>
-              <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="nome" className="block text-sm font-medium text-foreground mb-2">
                 Nome do Serviço <span className="text-red-500">*</span>
               </label>
               <input
@@ -110,7 +110,7 @@ export default function ServicoEdit() {
                 value={formData.nome}
                 onChange={(e) => setFormData((prev) => ({ ...prev, nome: e.target.value }))}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.nome ? 'border-red-500' : 'border-gray-300'
+                  errors.nome ? 'border-red-500' : 'border-border'
                 }`}
                 required
               />
@@ -119,7 +119,7 @@ export default function ServicoEdit() {
 
             {/* Descrição */}
             <div>
-              <label htmlFor="descricao" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
                 Descrição
               </label>
               <textarea
@@ -127,13 +127,13 @@ export default function ServicoEdit() {
                 value={formData.descricao ?? ''}
                 onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               />
             </div>
 
             {/* Valor */}
             <div>
-              <label htmlFor="valor" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="valor" className="block text-sm font-medium text-foreground mb-2">
                 Valor Individual (R$)
               </label>
               <input
@@ -149,7 +149,7 @@ export default function ServicoEdit() {
                   }))
                 }
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.valor ? 'border-red-500' : 'border-gray-300'
+                  errors.valor ? 'border-red-500' : 'border-border'
                 }`}
               />
               {errors.valor && <p className="mt-1 text-sm text-red-600">{errors.valor}</p>}
@@ -162,18 +162,18 @@ export default function ServicoEdit() {
                   type="checkbox"
                   checked={formData.ativo}
                   onChange={(e) => setFormData((prev) => ({ ...prev, ativo: e.target.checked }))}
-                  className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary/20"
+                  className="w-5 h-5 text-primary border-border rounded focus:ring-primary/20"
                 />
-                <span className="text-sm font-medium text-gray-700">Serviço ativo</span>
+                <span className="text-sm font-medium text-foreground">Serviço ativo</span>
               </label>
             </div>
           </div>
 
           {/* Botões */}
-          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/servicos"
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
             >
               Cancelar
             </Link>

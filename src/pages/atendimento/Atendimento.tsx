@@ -27,9 +27,9 @@ export default function Atendimento() {
 
   if (isEmDesenvolvimento) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-6">
         <h1 className="text-3xl font-bold text-foreground mb-2">Atendimento</h1>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Módulo em desenvolvimento. Esta funcionalidade será implementada em uma próxima fase.
         </p>
       </div>
@@ -113,7 +113,7 @@ export default function Atendimento() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Atendimento</h1>
-          <p className="text-gray-600 mt-1">Histórico de atendimentos aos clientes</p>
+          <p className="text-muted-foreground mt-1">Histórico de atendimentos aos clientes</p>
         </div>
         <Link
           to="/atendimento/novo"
@@ -125,22 +125,22 @@ export default function Atendimento() {
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <input
               type="text"
               placeholder="Buscar atendimentos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
             />
           </div>
           <select
             value={tipoFilter}
             onChange={(e) => setTipoFilter(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todos os tipos</option>
             <option value="email">Email</option>
@@ -151,7 +151,7 @@ export default function Atendimento() {
           <select
             value={clienteFilter}
             onChange={(e) => setClienteFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           >
             <option value="">Todos os clientes</option>
             {clientes.map((cliente) => (
@@ -166,14 +166,14 @@ export default function Atendimento() {
               value={dataInicio}
               onChange={(e) => setDataInicio(e.target.value)}
               placeholder="Data Início"
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
             />
             <input
               type="date"
               value={dataFim}
               onChange={(e) => setDataFim(e.target.value)}
               placeholder="Data Fim"
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
             />
           </div>
         </div>
@@ -181,52 +181,52 @@ export default function Atendimento() {
 
       {/* Lista de Atendimentos */}
       {loading ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-12">
           <div className="flex items-center justify-center">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="ml-3 text-gray-600">Carregando atendimentos...</span>
+            <span className="ml-3 text-muted-foreground">Carregando atendimentos...</span>
           </div>
         </div>
       ) : filteredAtendimentos.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-          <MessageSquare className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 text-lg">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-12 text-center">
+          <MessageSquare className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground text-lg">
             {searchTerm || tipoFilter || clienteFilter || dataInicio || dataFim
               ? 'Nenhum atendimento encontrado com os filtros aplicados'
               : 'Nenhum atendimento cadastrado'}
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-muted border-b border-border">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Cliente
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Assunto
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Tipo
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Data/Hora
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Duração
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Ações
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {filteredAtendimentos.map((atendimento) => {
                   const cliente = clientes.find((c) => c.id === atendimento.cliente_id)
                   return (
-                    <tr key={atendimento.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={atendimento.id} className="hover:bg-muted transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <Link
                           to={`/clientes/${atendimento.cliente_id}/editar`}
@@ -237,13 +237,13 @@ export default function Atendimento() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm font-medium text-foreground">{atendimento.assunto}</div>
-                        <div className="text-sm text-gray-500 mt-1 line-clamp-2">{atendimento.descricao}</div>
+                        <div className="text-sm text-muted-foreground mt-1 line-clamp-2">{atendimento.descricao}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">{getTipoBadge(atendimento.tipo)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                         {formatDateTime(atendimento.data_atendimento)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                         {formatDuracao(atendimento.duracao_minutos)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
