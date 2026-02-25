@@ -1,4 +1,4 @@
-ï»¿import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Plus, Search, Edit, Sparkles, FileSpreadsheet, ChevronUp, ChevronDown, FileText } from 'lucide-react'
 
@@ -112,7 +112,7 @@ export default function Clientes() {
     })
   }, [principais])
 
-  // Filtro client-side: busca + responsÃ¡vel; sÃ³ quando NÃƒO hÃ¡ filtros inteligentes (esses sÃ£o aplicados no backend)
+  // Filtro client-side: busca + responsável; só quando NÃO há filtros inteligentes (esses são aplicados no backend)
   const clientes = useMemo(() => {
     if (smartConditions.length > 0) return clientesRaw
     let list = clientesRaw
@@ -181,7 +181,7 @@ export default function Clientes() {
     }
   }
 
-  // Filtro e ordenaÃ§Ã£o da lista de contratos
+  // Filtro e ordenação da lista de contratos
   const contratosFiltrados = useMemo(() => {
     let list = contratosRaw
     if (contratosSearch.trim()) {
@@ -262,7 +262,7 @@ export default function Clientes() {
         <p className="text-red-600 mb-4">Erro ao carregar clientes: {error.message}</p>
         <button
           onClick={() => refetch()}
-          className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
         >
           Tentar novamente
         </button>
@@ -297,7 +297,7 @@ export default function Clientes() {
           </button>
           <Link
             to="/clientes/novo"
-            className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
           >
             <Plus className="w-5 h-5" />
             Novo Cliente
@@ -353,7 +353,7 @@ export default function Clientes() {
                     .catch(setContratosError)
                     .finally(() => setContratosLoading(false))
                 }}
-                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
               >
                 Tentar novamente
               </button>
@@ -378,7 +378,7 @@ export default function Clientes() {
                       onClick={() => handleContratosSort('numero')}
                     >
                       <span className="inline-flex items-center gap-1">
-                        NÂº Contrato
+                        Nº Contrato
                         {contratosSortBy === 'numero' &&
                           (contratosSortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
                       </span>
@@ -398,7 +398,7 @@ export default function Clientes() {
                       onClick={() => handleContratosSort('data_inicio')}
                     >
                       <span className="inline-flex items-center gap-1">
-                        Data InÃ­cio
+                        Data Início
                         {contratosSortBy === 'data_inicio' &&
                           (contratosSortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
                       </span>
@@ -434,7 +434,7 @@ export default function Clientes() {
                       </span>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      AÃ§Ãµes
+                      Ações
                     </th>
                   </tr>
                 </thead>
@@ -536,9 +536,9 @@ export default function Clientes() {
               value={responsavelFilter}
               onChange={(e) => setResponsavelFilter(e.target.value)}
               className="px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              title="Filtrar por responsÃ¡vel"
+              title="Filtrar por responsável"
             >
-              <option value="">Todos os responsÃ¡veis</option>
+              <option value="">Todos os responsáveis</option>
               {responsaveisUnicos.map((r) => (
                 <option key={r.responsavel_id} value={r.responsavel_id}>
                   {r.responsavel_name || '(sem nome)'}
@@ -613,7 +613,7 @@ export default function Clientes() {
                 onClick={() => handleSort('responsavel')}
               >
                 <span className="inline-flex items-center gap-1">
-                  ResponsÃ¡vel
+                  Responsável
                   {sortBy === 'responsavel' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
                 </span>
               </th>
@@ -627,7 +627,7 @@ export default function Clientes() {
                 </span>
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                AÃ§Ãµes
+                Ações
               </th>
             </tr>
           </thead>

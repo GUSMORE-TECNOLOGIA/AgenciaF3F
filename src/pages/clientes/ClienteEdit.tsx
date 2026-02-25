@@ -1,4 +1,4 @@
-ï»¿import { useState } from 'react'
+import { useState } from 'react'
 import { useParams, Link, useNavigate, Navigate } from 'react-router-dom'
 import { ArrowLeft, User, Briefcase, DollarSign, AlertCircle, MessageSquare, Link as LinkIcon, Trash2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -23,12 +23,12 @@ export default function ClienteEdit() {
 
   const podeFinanceiro = pode('financeiro', 'visualizar')
   const tabs = [
-    { id: 'identificacao', label: 'IdentificaÃ§Ã£o', icon: Briefcase },
-    { id: 'links', label: 'Links Ãšteis', icon: LinkIcon },
-    { id: 'responsaveis', label: 'ResponsÃ¡veis', icon: User },
-    { id: 'servicos', label: 'ServiÃ§os', icon: Briefcase },
+    { id: 'identificacao', label: 'Identificação', icon: Briefcase },
+    { id: 'links', label: 'Links Úteis', icon: LinkIcon },
+    { id: 'responsaveis', label: 'Responsáveis', icon: User },
+    { id: 'servicos', label: 'Serviços', icon: Briefcase },
     ...(podeFinanceiro ? [{ id: 'financeiro' as const, label: 'Financeiro', icon: DollarSign }] : []),
-    { id: 'ocorrencias', label: 'OcorrÃªncias', icon: AlertCircle },
+    { id: 'ocorrencias', label: 'Ocorrências', icon: AlertCircle },
     { id: 'atendimento', label: 'Atendimento', icon: MessageSquare },
   ]
 
@@ -36,7 +36,7 @@ export default function ClienteEdit() {
     if (!cliente) return
     const ok = await confirm({
       title: 'Excluir cliente',
-      message: `Deseja realmente excluir o cliente "${cliente.nome}"?\n\nEsta aÃ§Ã£o Ã© irreversÃ­vel.`,
+      message: `Deseja realmente excluir o cliente "${cliente.nome}"?\n\nEsta ação é irreversível.`,
       confirmLabel: 'Excluir',
       variant: 'danger',
     })
@@ -73,7 +73,7 @@ export default function ClienteEdit() {
           <button
             type="button"
             onClick={() => refetch()}
-            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
           >
             Tentar novamente
           </button>
@@ -91,7 +91,7 @@ export default function ClienteEdit() {
   if (!cliente) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">Cliente nÃ£o encontrado</p>
+        <p className="text-muted-foreground mb-4">Cliente não encontrado</p>
         <Link to="/clientes" className="text-primary hover:underline">
           Voltar para lista de clientes
         </Link>
@@ -106,7 +106,7 @@ export default function ClienteEdit() {
 
   return (
     <div className="max-w-[1200px]">
-      {/* Breadcrumb e botÃµes */}
+      {/* Breadcrumb e botões */}
       <div className="flex items-center justify-between mb-6">
         <Link
           to="/clientes"
@@ -169,19 +169,19 @@ export default function ClienteEdit() {
 
           {podeFinanceiro && activeTab === 'financeiro' && (
             <div className="text-center py-12 text-muted-foreground">
-              MÃ³dulo Financeiro em desenvolvimento
+              Módulo Financeiro em desenvolvimento
             </div>
           )}
 
           {activeTab === 'ocorrencias' && (
             <div className="text-center py-12 text-muted-foreground">
-              MÃ³dulo de OcorrÃªncias em desenvolvimento
+              Módulo de Ocorrências em desenvolvimento
             </div>
           )}
 
           {activeTab === 'atendimento' && (
             <div className="text-center py-12 text-muted-foreground">
-              MÃ³dulo de Atendimento em desenvolvimento
+              Módulo de Atendimento em desenvolvimento
             </div>
           )}
         </div>

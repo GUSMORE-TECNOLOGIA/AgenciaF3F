@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Sparkles, Plus, X, Save, Filter, BookmarkCheck } from 'lucide-react'
 import type { SmartFilter, SmartFilterCondition } from '@/services/clientes'
 import { useAuth } from '@/contexts/AuthContext'
@@ -228,7 +228,7 @@ export default function SmartFiltersModal({
                 {savedFilters.map((filter) => (
                   <span
                     key={filter.id}
-                    className="inline-flex items-center gap-2 px-3 py-1 bg-muted hover:bg-primary hover:text-white rounded-full text-sm cursor-pointer transition-colors"
+                    className="inline-flex items-center gap-2 px-3 py-1 bg-muted hover:bg-primary hover:text-primary-foreground rounded-full text-sm cursor-pointer transition-colors"
                     onClick={() => handleLoadFilter(filter)}
                   >
                     {filter.name}
@@ -332,7 +332,7 @@ export default function SmartFiltersModal({
                             updateCondition(condition.id!, { operator: e.target.value })
                           }
                           disabled={!condition.field}
-                          className="w-full px-3 py-2 border border-border rounded-lg text-sm disabled:opacity-50"
+                          className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-lg text-sm disabled:opacity-50"
                         >
                           {operators.map((op) => (
                             <option key={op.value} value={op.value}>
@@ -352,7 +352,7 @@ export default function SmartFiltersModal({
                                   updateCondition(condition.id!, { value: e.target.value })
                                 }
                                 disabled={!condition.field}
-                                className="w-full px-3 py-2 border border-border rounded-lg text-sm disabled:opacity-50"
+                                className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-lg text-sm disabled:opacity-50"
                               >
                                 <option value="">Selecione</option>
                                 {responsaveis.map((r) => (
@@ -368,7 +368,7 @@ export default function SmartFiltersModal({
                                   updateCondition(condition.id!, { value: e.target.value })
                                 }
                                 disabled={!condition.field}
-                                className="w-full px-3 py-2 border border-border rounded-lg text-sm disabled:opacity-50"
+                                className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-lg text-sm disabled:opacity-50"
                               >
                                 <option value="">Selecione</option>
                                 {fieldDef.options.map((opt) => (
@@ -384,7 +384,7 @@ export default function SmartFiltersModal({
                                   updateCondition(condition.id!, { value: e.target.value })
                                 }
                                 disabled={!condition.field}
-                                className="w-full px-3 py-2 border border-border rounded-lg text-sm disabled:opacity-50"
+                                className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-lg text-sm disabled:opacity-50"
                               >
                                 <option value="true">Sim</option>
                                 <option value="false">Não</option>
@@ -398,7 +398,7 @@ export default function SmartFiltersModal({
                                 }
                                 placeholder="Digite o valor"
                                 disabled={!condition.field}
-                                className="w-full px-3 py-2 border border-border rounded-lg text-sm disabled:opacity-50"
+                                className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-lg text-sm disabled:opacity-50"
                               />
                             )}
                           </>
@@ -450,7 +450,7 @@ export default function SmartFiltersModal({
                   <button
                     type="button"
                     onClick={handleSaveFilter}
-                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
                   >
                     Salvar
                   </button>
@@ -471,7 +471,7 @@ export default function SmartFiltersModal({
           <button
             type="button"
             onClick={handleApply}
-            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 inline-flex items-center gap-2"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 inline-flex items-center gap-2"
           >
             <Filter className="w-4 h-4" />
             Aplicar Filtros

@@ -52,7 +52,7 @@ export default function OcorrenciasTab({ clienteId, clienteNome }: OcorrenciasTa
         </div>
         <Link
           to={`/ocorrencias/nova?cliente_id=${clienteId}`}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
         >
           <AlertCircle className="w-4 h-4" />
           Nova Ocorrência

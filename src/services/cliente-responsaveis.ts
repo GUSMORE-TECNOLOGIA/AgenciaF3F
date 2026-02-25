@@ -78,28 +78,57 @@ export async function createClienteResponsavel(input: CreateClienteResponsavelIn
   }
 
   const now = new Date().toISOString()
-  const row = {
-    cliente_id: input.cliente_id,
-    responsavel_id: input.responsavel_id,
-    roles,
-    observacao: input.observacao?.trim() || null,
-    deleted_at: null,
-    updated_at: now,
-  }
 
   try {
-    const { data, error } = await supabase
+    // Verificar se já existe registro (ativo ou soft-deleted) para este par cliente/responsável.
+    // Se existir, fazer UPDATE (restaurar); caso contrário, INSERT.
+    // Isso evita que a política RLS cr_insert bloqueie upserts quando o cliente já tem responsáveis.
+    const { data: existing } = await supabase
       .from('cliente_responsaveis')
-      .upsert(row, {
-        onConflict: 'cliente_id,responsavel_id',
-        ignoreDuplicates: false,
-      })
-      .select('id, cliente_id, responsavel_id, roles, observacao, created_at, updated_at')
-      .single()
+      .select('id')
+      .eq('cliente_id', input.cliente_id)
+      .eq('responsavel_id', input.responsavel_id)
+      .maybeSingle()
 
-    if (error) {
+    let data: { id: string; cliente_id: string; responsavel_id: string; roles: string[]; observacao: string | null; created_at: string; updated_at: string } | null = null
+    let error: { message: string } | null = null
+
+    if (existing?.id) {
+      // Registro já existe — UPDATE (restaura se estava soft-deleted)
+      const result = await supabase
+        .from('cliente_responsaveis')
+        .update({
+          roles,
+          observacao: input.observacao?.trim() || null,
+          deleted_at: null,
+          updated_at: now,
+        })
+        .eq('id', existing.id)
+        .select('id, cliente_id, responsavel_id, roles, observacao, created_at, updated_at')
+        .single()
+      data = result.data
+      error = result.error
+    } else {
+      // Registro novo — INSERT
+      const result = await supabase
+        .from('cliente_responsaveis')
+        .insert({
+          cliente_id: input.cliente_id,
+          responsavel_id: input.responsavel_id,
+          roles,
+          observacao: input.observacao?.trim() || null,
+          deleted_at: null,
+          updated_at: now,
+        })
+        .select('id, cliente_id, responsavel_id, roles, observacao, created_at, updated_at')
+        .single()
+      data = result.data
+      error = result.error
+    }
+
+    if (error || !data) {
       console.error('Erro ao adicionar responsável:', error)
-      throw error
+      throw error ?? new Error('Nenhum dado retornado ao adicionar responsável.')
     }
 
     const name = await fetchResponsavelName(data.responsavel_id)

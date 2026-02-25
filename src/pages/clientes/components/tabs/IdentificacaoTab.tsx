@@ -1,4 +1,4 @@
-ï»¿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Cliente } from '@/types'
 import { useUpdateCliente } from '@/hooks/useCliente'
 import { ClienteUpdateInput } from '@/lib/validators/cliente-schema'
@@ -154,11 +154,11 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
               <button
                 onClick={handleSave}
                 disabled={saving || loading}
-                className="flex items-center gap-2 px-4 py-2 h-9 text-sm bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2 h-9 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {(saving || loading) && <Loader2 className="w-4 h-4 animate-spin" />}
                 <Save className="w-4 h-4" />
-                Salvar AlteraÃ§Ãµes
+                Salvar Alterações
               </button>
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
           </div>
         </div>
 
-        {/* InformaÃ§Ãµes do Sistema */}
+        {/* Informações do Sistema */}
         <div className="bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow">
           <div className="border-b border-border px-6 py-3">
             <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
@@ -201,7 +201,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
                 Criado em{' '}
                 {cliente.created_at
                   ? new Date(cliente.created_at).toLocaleDateString('pt-BR')
-                  : 'Data nÃ£o disponÃ­vel'}
+                  : 'Data não disponível'}
               </span>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">

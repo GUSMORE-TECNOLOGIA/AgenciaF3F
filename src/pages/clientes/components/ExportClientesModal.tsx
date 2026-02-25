@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { X, FileSpreadsheet, Loader2 } from 'lucide-react'
 import * as XLSX from 'xlsx'
 import type { Cliente } from '@/types'
@@ -279,7 +279,7 @@ export default function ExportClientesModal({
             type="button"
             onClick={handleExport}
             disabled={exporting || selected.size === 0}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 inline-flex items-center gap-2"
+            className="px-4 py-2 bg-green-600 dark:bg-green-700 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-800 disabled:opacity-50 inline-flex items-center gap-2"
           >
             {exporting ? (
               <>

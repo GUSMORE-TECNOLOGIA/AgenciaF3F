@@ -1,4 +1,4 @@
-Ôªøimport { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Perfil, PerfilPermissao, ModuloSistema } from '@/types'
 import { MODULOS_SISTEMA } from '@/services/perfis'
 
@@ -125,23 +125,23 @@ export default function PerfilPermissoesForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Descri√ß√£o (opcional)</label>
+          <label className="block text-sm font-medium text-foreground mb-1">DescriÁ„o (opcional)</label>
           <input
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
             className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-            placeholder="Breve descri√ß√£o do perfil"
+            placeholder="Breve descriÁ„o do perfil"
           />
         </div>
       </div>
 
       <div className="mb-6">
-        <h4 className="text-sm font-medium text-foreground mb-2">Permiss√µes por m√≥dulo</h4>
+        <h4 className="text-sm font-medium text-foreground mb-2">Permissıes por mÛdulo</h4>
         <div className="border border-border rounded-lg overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-muted border-b border-border">
-                <th className="text-left py-3 px-4 font-medium text-foreground">M√≥dulo</th>
+                <th className="text-left py-3 px-4 font-medium text-foreground">MÛdulo</th>
                 <th className="text-center py-3 px-4 font-medium text-foreground">Visualizar</th>
                 <th className="text-center py-3 px-4 font-medium text-foreground">Editar</th>
                 <th className="text-center py-3 px-4 font-medium text-foreground">Excluir</th>
@@ -194,7 +194,7 @@ export default function PerfilPermissoesForm({
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50"
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
         >
           {loading ? 'Salvando...' : initialPerfil ? 'Salvar' : 'Criar perfil'}
         </button>

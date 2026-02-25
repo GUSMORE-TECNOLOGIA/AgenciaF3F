@@ -1,4 +1,4 @@
-Ôªøimport { useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { Camera, Upload, X, Loader2 } from 'lucide-react'
 import { supabase } from '@/services/supabase'
 import { useModal } from '@/contexts/ModalContext'
@@ -30,18 +30,18 @@ export default function ClienteLogoUpload({
     // Validar tipo de arquivo
     if (!file.type.startsWith('image/')) {
       await alert({
-        title: 'Arquivo inv√°lido',
+        title: 'Arquivo inv·lido',
         message: 'Por favor, selecione um arquivo de imagem',
         variant: 'warning',
       })
       return
     }
 
-    // Validar tamanho (m√°ximo 5MB)
+    // Validar tamanho (m·ximo 5MB)
     if (file.size > 5 * 1024 * 1024) {
       await alert({
         title: 'Arquivo muito grande',
-        message: 'A imagem deve ter no m√°ximo 5MB',
+        message: 'A imagem deve ter no m·ximo 5MB',
         variant: 'warning',
       })
       return
@@ -71,10 +71,10 @@ export default function ClienteLogoUpload({
         })
 
       if (uploadError) {
-        // Se o bucket n√£o existir, criar um tempor√°rio ou usar URL externa
+        // Se o bucket n„o existir, criar um tempor·rio ou usar URL externa
         console.warn('Erro ao fazer upload para Supabase Storage:', uploadError)
         // Por enquanto, usar data URL como fallback
-        // Em produ√ß√£o, voc√™ deve configurar o bucket 'clientes-logos' no Supabase
+        // Em produÁ„o, vocÍ deve configurar o bucket 'clientes-logos' no Supabase
         await alert({
           title: 'Erro de upload',
           message: 'Erro ao fazer upload. Configure o bucket \"clientes-logos\" no Supabase Storage.',
@@ -84,7 +84,7 @@ export default function ClienteLogoUpload({
         return
       }
 
-      // Obter URL p√∫blica
+      // Obter URL p˙blica
       const {
         data: { publicUrl },
       } = supabase.storage.from('clientes-logos').getPublicUrl(filePath)
@@ -149,7 +149,7 @@ export default function ClienteLogoUpload({
         )}
       </div>
 
-      {/* Bot√µes de A√ß√£o */}
+      {/* Botıes de AÁ„o */}
       <div className="flex items-center justify-center gap-2">
         <input
           ref={fileInputRef}
@@ -178,7 +178,7 @@ export default function ClienteLogoUpload({
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
           className="h-9 w-9 flex items-center justify-center border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          title="C√¢mera"
+          title="C‚mera"
         >
           <Camera className="h-4 w-4" />
         </button>
@@ -197,9 +197,9 @@ export default function ClienteLogoUpload({
         )}
       </div>
 
-      {/* Informa√ß√µes de formato */}
+      {/* InformaÁıes de formato */}
       <div className="text-xs text-muted-foreground text-center space-y-1">
-        <p>Formatos: JPG, PNG, WEBP (m√°x. 5MB)</p>
+        <p>Formatos: JPG, PNG, WEBP (m·x. 5MB)</p>
       </div>
     </div>
   )

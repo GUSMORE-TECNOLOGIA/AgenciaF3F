@@ -260,7 +260,7 @@ export default function Dashboard() {
               <span className="font-bold text-emerald-700 dark:text-emerald-400">{clientes.ativos}</span>
             </div>
             <div className="flex items-center gap-3 rounded-xl bg-muted px-4 py-3 border border-border">
-              <div className="w-3 h-3 rounded-full bg-gray-400" />
+              <div className="w-3 h-3 rounded-full bg-slate-400 dark:bg-slate-500" />
               <span className="text-sm text-muted-foreground">Inativos</span>
               <span className="font-bold text-foreground">{clientes.inativos}</span>
             </div>
@@ -528,7 +528,7 @@ function ContratosPanel({
             <select
               value={filterResponsavel}
               onChange={(e) => setFilterResponsavel(e.target.value)}
-              className="rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm focus:ring-2 focus:ring-ring focus:border-ring"
               title="Filtrar por responsável (agente)"
             >
               <option value="">Todos os responsáveis</option>
@@ -542,7 +542,7 @@ function ContratosPanel({
           <select
             value={filterFaixa}
             onChange={(e) => setFilterFaixa(e.target.value)}
-            className="rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm focus:ring-2 focus:ring-ring focus:border-ring"
             title="Filtrar por faixa de vencimento"
           >
             {faixaKeys.map((f) => (

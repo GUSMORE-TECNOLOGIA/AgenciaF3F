@@ -1,4 +1,4 @@
-ï»¿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Save, Loader2 } from 'lucide-react'
 import { ClientePlano } from '@/types'
 import { useUpdateClientePlano } from '@/hooks/usePlanos'
@@ -103,11 +103,11 @@ export default function EditClientePlanoModal({
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-6">
-            {/* InformaÃ§Ãµes do Plano */}
+            {/* Informações do Plano */}
             <div className="p-4 bg-muted rounded-lg border border-border">
               <div className="text-sm font-medium text-foreground mb-2">Plano</div>
               <div className="text-lg font-semibold text-foreground">
-                {contrato.plano?.nome || 'Plano nÃ£o encontrado'}
+                {contrato.plano?.nome || 'Plano não encontrado'}
               </div>
               {contrato.plano && (
                 <div className="text-sm text-muted-foreground mt-1">
@@ -153,16 +153,16 @@ export default function EditClientePlanoModal({
                 }`}
               >
                 <option value="BRL">BRL - Real Brasileiro</option>
-                <option value="USD">USD - DÃ³lar Americano</option>
+                <option value="USD">USD - Dólar Americano</option>
                 <option value="EUR">EUR - Euro</option>
               </select>
             </div>
 
-            {/* Data InÃ­cio / Data Fim (apenas Super Edit) */}
+            {/* Data Início / Data Fim (apenas Super Edit) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="data_inicio" className="block text-sm font-medium text-foreground mb-2">
-                  Data de InÃ­cio
+                  Data de Início
                 </label>
                 <input
                   id="data_inicio"
@@ -271,10 +271,10 @@ export default function EditClientePlanoModal({
               </select>
             </div>
 
-            {/* ObservaÃ§Ãµes */}
+            {/* Observações */}
             <div>
               <label htmlFor="observacoes" className="block text-sm font-medium text-foreground mb-2">
-                ObservaÃ§Ãµes
+                Observações
               </label>
               <textarea
                 id="observacoes"
@@ -282,12 +282,12 @@ export default function EditClientePlanoModal({
                 onChange={(e) => setFormData((prev) => ({ ...prev, observacoes: e.target.value }))}
                 rows={4}
                 className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                placeholder="ObservaÃ§Ãµes sobre o contrato..."
+                placeholder="Observações sobre o contrato..."
               />
             </div>
           </div>
 
-          {/* BotÃµes */}
+          {/* Botões */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <button
               type="button"
@@ -300,11 +300,11 @@ export default function EditClientePlanoModal({
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar AlteraÃ§Ãµes
+              Salvar Alterações
             </button>
           </div>
         </form>

@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Search, Package, Edit, Trash2, CheckCircle2, XCircle, Loader2, Eye } from 'lucide-react'
 import { usePlanos } from '@/hooks/usePlanos'
@@ -57,7 +57,7 @@ export default function Planos() {
         </div>
         <Link
           to="/planos/novo"
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
         >
           <Plus className="w-5 h-5" />
           Novo Plano
@@ -87,7 +87,7 @@ export default function Planos() {
               onClick={() => setFilterAtivo(undefined)}
               className={`px-4 py-2 rounded-lg border transition-colors ${
                 filterAtivo === undefined
-                  ? 'bg-primary text-white border-primary'
+                  ? 'bg-primary text-primary-foreground border-primary'
                   : 'bg-card text-foreground border-border hover:bg-muted'
               }`}
             >
@@ -97,7 +97,7 @@ export default function Planos() {
               onClick={() => setFilterAtivo(true)}
               className={`px-4 py-2 rounded-lg border transition-colors ${
                 filterAtivo === true
-                  ? 'bg-green-600 text-white border-green-600'
+                  ? 'bg-green-600 dark:bg-green-700 text-white border-green-600 dark:border-green-700'
                   : 'bg-card text-foreground border-border hover:bg-muted'
               }`}
             >
@@ -107,7 +107,7 @@ export default function Planos() {
               onClick={() => setFilterAtivo(false)}
               className={`px-4 py-2 rounded-lg border transition-colors ${
                 filterAtivo === false
-                  ? 'bg-gray-600 text-white border-gray-600'
+                  ? 'bg-slate-500 dark:bg-slate-600 text-white border-slate-500 dark:border-slate-600'
                   : 'bg-card text-foreground border-border hover:bg-muted'
               }`}
             >
@@ -136,7 +136,7 @@ export default function Planos() {
           {!searchTerm && filterAtivo === undefined && (
             <Link
               to="/planos/novo"
-              className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
             >
               <Plus className="w-5 h-5" />
               Criar primeiro plano

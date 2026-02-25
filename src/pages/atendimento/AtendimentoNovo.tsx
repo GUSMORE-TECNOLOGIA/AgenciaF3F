@@ -1,4 +1,4 @@
-ï»¿import { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Save, Loader2, MessageSquare } from 'lucide-react'
 import { useCreateAtendimento } from '@/hooks/useAtendimentos'
@@ -123,7 +123,7 @@ export default function AtendimentoNovo() {
               {errors.cliente_id && <p className="mt-1 text-sm text-red-600">{errors.cliente_id}</p>}
             </div>
 
-            {/* UsuÃ¡rio */}
+            {/* Usuário */}
             <div>
               <label htmlFor="usuario_id" className="block text-sm font-medium text-foreground mb-2">
                 Atendente <span className="text-red-500">*</span>
@@ -166,10 +166,10 @@ export default function AtendimentoNovo() {
                 }`}
                 required
               >
-                <option value="email">ðŸ“§ Email</option>
-                <option value="whatsapp">ðŸ’¬ WhatsApp</option>
-                <option value="telefone">ðŸ“ž Telefone</option>
-                <option value="presencial">ðŸ‘¤ Presencial</option>
+                <option value="email">?? Email</option>
+                <option value="whatsapp">?? WhatsApp</option>
+                <option value="telefone">?? Telefone</option>
+                <option value="presencial">?? Presencial</option>
               </select>
               {errors.tipo && <p className="mt-1 text-sm text-red-600">{errors.tipo}</p>}
             </div>
@@ -187,16 +187,16 @@ export default function AtendimentoNovo() {
                 className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.assunto ? 'border-red-500' : 'border-border'
                 }`}
-                placeholder="Ex: DÃºvida sobre serviÃ§o, SolicitaÃ§Ã£o de alteraÃ§Ã£o..."
+                placeholder="Ex: Dúvida sobre serviço, Solicitação de alteração..."
                 required
               />
               {errors.assunto && <p className="mt-1 text-sm text-red-600">{errors.assunto}</p>}
             </div>
 
-            {/* DescriÃ§Ã£o */}
+            {/* Descrição */}
             <div>
               <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
-                DescriÃ§Ã£o <span className="text-red-500">*</span>
+                Descrição <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="descricao"
@@ -235,10 +235,10 @@ export default function AtendimentoNovo() {
               {errors.data_atendimento && <p className="mt-1 text-sm text-red-600">{errors.data_atendimento}</p>}
             </div>
 
-            {/* DuraÃ§Ã£o */}
+            {/* Duração */}
             <div>
               <label htmlFor="duracao_minutos" className="block text-sm font-medium text-foreground mb-2">
-                DuraÃ§Ã£o (minutos)
+                Duração (minutos)
               </label>
               <input
                 id="duracao_minutos"
@@ -255,11 +255,11 @@ export default function AtendimentoNovo() {
                 className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 placeholder="Ex: 30"
               />
-              <p className="mt-1 text-xs text-muted-foreground">Tempo de duraÃ§Ã£o do atendimento em minutos</p>
+              <p className="mt-1 text-xs text-muted-foreground">Tempo de duração do atendimento em minutos</p>
             </div>
           </div>
 
-          {/* BotÃµes */}
+          {/* Botões */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/atendimento"
@@ -270,7 +270,7 @@ export default function AtendimentoNovo() {
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />

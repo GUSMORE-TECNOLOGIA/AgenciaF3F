@@ -1,4 +1,4 @@
-Ôªøimport { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Save, Loader2, DollarSign } from 'lucide-react'
 import { useTransacao, useUpdateTransacao } from '@/hooks/useFinanceiro'
@@ -67,10 +67,10 @@ export default function TransacaoEdit() {
         })
         setErrors(zodErrors)
       } else {
-        console.error('Erro ao atualizar transa√ß√£o:', error)
+        console.error('Erro ao atualizar transaÁ„o:', error)
         await alert({
           title: 'Erro',
-          message: 'Erro ao atualizar transa√ß√£o. Tente novamente.',
+          message: 'Erro ao atualizar transaÁ„o. Tente novamente.',
           variant: 'danger',
         })
       }
@@ -81,7 +81,7 @@ export default function TransacaoEdit() {
     return (
       <div className="text-center py-12">
         <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-        <p className="text-muted-foreground">Carregando dados da transa√ß√£o...</p>
+        <p className="text-muted-foreground">Carregando dados da transaÁ„o...</p>
       </div>
     )
   }
@@ -89,7 +89,7 @@ export default function TransacaoEdit() {
   if (!transacao) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">Transa√ß√£o n√£o encontrada</p>
+        <p className="text-muted-foreground mb-4">TransaÁ„o n„o encontrada</p>
         <Link to="/financeiro" className="text-primary hover:underline">
           Voltar para financeiro
         </Link>
@@ -111,9 +111,9 @@ export default function TransacaoEdit() {
         <div className="border-b border-border px-6 py-4">
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <DollarSign className="w-6 h-6 text-primary" />
-            Editar Transa√ß√£o
+            Editar TransaÁ„o
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Atualize as informa√ß√µes da transa√ß√£o</p>
+          <p className="text-sm text-muted-foreground mt-1">Atualize as informaÁıes da transaÁ„o</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
@@ -123,7 +123,7 @@ export default function TransacaoEdit() {
               <label className="block text-sm font-medium text-foreground mb-2">Cliente</label>
               <input
                 type="text"
-                value={clientes.find((c) => c.id === transacao.cliente_id)?.nome || 'Cliente n√£o encontrado'}
+                value={clientes.find((c) => c.id === transacao.cliente_id)?.nome || 'Cliente n„o encontrado'}
                 disabled
                 className="w-full px-4 py-2 border border-border rounded-lg bg-muted text-muted-foreground"
               />
@@ -160,10 +160,10 @@ export default function TransacaoEdit() {
               {errors.valor && <p className="mt-1 text-sm text-red-600">{errors.valor}</p>}
             </div>
 
-            {/* Descri√ß√£o */}
+            {/* DescriÁ„o */}
             <div>
               <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
-                Descri√ß√£o <span className="text-red-500">*</span>
+                DescriÁ„o <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="descricao"
@@ -220,11 +220,11 @@ export default function TransacaoEdit() {
               </select>
             </div>
 
-            {/* M√©todo de Pagamento */}
+            {/* MÈtodo de Pagamento */}
             {formData.status === 'pago' && (
               <div>
                 <label htmlFor="metodo_pagamento" className="block text-sm font-medium text-foreground mb-2">
-                  M√©todo de Pagamento
+                  MÈtodo de Pagamento
                 </label>
                 <select
                   id="metodo_pagamento"
@@ -234,10 +234,10 @@ export default function TransacaoEdit() {
                 >
                   <option value="">Selecione...</option>
                   <option value="PIX">PIX</option>
-                  <option value="Cart√£o de Cr√©dito">Cart√£o de Cr√©dito</option>
-                  <option value="Cart√£o de D√©bito">Cart√£o de D√©bito</option>
+                  <option value="Cart„o de CrÈdito">Cart„o de CrÈdito</option>
+                  <option value="Cart„o de DÈbito">Cart„o de DÈbito</option>
                   <option value="Boleto">Boleto</option>
-                  <option value="Transfer√™ncia">Transfer√™ncia Banc√°ria</option>
+                  <option value="TransferÍncia">TransferÍncia Banc·ria</option>
                   <option value="Dinheiro">Dinheiro</option>
                 </select>
               </div>
@@ -260,7 +260,7 @@ export default function TransacaoEdit() {
             )}
           </div>
 
-          {/* Bot√µes */}
+          {/* Botıes */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/financeiro"
@@ -271,11 +271,11 @@ export default function TransacaoEdit() {
             <button
               type="submit"
               disabled={updating}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {updating && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar Altera√ß√µes
+              Salvar AlteraÁıes
             </button>
           </div>
         </form>

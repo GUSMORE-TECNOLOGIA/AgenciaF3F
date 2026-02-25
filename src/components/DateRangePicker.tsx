@@ -277,7 +277,7 @@ export default function DateRangePicker({ value, onChange, placeholder = 'Seleci
               <button
                 type="button"
                 onClick={handleAtualizar}
-                className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 text-sm font-medium"
+                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium"
               >
                 Atualizar
               </button>

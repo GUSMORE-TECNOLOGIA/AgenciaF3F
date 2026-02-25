@@ -1,4 +1,4 @@
-ï»¿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Save, Loader2, MessageSquare } from 'lucide-react'
 import { useAtendimento, useUpdateAtendimento } from '@/hooks/useAtendimentos'
@@ -100,7 +100,7 @@ export default function AtendimentoEdit() {
   if (!atendimento) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">Atendimento nÃ£o encontrado</p>
+        <p className="text-muted-foreground mb-4">Atendimento não encontrado</p>
         <Link to="/atendimento" className="text-primary hover:underline">
           Voltar para atendimento
         </Link>
@@ -124,7 +124,7 @@ export default function AtendimentoEdit() {
             <MessageSquare className="w-6 h-6 text-primary" />
             Editar Atendimento
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Atualize as informaÃ§Ãµes do atendimento</p>
+          <p className="text-sm text-muted-foreground mt-1">Atualize as informações do atendimento</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
@@ -134,18 +134,18 @@ export default function AtendimentoEdit() {
               <label className="block text-sm font-medium text-foreground mb-2">Cliente</label>
               <input
                 type="text"
-                value="Cliente (nÃ£o editÃ¡vel)"
+                value="Cliente (não editável)"
                 disabled
                 className="w-full px-4 py-2 border border-border rounded-lg bg-muted text-muted-foreground"
               />
             </div>
 
-            {/* UsuÃ¡rio (readonly) */}
+            {/* Usuário (readonly) */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">Atendente</label>
               <input
                 type="text"
-                value={usuarios.find((u) => u.id === atendimento.usuario_id)?.name || 'UsuÃ¡rio nÃ£o encontrado'}
+                value={usuarios.find((u) => u.id === atendimento.usuario_id)?.name || 'Usuário não encontrado'}
                 disabled
                 className="w-full px-4 py-2 border border-border rounded-lg bg-muted text-muted-foreground"
               />
@@ -170,10 +170,10 @@ export default function AtendimentoEdit() {
                 }`}
                 required
               >
-                <option value="email">ðŸ“§ Email</option>
-                <option value="whatsapp">ðŸ’¬ WhatsApp</option>
-                <option value="telefone">ðŸ“ž Telefone</option>
-                <option value="presencial">ðŸ‘¤ Presencial</option>
+                <option value="email">?? Email</option>
+                <option value="whatsapp">?? WhatsApp</option>
+                <option value="telefone">?? Telefone</option>
+                <option value="presencial">?? Presencial</option>
               </select>
               {errors.tipo && <p className="mt-1 text-sm text-red-600">{errors.tipo}</p>}
             </div>
@@ -196,10 +196,10 @@ export default function AtendimentoEdit() {
               {errors.assunto && <p className="mt-1 text-sm text-red-600">{errors.assunto}</p>}
             </div>
 
-            {/* DescriÃ§Ã£o */}
+            {/* Descrição */}
             <div>
               <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
-                DescriÃ§Ã£o <span className="text-red-500">*</span>
+                Descrição <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="descricao"
@@ -237,10 +237,10 @@ export default function AtendimentoEdit() {
               {errors.data_atendimento && <p className="mt-1 text-sm text-red-600">{errors.data_atendimento}</p>}
             </div>
 
-            {/* DuraÃ§Ã£o */}
+            {/* Duração */}
             <div>
               <label htmlFor="duracao_minutos" className="block text-sm font-medium text-foreground mb-2">
-                DuraÃ§Ã£o (minutos)
+                Duração (minutos)
               </label>
               <input
                 id="duracao_minutos"
@@ -260,7 +260,7 @@ export default function AtendimentoEdit() {
             </div>
           </div>
 
-          {/* BotÃµes */}
+          {/* Botões */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/atendimento"
@@ -271,11 +271,11 @@ export default function AtendimentoEdit() {
             <button
               type="submit"
               disabled={updating}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {updating && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar AlteraÃ§Ãµes
+              Salvar Alterações
             </button>
           </div>
         </form>

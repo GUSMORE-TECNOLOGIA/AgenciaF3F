@@ -1,4 +1,4 @@
-ï»¿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Save, Loader2, AlertCircle } from 'lucide-react'
 import { useCreateOcorrencia } from '@/hooks/useOcorrencias'
@@ -58,7 +58,7 @@ export default function OcorrenciaNovo() {
     setErrors({})
 
     if (isCancelamento && !(formData.notas ?? '').trim()) {
-      setErrors({ notas: 'Motivo/Causa Ã© obrigatÃ³rio para tipo Cancelamento.' })
+      setErrors({ notas: 'Motivo/Causa é obrigatório para tipo Cancelamento.' })
       return
     }
 
@@ -76,10 +76,10 @@ export default function OcorrenciaNovo() {
         })
         setErrors(zodErrors)
       } else {
-        console.error('Erro ao criar ocorrÃªncia:', error)
+        console.error('Erro ao criar ocorrência:', error)
         await alert({
           title: 'Erro',
-          message: 'Erro ao criar ocorrÃªncia. Tente novamente.',
+          message: 'Erro ao criar ocorrência. Tente novamente.',
           variant: 'danger',
         })
       }
@@ -93,16 +93,16 @@ export default function OcorrenciaNovo() {
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-5 h-5" />
-        Voltar para ocorrÃªncias
+        Voltar para ocorrências
       </Link>
 
       <div className="bg-card rounded-lg shadow-sm border border-border">
         <div className="border-b border-border px-6 py-4">
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <AlertCircle className="w-6 h-6 text-primary" />
-            Nova OcorrÃªncia
+            Nova Ocorrência
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Registre uma nova ocorrÃªncia</p>
+          <p className="text-sm text-muted-foreground mt-1">Registre uma nova ocorrência</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
@@ -186,7 +186,7 @@ export default function OcorrenciaNovo() {
             {/* Data */}
             <div>
               <label htmlFor="ocorreu_em" className="block text-sm font-medium text-foreground mb-2">
-                Data da OcorrÃªncia <span className="text-red-500">*</span>
+                Data da Ocorrência <span className="text-red-500">*</span>
               </label>
               <input
                 id="ocorreu_em"
@@ -205,7 +205,7 @@ export default function OcorrenciaNovo() {
             {/* Notas */}
             <div>
               <label htmlFor="notas" className="block text-sm font-medium text-foreground mb-2">
-                {isCancelamento ? 'Motivo/Causa (obrigatÃ³rio)' : 'Notas'} <span className="text-red-500">*</span>
+                {isCancelamento ? 'Motivo/Causa (obrigatório)' : 'Notas'} <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="notas"
@@ -215,16 +215,16 @@ export default function OcorrenciaNovo() {
                 className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.notas ? 'border-red-500' : 'border-border'
                 }`}
-                placeholder="Descreva a ocorrÃªncia em detalhes..."
+                placeholder="Descreva a ocorrência em detalhes..."
                 required
               />
               {errors.notas && <p className="mt-1 text-sm text-red-600">{errors.notas}</p>}
             </div>
 
-            {/* ResponsÃ¡vel */}
+            {/* Responsável */}
             <div>
               <label htmlFor="responsavel_id" className="block text-sm font-medium text-foreground mb-2">
-                ResponsÃ¡vel <span className="text-red-500">*</span>
+                Responsável <span className="text-red-500">*</span>
               </label>
               <select
                 id="responsavel_id"
@@ -235,7 +235,7 @@ export default function OcorrenciaNovo() {
                 }`}
                 required
               >
-                <option value="">Selecione um responsÃ¡vel...</option>
+                <option value="">Selecione um responsável...</option>
                 {usuarios.map((usuario) => (
                   <option key={usuario.id} value={usuario.id}>
                     {usuario.name} ({usuario.email})
@@ -262,7 +262,7 @@ export default function OcorrenciaNovo() {
                 className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               >
                 <option value="baixa">Baixa</option>
-                <option value="media">MÃ©dia</option>
+                <option value="media">Média</option>
                 <option value="alta">Alta</option>
                 <option value="urgente">Urgente</option>
               </select>
@@ -329,7 +329,7 @@ export default function OcorrenciaNovo() {
               </select>
             </div>
 
-            {/* SensÃ­vel */}
+            {/* Sensível */}
             <div>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
@@ -338,15 +338,15 @@ export default function OcorrenciaNovo() {
                   onChange={(e) => setFormData((prev) => ({ ...prev, is_sensitive: e.target.checked }))}
                   className="w-5 h-5 text-primary border-border rounded focus:ring-primary/20"
                 />
-                <span className="text-sm font-medium text-foreground">OcorrÃªncia sensÃ­vel</span>
+                <span className="text-sm font-medium text-foreground">Ocorrência sensível</span>
               </label>
               <p className="mt-1 text-xs text-muted-foreground ml-8">
-                Marque se esta ocorrÃªncia contÃ©m informaÃ§Ãµes sensÃ­veis
+                Marque se esta ocorrência contém informações sensíveis
               </p>
             </div>
           </div>
 
-          {/* BotÃµes */}
+          {/* Botões */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/ocorrencias"
@@ -357,11 +357,11 @@ export default function OcorrenciaNovo() {
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar OcorrÃªncia
+              Salvar Ocorrência
             </button>
           </div>
         </form>

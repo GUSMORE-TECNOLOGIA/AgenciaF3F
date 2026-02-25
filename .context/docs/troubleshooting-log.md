@@ -4,6 +4,19 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 
 ---
 
+## 2026-02-25 – Admin ainda não consegue adicionar responsável (upsert bloqueado por RLS cr_insert) (RESOLVIDO)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-02-25 |
+| **Descrição do erro** | Admin recebia "Erro ao adicionar responsável. Tente novamente ou verifique permissões." mesmo após a migration `20260224220000` que corrigiu as políticas duplicadas. |
+| **Arquivo(s)/módulo** | `src/services/cliente-responsaveis.ts`; política RLS `cr_insert` em `cliente_responsaveis`. |
+| **Causa raiz** | O service usava `.upsert()` com `onConflict: 'cliente_id,responsavel_id'`. O PostgREST avalia a política `cr_insert WITH CHECK` **mesmo quando o upsert vai resolver como UPDATE** (conflito na unique constraint). A condição `NOT EXISTS (SELECT 1 FROM cliente_responsaveis WHERE cliente_id = ...)` retornava `FALSE` quando o cliente já tinha pelo menos um responsável, bloqueando o upsert para admins tentando adicionar um segundo responsável. |
+| **Solução aplicada** | (1) Substituído `.upsert()` por lógica explícita no service: primeiro busca se já existe registro (`maybeSingle`), depois faz `UPDATE` (restaura) ou `INSERT` conforme o resultado. Isso garante que a política `cr_insert` só é avaliada em INSERTs genuinamente novos. (2) Migration `fix_cr_insert_policy_simplify`: simplificada a política `cr_insert` removendo a condição `NOT EXISTS` — agora permite INSERT para admin ou para responsável já vinculado ao cliente. |
+| **Lição aprendida** | Nunca usar `.upsert()` do Supabase em tabelas com políticas RLS complexas no INSERT. O PostgREST avalia `WITH CHECK` do INSERT mesmo em conflitos resolvidos como UPDATE. Preferir lógica explícita SELECT → INSERT ou UPDATE no service. |
+
+---
+
 ## 2026-02-24 – Admin não consegue adicionar responsável ao cliente (RESOLVIDO)
 
 | Campo | Conteúdo |

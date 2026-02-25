@@ -1,4 +1,4 @@
-ï»¿import { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { useCreateServico } from '@/hooks/usePlanos'
@@ -38,10 +38,10 @@ export default function ServicoNovo() {
         })
         setErrors(zodErrors)
       } else {
-        console.error('Erro ao criar serviÃ§o:', error)
+        console.error('Erro ao criar serviço:', error)
         await alert({
           title: 'Erro',
-          message: 'Erro ao criar serviÃ§o. Tente novamente.',
+          message: 'Erro ao criar serviço. Tente novamente.',
           variant: 'danger',
         })
       }
@@ -55,13 +55,13 @@ export default function ServicoNovo() {
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-5 h-5" />
-        Voltar para serviÃ§os
+        Voltar para serviços
       </Link>
 
       <div className="bg-card rounded-lg shadow-sm border border-border">
         <div className="border-b border-border px-6 py-4">
-          <h1 className="text-2xl font-bold text-foreground">Novo ServiÃ§o</h1>
-          <p className="text-sm text-muted-foreground mt-1">Cadastre um novo serviÃ§o disponÃ­vel na agÃªncia</p>
+          <h1 className="text-2xl font-bold text-foreground">Novo Serviço</h1>
+          <p className="text-sm text-muted-foreground mt-1">Cadastre um novo serviço disponível na agência</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
@@ -69,7 +69,7 @@ export default function ServicoNovo() {
             {/* Nome */}
             <div>
               <label htmlFor="nome" className="block text-sm font-medium text-foreground mb-2">
-                Nome do ServiÃ§o <span className="text-red-500">*</span>
+                Nome do Serviço <span className="text-red-500">*</span>
               </label>
               <input
                 id="nome"
@@ -79,16 +79,16 @@ export default function ServicoNovo() {
                 className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.nome ? 'border-red-500' : 'border-border'
                 }`}
-                placeholder="Ex: TrÃ¡fego, EstratÃ©gia, PÃ¡gina..."
+                placeholder="Ex: Tráfego, Estratégia, Página..."
                 required
               />
               {errors.nome && <p className="mt-1 text-sm text-red-600">{errors.nome}</p>}
             </div>
 
-            {/* DescriÃ§Ã£o */}
+            {/* Descrição */}
             <div>
               <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
-                DescriÃ§Ã£o
+                Descrição
               </label>
               <textarea
                 id="descricao"
@@ -96,7 +96,7 @@ export default function ServicoNovo() {
                 onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))}
                 rows={4}
                 className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                placeholder="Descreva o serviÃ§o..."
+                placeholder="Descreva o serviço..."
               />
             </div>
 
@@ -124,7 +124,7 @@ export default function ServicoNovo() {
               />
               {errors.valor && <p className="mt-1 text-sm text-red-600">{errors.valor}</p>}
               <p className="mt-1 text-xs text-muted-foreground">
-                Valor opcional. Pode ser definido quando o serviÃ§o for adicionado a um plano.
+                Valor opcional. Pode ser definido quando o serviço for adicionado a um plano.
               </p>
             </div>
 
@@ -137,15 +137,15 @@ export default function ServicoNovo() {
                   onChange={(e) => setFormData((prev) => ({ ...prev, ativo: e.target.checked }))}
                   className="w-5 h-5 text-primary border-border rounded focus:ring-primary/20"
                 />
-                <span className="text-sm font-medium text-foreground">ServiÃ§o ativo</span>
+                <span className="text-sm font-medium text-foreground">Serviço ativo</span>
               </label>
               <p className="mt-1 text-xs text-muted-foreground ml-8">
-                ServiÃ§os inativos nÃ£o aparecerÃ£o nas opÃ§Ãµes de seleÃ§Ã£o
+                Serviços inativos não aparecerão nas opções de seleção
               </p>
             </div>
           </div>
 
-          {/* BotÃµes */}
+          {/* Botões */}
           <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/servicos"
@@ -156,11 +156,11 @@ export default function ServicoNovo() {
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               <Save className="w-4 h-4" />
-              Salvar ServiÃ§o
+              Salvar Serviço
             </button>
           </div>
         </form>

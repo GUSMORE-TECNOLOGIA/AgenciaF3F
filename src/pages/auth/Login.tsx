@@ -1,4 +1,4 @@
-ï»¿import { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/services/supabase'
@@ -27,7 +27,7 @@ export default function Login() {
       const msg = err?.message ?? 'Erro ao fazer login'
       if (msg.toLowerCase().includes('database error querying schema')) {
         setError(
-          'Problema temporÃ¡rio de conexÃ£o. Tente novamente em instantes ou contate o administrador.'
+          'Problema temporário de conexão. Tente novamente em instantes ou contate o administrador.'
         )
       } else {
         setError(msg)
@@ -56,7 +56,7 @@ export default function Login() {
       const isRateLimit = String(raw).toLowerCase().includes('rate limit')
       setError(
         isRateLimit
-          ? 'Muitas solicitaÃ§Ãµes de e-mail no momento. O provedor de autenticaÃ§Ã£o limita envios por hora. Tente novamente em alguns minutos ou peÃ§a ao administrador para reenviar o link mais tarde.'
+          ? 'Muitas solicitações de e-mail no momento. O provedor de autenticação limita envios por hora. Tente novamente em alguns minutos ou peça ao administrador para reenviar o link mais tarde.'
           : raw
       )
     } finally {
@@ -68,8 +68,8 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md p-8 bg-card rounded-lg shadow-lg">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary mb-2">AgÃªncia F3F</h1>
-          <p className="text-muted-foreground">GestÃ£o de Clientes e ServiÃ§os</p>
+          <h1 className="text-3xl font-bold text-primary mb-2">Agência F3F</h1>
+          <p className="text-muted-foreground">Gestão de Clientes e Serviços</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -107,7 +107,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                  placeholder="••••••••"
                 />
               </div>
 
@@ -128,7 +128,7 @@ export default function Login() {
               {!forgotSent ? (
                 <>
                   <p className="text-sm text-foreground">
-                    Informe seu e-mail. Enviaremos um link para vocÃª redefinir sua senha.
+                    Informe seu e-mail. Enviaremos um link para você redefinir sua senha.
                   </p>
                   <div className="flex gap-2">
                     <input
@@ -142,7 +142,7 @@ export default function Login() {
                       type="button"
                       onClick={handleForgotPassword}
                       disabled={forgotLoading}
-                      className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 text-sm font-medium"
+                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 text-sm font-medium"
                     >
                       {forgotLoading ? 'Enviando...' : 'Enviar link'}
                     </button>
@@ -158,7 +158,7 @@ export default function Login() {
               ) : (
                 <>
                   <p className="text-sm text-green-700 font-medium">
-                    Se o e-mail estiver cadastrado, vocÃª receberÃ¡ um link para redefinir sua senha. Verifique sua caixa de entrada e o spam.
+                    Se o e-mail estiver cadastrado, você receberá um link para redefinir sua senha. Verifique sua caixa de entrada e o spam.
                   </p>
                   <button
                     type="button"
@@ -176,7 +176,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <LogIn className="w-5 h-5" />
               {loading ? 'Entrando...' : 'Entrar'}
