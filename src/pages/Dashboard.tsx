@@ -44,7 +44,6 @@ const CONTRATO_FAIXA_COLORS: Record<string, string> = {
 export default function Dashboard() {
   const { user, pode } = useAuth()
   const podeFinanceiro = pode('financeiro', 'visualizar')
-  const isAgenteOperacional = user?.perfil === 'agente' && user?.role !== 'admin'
   const [filterContratoResponsavel, setFilterContratoResponsavel] = useState<string>('')
   const [filterContratoFaixa, setFilterContratoFaixa] = useState<string>('todos')
   const [debugVisibilidade, setDebugVisibilidade] = useState<DebugVisibilidadeClientes | null>(null)

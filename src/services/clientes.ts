@@ -119,7 +119,6 @@ export async function fetchClientes(filters?: ClienteFilters): Promise<ClientesR
 }
 
 const FETCH_CLIENTE_TIMEOUT_MS = 12_000
-const FETCH_CLIENTES_TIMEOUT_MS = 15_000
 
 function withTimeout<T>(promise: Promise<T>, ms: number, msg: string): Promise<T> {
   return Promise.race([
