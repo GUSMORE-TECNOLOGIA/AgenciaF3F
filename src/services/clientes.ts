@@ -41,112 +41,58 @@ export interface ClientesResponse {
 
 /**
  * Buscar lista de clientes com filtros opcionais.
- * Se smartConditions tiver condições, usa RPC list_clientes_filtrados (filtros relacionais).
+ * Usa sempre RPC list_clientes_filtrados (visibilidade por is_responsavel_do_cliente no servidor).
  */
 export async function fetchClientes(filters?: ClienteFilters): Promise<ClientesResponse> {
   try {
     const limit = filters?.limit || 50
     const offset = filters?.offset || 0
 
-    const hasSmartConditions =
-      filters?.smartConditions && filters.smartConditions.length > 0
-    const hasResponsavelFilter = Boolean(filters?.responsavel_id)
-
-    if (hasSmartConditions || hasResponsavelFilter) {
-      const conditions: Record<string, unknown>[] = (filters?.smartConditions ?? []).map((c) => ({
-        field: c.field,
-        operator: c.operator,
-        value: c.value,
-        logicalOperator: c.logicalOperator,
-      }))
-      if (filters?.search?.trim()) {
-        conditions.unshift({
-          field: 'search',
-          operator: 'contains',
-          value: filters.search.trim(),
-        })
-      }
-      if (filters?.status) {
-        conditions.push({
-          field: 'status',
-          operator: 'equals',
-          value: filters.status,
-          logicalOperator: 'AND',
-        })
-      }
-      if (filters?.responsavel_id) {
-        conditions.push({
-          field: 'responsavel_id',
-          operator: 'equals',
-          value: filters.responsavel_id,
-          logicalOperator: 'AND',
-        })
-      }
-      const { data, error } = await supabase.rpc('list_clientes_filtrados', {
-        p_conditions: conditions,
-        p_limit: limit,
-        p_offset: offset,
+    // Usar sempre RPC list_clientes_filtrados: aplica is_responsavel_do_cliente no servidor e evita
+    // diferenças de comportamento da RLS na tabela (ex.: agente vendo 0 clientes no dashboard).
+    const conditions: Record<string, unknown>[] = (filters?.smartConditions ?? []).map((c) => ({
+      field: c.field,
+      operator: c.operator,
+      value: c.value,
+      logicalOperator: c.logicalOperator,
+    }))
+    if (filters?.search?.trim()) {
+      conditions.unshift({
+        field: 'search',
+        operator: 'contains',
+        value: filters.search.trim(),
       })
-      if (error) {
-        console.error('Erro ao buscar clientes (RPC):', error)
-        throw error
-      }
-      const rows = (data as any[]) || []
-      const total = rows[0]?.total_count ?? 0
-      const clientes: Cliente[] = rows.map((item: any) => ({
-        id: item.id,
-        nome: item.nome,
-        email: item.email || undefined,
-        telefone: item.telefone || undefined,
-        responsavel_id: item.responsavel_id ?? null,
-        status: item.status,
-        logo_url: item.logo_url || undefined,
-        links_uteis: item.links_uteis || {},
-        drive_url: item.drive_url || undefined,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-        responsavel: undefined,
-      }))
-      return {
-        data: clientes,
-        total: Number(total),
-        page: Math.floor(offset / limit) + 1,
-        pageSize: limit,
-      }
     }
-
-    let query = supabase
-      .from('clientes')
-      .select('*', { count: 'exact' })
-      .is('deleted_at', null)
-
     if (filters?.status) {
-      query = query.eq('status', filters.status)
+      conditions.push({
+        field: 'status',
+        operator: 'equals',
+        value: filters.status,
+        logicalOperator: 'AND',
+      })
     }
     if (filters?.responsavel_id) {
-      query = query.eq('responsavel_id', filters.responsavel_id)
+      conditions.push({
+        field: 'responsavel_id',
+        operator: 'equals',
+        value: filters.responsavel_id,
+        logicalOperator: 'AND',
+      })
     }
-    if (filters?.search) {
-      const searchTerm = `%${filters.search}%`
-      query = query.or(`nome.ilike.${searchTerm},email.ilike.${searchTerm},telefone.ilike.${searchTerm}`)
-    }
-    query = query.order('created_at', { ascending: false })
-    query = query.range(offset, offset + limit - 1)
 
-    const promise = query as unknown as Promise<{ data: unknown; error: unknown; count: number }>
-    const result = await withTimeout(
-      promise,
-      FETCH_CLIENTES_TIMEOUT_MS,
-      'Timeout ao carregar clientes. Verifique sua conexão e tente novamente.'
-    )
-    const { data, error, count } = result
-
+    const { data, error } = await supabase.rpc('list_clientes_filtrados', {
+      p_conditions: conditions,
+      p_limit: limit,
+      p_offset: offset,
+    })
     if (error) {
-      console.error('Erro ao buscar clientes:', error)
+      console.error('Erro ao buscar clientes (RPC):', error)
       throw error
     }
-
-    const clientes: Cliente[] = ((data as any) || []).map((item: any) => ({
+    const rows = (data as any[]) || []
+    // RPC retorna total na coluna "t" (cnt.t no SQL)
+    const total = rows[0]?.t ?? rows[0]?.total_count ?? 0
+    const clientes: Cliente[] = rows.map((item: any) => ({
       id: item.id,
       nome: item.nome,
       email: item.email || undefined,
@@ -160,10 +106,9 @@ export async function fetchClientes(filters?: ClienteFilters): Promise<ClientesR
       updated_at: item.updated_at,
       responsavel: undefined,
     }))
-
     return {
       data: clientes,
-      total: count || 0,
+      total: Number(total),
       page: Math.floor(offset / limit) + 1,
       pageSize: limit,
     }

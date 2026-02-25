@@ -4,7 +4,7 @@ Welcome to the repository knowledge base. Start with the project overview, then 
 
 ## Guias e checklists (operacionais)
 Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
-- [APLICAR_MIGRATIONS](./guias/APLICAR_MIGRATIONS.md) · [CRIAR_USUARIO_ADMIN](./guias/CRIAR_USUARIO_ADMIN.md) · [CRIAR_USUARIO_ACESSO](./guias/CRIAR_USUARIO_ACESSO.md) · [criar_admin_via_dashboard](./guias/criar_admin_via_dashboard.md)
+- [APLICAR_MIGRATIONS](./guias/APLICAR_MIGRATIONS.md) · [VALIDAR_E_APLICAR_FIX_AGENTE_VISIBILIDADE](./guias/VALIDAR_E_APLICAR_FIX_AGENTE_VISIBILIDADE.md) · [APLICAR_FIX_AGENTE_DASHBOARD](./guias/APLICAR_FIX_AGENTE_DASHBOARD.md) · [CRIAR_USUARIO_ADMIN](./guias/CRIAR_USUARIO_ADMIN.md) · [CRIAR_USUARIO_ACESSO](./guias/CRIAR_USUARIO_ACESSO.md) · [criar_admin_via_dashboard](./guias/criar_admin_via_dashboard.md)
 - [VERCEL_DEPLOY](./guias/VERCEL_DEPLOY.md) · [GITHUB_SETUP](./guias/GITHUB_SETUP.md) · [INTEGRACAO_SUPABASE](./guias/INTEGRACAO_SUPABASE.md)
 - [FIX_ERRO_431](./guias/FIX_ERRO_431.md) · [SOLUCAO_ERRO_431](./guias/SOLUCAO_ERRO_431.md) · [DEBUG_INSTRUCOES](./guias/DEBUG_INSTRUCOES.md)
 - [INSTALAR_DEPENDENCIAS](./guias/INSTALAR_DEPENDENCIAS.md) · [LIMPAR_CHROME](./guias/LIMPAR_CHROME.md)

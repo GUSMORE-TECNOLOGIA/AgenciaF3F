@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDashboard } from '@/hooks/useDashboard'
 import type { DashboardStats } from '@/services/dashboard'
+import { getDebugVisibilidadeClientes, type DebugVisibilidadeClientes } from '@/services/dashboard'
 import {
   Users,
   UserCheck,
@@ -46,10 +47,24 @@ export default function Dashboard() {
   const isAgenteOperacional = user?.perfil === 'agente' && user?.role !== 'admin'
   const [filterContratoResponsavel, setFilterContratoResponsavel] = useState<string>('')
   const [filterContratoFaixa, setFilterContratoFaixa] = useState<string>('todos')
+  const [debugVisibilidade, setDebugVisibilidade] = useState<DebugVisibilidadeClientes | null>(null)
   const { stats, loading, error, refetch } = useDashboard({
     skipFinance: !podeFinanceiro,
-    responsavelId: isAgenteOperacional ? user?.id : undefined,
+    responsavelId: undefined,
   })
+
+  // Quando o usuário vê 0 clientes, buscar diagnóstico (auth_uid no backend) para corrigir responsavel_id no banco.
+  useEffect(() => {
+    if (!stats || stats.clientes.total > 0) {
+      setDebugVisibilidade(null)
+      return
+    }
+    let cancelled = false
+    getDebugVisibilidadeClientes().then((d) => {
+      if (!cancelled && d) setDebugVisibilidade(d)
+    })
+    return () => { cancelled = true }
+  }, [stats?.clientes.total])
 
   if (loading) {
     return (
@@ -132,6 +147,20 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8 animate-fade-in">
+      {debugVisibilidade && clientes.total === 0 && debugVisibilidade.auth_uid && (
+        <div className="rounded-xl border-2 border-amber-400 bg-amber-50 p-4 text-sm text-amber-900">
+          <p className="font-semibold">Você vê 0 clientes — diagnóstico</p>
+          <p className="mt-1">
+            ID do seu login: <code className="rounded bg-amber-100 px-1 font-mono text-xs">{debugVisibilidade.auth_uid}</code>
+          </p>
+          <p className="mt-2 text-amber-800">
+            <strong>Admin:</strong> siga o guia <strong>VALIDAR_E_APLICAR_FIX_AGENTE_VISIBILIDADE</strong> no repositório (.context/docs/guias/). Primeiro rode a <em>Validação</em> no SQL Editor (projeto F3F). Se aparecer FALTA_APLICAR_FIX, execute o bloco <em>Aplicar o fix</em> e depois <code className="rounded bg-amber-100 px-1">NOTIFY pgrst, &apos;reload schema&apos;;</code>. Se o ID acima for diferente do responsável dos clientes, use o UPDATE do guia (seção 5).
+          </p>
+          <p className="mt-1 text-amber-700">
+            Depois o usuário atualiza a página (Ctrl+F5).
+          </p>
+        </div>
+      )}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-primary to-indigo-600 bg-clip-text text-transparent">

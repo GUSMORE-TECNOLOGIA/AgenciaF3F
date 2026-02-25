@@ -1,9 +1,34 @@
+import { supabase } from './supabase'
 import { fetchClientes } from './clientes'
 import { fetchTransacoes } from './financeiro'
 import { fetchOcorrencias } from './ocorrencias'
 import { fetchResponsaveisParaDashboard, fetchPrincipaisParaLista } from './usuarios'
 import { fetchTodosContratosPlanos } from './planos'
 import type { Transacao } from '@/types'
+
+export interface DebugVisibilidadeClientes {
+  auth_uid: string | null
+  total_visiveis: number
+  is_admin: boolean
+  mensagem: string | null
+}
+
+/** Diagnóstico quando o agente vê 0 clientes: retorna o auth.uid() que o backend enxerga. */
+export async function getDebugVisibilidadeClientes(): Promise<DebugVisibilidadeClientes | null> {
+  const { data, error } = await supabase.rpc('get_debug_visibilidade_clientes')
+  if (error) {
+    console.error('get_debug_visibilidade_clientes:', error)
+    return null
+  }
+  const d = data as { auth_uid: string | null; total_visiveis: number; is_admin: boolean; mensagem: string | null } | null
+  if (!d) return null
+  return {
+    auth_uid: d.auth_uid ?? null,
+    total_visiveis: Number(d.total_visiveis ?? 0),
+    is_admin: Boolean(d.is_admin),
+    mensagem: d.mensagem ?? null,
+  }
+}
 
 const hoje = () => new Date().toISOString().slice(0, 10)
 const startOfMonth = () => {

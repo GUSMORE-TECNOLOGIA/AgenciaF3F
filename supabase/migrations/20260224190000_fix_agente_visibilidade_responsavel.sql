@@ -4,6 +4,7 @@
 -- 2) Backfill: inserir em cliente_responsaveis (principal) onde clientes.responsavel_id está preenchido e ainda não existe vínculo.
 
 -- 1) is_responsavel_do_cliente: incluir fallback para clientes.responsavel_id (compatibilidade até backfill/dados migrados)
+-- NOTA: usar OR (não COALESCE) — COALESCE(false, true) = false porque is_admin() retorna FALSE para agentes.
 CREATE OR REPLACE FUNCTION public.is_responsavel_do_cliente(p_cliente_id uuid)
 RETURNS boolean
 LANGUAGE sql
@@ -11,25 +12,24 @@ STABLE
 SECURITY DEFINER
 SET search_path = public
 AS $$
-  SELECT COALESCE(
-    public.is_admin(),
-    EXISTS (
+  SELECT
+    public.is_admin()
+    OR EXISTS (
       SELECT 1 FROM public.cliente_responsaveis cr
       WHERE cr.cliente_id = p_cliente_id
         AND cr.responsavel_id = auth.uid()
         AND cr.deleted_at IS NULL
-    ),
-    COALESCE(
+    )
+    OR COALESCE(
       (SELECT (c.responsavel_id = auth.uid())
        FROM public.clientes c
        WHERE c.id = p_cliente_id AND c.deleted_at IS NULL
        LIMIT 1),
       false
-    )
-  );
+    );
 $$;
 
-COMMENT ON FUNCTION public.is_responsavel_do_cliente(uuid) IS 'True se o usuário atual é admin, está em cliente_responsaveis para o cliente, ou é o responsavel_id legado em clientes (fallback até migração completa).';
+COMMENT ON FUNCTION public.is_responsavel_do_cliente(uuid) IS 'True se admin OR em cliente_responsaveis OR clientes.responsavel_id = auth.uid(). Usa OR (não COALESCE) para combinar booleanos.';
 
 -- 2) Backfill: cliente_responsaveis a partir de clientes.responsavel_id (apenas onde ainda não existe principal)
 -- Respeita validate_single_principal_per_cliente: só insere se o cliente ainda não tem nenhum responsável com role principal.
