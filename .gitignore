@@ -30,3 +30,13 @@ dist-ssr
 .env.test.local
 .env.production.local
 .vercel
+
+# Supabase CLI temp files
+supabase/.temp/
+
+# Cursor generated files
+.cursor/pr-body-*.txt
+*.code-workspace
+
+# Context images/debug
+.context/docs/guias/image/
