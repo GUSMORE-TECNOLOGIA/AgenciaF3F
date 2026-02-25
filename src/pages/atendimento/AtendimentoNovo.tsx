@@ -108,7 +108,7 @@ export default function AtendimentoNovo() {
                 id="cliente_id"
                 value={formData.cliente_id}
                 onChange={(e) => setFormData((prev) => ({ ...prev, cliente_id: e.target.value }))}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.cliente_id ? 'border-red-500' : 'border-border'
                 }`}
                 required
@@ -132,7 +132,7 @@ export default function AtendimentoNovo() {
                 id="usuario_id"
                 value={formData.usuario_id}
                 onChange={(e) => setFormData((prev) => ({ ...prev, usuario_id: e.target.value }))}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.usuario_id ? 'border-red-500' : 'border-border'
                 }`}
                 required
@@ -161,7 +161,7 @@ export default function AtendimentoNovo() {
                     tipo: e.target.value as 'email' | 'whatsapp' | 'telefone' | 'presencial',
                   }))
                 }
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.tipo ? 'border-red-500' : 'border-border'
                 }`}
                 required
@@ -184,7 +184,7 @@ export default function AtendimentoNovo() {
                 type="text"
                 value={formData.assunto}
                 onChange={(e) => setFormData((prev) => ({ ...prev, assunto: e.target.value }))}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.assunto ? 'border-red-500' : 'border-border'
                 }`}
                 placeholder="Ex: Dúvida sobre serviço, Solicitação de alteração..."
@@ -203,7 +203,7 @@ export default function AtendimentoNovo() {
                 value={formData.descricao}
                 onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))}
                 rows={6}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.descricao ? 'border-red-500' : 'border-border'
                 }`}
                 placeholder="Descreva o atendimento em detalhes..."
@@ -227,7 +227,7 @@ export default function AtendimentoNovo() {
                     data_atendimento: parseDateTimeLocal(e.target.value),
                   }))
                 }
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.data_atendimento ? 'border-red-500' : 'border-border'
                 }`}
                 required

@@ -188,7 +188,7 @@ export default function Planos() {
                   <button
                     onClick={() => handleDelete(plano)}
                     disabled={deleting}
-                    className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     title="Excluir"
                   >
                     {deleting ? (

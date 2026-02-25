@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Search, MessageSquare, Loader2, Edit, Trash2 } from 'lucide-react'
 import { useAtendimentos, useDeleteAtendimento } from '@/hooks/useAtendimentos'
@@ -71,10 +71,10 @@ export default function Atendimento() {
 
   const getTipoBadge = (tipo: AtendimentoType['tipo']) => {
     const badges = {
-      email: { className: 'bg-blue-100 text-blue-800', label: 'Email', icon: '📧' },
-      whatsapp: { className: 'bg-green-100 text-green-800', label: 'WhatsApp', icon: '💬' },
-      telefone: { className: 'bg-purple-100 text-purple-800', label: 'Telefone', icon: '📞' },
-      presencial: { className: 'bg-orange-100 text-orange-800', label: 'Presencial', icon: '👤' },
+      email: { className: 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300', label: 'Email', icon: '📧' },
+      whatsapp: { className: 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300', label: 'WhatsApp', icon: '💬' },
+      telefone: { className: 'bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300', label: 'Telefone', icon: '📞' },
+      presencial: { className: 'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300', label: 'Presencial', icon: '👤' },
     }
 
     const badge = badges[tipo]

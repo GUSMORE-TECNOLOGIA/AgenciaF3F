@@ -129,7 +129,7 @@ export default function EditClienteServicoModal({
                 value={formData.valor ?? ''}
                 onValueChange={(v) => setFormData((prev) => ({ ...prev, valor: v ?? 0 }))}
                 readOnly={!canSuperEditPlanos}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.valor ? 'border-red-500' : 'border-border'
                 } ${!canSuperEditPlanos ? 'bg-muted cursor-not-allowed' : ''}`}
                 aria-invalid={!!errors.valor}
@@ -174,7 +174,7 @@ export default function EditClienteServicoModal({
                   min={DATE_MIN}
                   max={DATE_MAX}
                   readOnly={!canSuperEditPlanos}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                  className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                     errors.data_inicio ? 'border-red-500' : 'border-border'
                   } ${!canSuperEditPlanos ? 'bg-muted cursor-not-allowed' : ''}`}
                 />
@@ -196,7 +196,7 @@ export default function EditClienteServicoModal({
                   min={formData.data_inicio ?? DATE_MIN}
                   max={DATE_MAX}
                   readOnly={!canSuperEditPlanos}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                  className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                     errors.data_fim ? 'border-red-500' : 'border-border'
                   } ${!canSuperEditPlanos ? 'bg-muted cursor-not-allowed' : ''}`}
                 />
@@ -219,7 +219,7 @@ export default function EditClienteServicoModal({
                     }
                     min={DATE_MIN}
                     max={DATE_MAX}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                    className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                       errors.data_assinatura ? 'border-red-500' : 'border-border'
                     }`}
                   />
@@ -238,7 +238,7 @@ export default function EditClienteServicoModal({
                     }
                     min={DATE_MIN}
                     max={DATE_MAX}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                    className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                       errors.data_cancelamento ? 'border-red-500' : 'border-border'
                     }`}
                   />

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+﻿import { useState, useRef } from 'react'
 import { Camera, Upload, X, Loader2 } from 'lucide-react'
 import { supabase } from '@/services/supabase'
 import { useModal } from '@/contexts/ModalContext'
@@ -188,7 +188,7 @@ export default function ClienteLogoUpload({
             <button
               type="button"
               onClick={handleRemove}
-              className="h-9 w-9 flex items-center justify-center border border-border rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
+              className="h-9 w-9 flex items-center justify-center border border-border rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
               title="Excluir logo"
             >
               <X className="h-4 w-4" />

@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Search, DollarSign, CheckCircle2, XCircle, AlertCircle, Clock, Loader2, Edit } from 'lucide-react'
 import { useTransacoes, useDeleteTransacao, useBaixarTitulo } from '@/hooks/useFinanceiro'
@@ -116,11 +116,11 @@ export default function Financeiro() {
 
   const getStatusBadge = (status: Transacao['status']) => {
     const badges = {
-      pendente: { icon: Clock, className: 'bg-yellow-100 text-yellow-800', label: 'Pendente' },
-      pago: { icon: CheckCircle2, className: 'bg-green-100 text-green-800', label: 'Pago' },
-      vencido: { icon: AlertCircle, className: 'bg-red-100 text-red-800', label: 'Vencido' },
+      pendente: { icon: Clock, className: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300', label: 'Pendente' },
+      pago: { icon: CheckCircle2, className: 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300', label: 'Pago' },
+      vencido: { icon: AlertCircle, className: 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300', label: 'Vencido' },
       cancelado: { icon: XCircle, className: 'bg-muted text-foreground', label: 'Cancelado' },
-      reembolsado: { icon: XCircle, className: 'bg-blue-100 text-blue-800', label: 'Reembolsado' },
+      reembolsado: { icon: XCircle, className: 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300', label: 'Reembolsado' },
     }
 
     const badge = badges[status]

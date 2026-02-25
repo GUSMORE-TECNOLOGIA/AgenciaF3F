@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { Cliente } from '@/types'
 import { useUpdateCliente } from '@/hooks/useCliente'
 import { ClienteUpdateInput } from '@/lib/validators/cliente-schema'
@@ -97,7 +97,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
                   type="text"
                   value={formData.nome}
                   onChange={(e) => setFormData((prev) => ({ ...prev, nome: e.target.value }))}
-                  className="w-full h-9 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full h-9 px-3 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                   required
                 />
               </div>
@@ -111,7 +111,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                  className="w-full h-9 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full h-9 px-3 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                   placeholder="email@exemplo.com"
                 />
               </div>
@@ -125,7 +125,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
                   type="tel"
                   value={formData.telefone}
                   onChange={(e) => setFormData((prev) => ({ ...prev, telefone: e.target.value }))}
-                  className="w-full h-9 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full h-9 px-3 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                   placeholder="(11) 99999-9999"
                 />
               </div>
@@ -140,7 +140,7 @@ export default function IdentificacaoTab({ cliente, onSave }: IdentificacaoTabPr
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, status: e.target.value as 'ativo' | 'inativo' | 'pausado' }))
                   }
-                  className="w-full h-9 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full h-9 px-3 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                   required
                 >
                   <option value="ativo">Ativo</option>

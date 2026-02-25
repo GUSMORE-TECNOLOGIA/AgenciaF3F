@@ -201,8 +201,8 @@ export default function LinksUteisEditor({ links: initialLinks, onSave, loading:
       </div>
 
       {hasErrors && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-600">
+        <div className="p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-lg">
+          <p className="text-sm text-red-600 dark:text-red-400">
             Corrija os erros de validação antes de salvar
           </p>
         </div>

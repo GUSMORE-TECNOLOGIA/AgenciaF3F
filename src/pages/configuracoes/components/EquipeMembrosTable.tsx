@@ -12,7 +12,7 @@ function PerfilCell({ membro, perfis }: { membro: EquipeMembro; perfis: Perfil[]
   const display =
     foundById?.nome ?? foundBySlug?.nome ?? membro.perfil
   return (
-    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">{display}</span>
+    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300">{display}</span>
   )
 }
 
@@ -62,7 +62,7 @@ export default function EquipeMembrosTable({ membros, perfis, onEdit, onDelete, 
               <td className="px-6 py-4 whitespace-nowrap">
                 <span
                   className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                    membro.status === 'ativo' ? 'bg-green-100 text-green-800' : 'bg-muted text-foreground'
+                    membro.status === 'ativo' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300' : 'bg-muted text-foreground'
                   }`}
                 >
                   {membro.status}

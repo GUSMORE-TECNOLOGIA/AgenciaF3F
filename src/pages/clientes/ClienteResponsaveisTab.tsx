@@ -104,9 +104,9 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
 
   const getRoleColor = (role: string) => {
     const colors: Record<string, string> = {
-      principal: 'bg-blue-100 text-blue-800',
-      comercial: 'bg-green-100 text-green-800',
-      suporte: 'bg-yellow-100 text-yellow-800',
+      principal: 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300',
+      comercial: 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300',
+      suporte: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300',
       backup: 'bg-muted text-foreground',
     }
     return colors[role] || 'bg-muted text-foreground'
@@ -184,7 +184,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                       </div>
                       <button
                         onClick={() => handleRemoveResponsavel(responsavel.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
                         title="Remover responsável"
                       >
                         <X className="w-4 h-4" />

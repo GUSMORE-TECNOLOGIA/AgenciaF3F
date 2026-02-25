@@ -553,9 +553,9 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      ativo: { bg: 'bg-green-100', text: 'text-green-800', icon: CheckCircle2 },
-      pausado: { bg: 'bg-yellow-100', text: 'text-yellow-800', icon: Pause },
-      cancelado: { bg: 'bg-red-100', text: 'text-red-800', icon: XCircle },
+      ativo: { bg: 'bg-green-100 dark:bg-green-900/40', text: 'text-green-800 dark:text-green-300', icon: CheckCircle2 },
+      pausado: { bg: 'bg-yellow-100 dark:bg-yellow-900/40', text: 'text-yellow-800 dark:text-yellow-300', icon: Pause },
+      cancelado: { bg: 'bg-red-100 dark:bg-red-900/40', text: 'text-red-800 dark:text-red-300', icon: XCircle },
       finalizado: { bg: 'bg-muted', text: 'text-foreground', icon: CheckCircle2 },
     }
 
@@ -572,9 +572,9 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
 
   const getContratoBadge = (contrato: 'assinado' | 'nao_assinado' | 'cancelado') => {
     const configs = {
-      assinado: { label: 'Assinado', className: 'bg-emerald-100 text-emerald-800' },
-      nao_assinado: { label: 'Não assinado', className: 'bg-slate-100 text-slate-700' },
-      cancelado: { label: 'Cancelado', className: 'bg-red-100 text-red-800' },
+      assinado: { label: 'Assinado', className: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300' },
+      nao_assinado: { label: 'Não assinado', className: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300' },
+      cancelado: { label: 'Cancelado', className: 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300' },
     }
     const c = configs[contrato] ?? configs.nao_assinado
     return (
@@ -796,7 +796,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       <button
                         onClick={() => handleCancelContrato(c)}
                         disabled={cancellingContrato}
-                        className="flex items-center gap-1 px-2 py-1 text-sm text-orange-600 hover:bg-orange-50 rounded transition-colors disabled:opacity-50"
+                        className="flex items-center gap-1 px-2 py-1 text-sm text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/30 rounded transition-colors disabled:opacity-50"
                       >
                         <Ban className="w-4 h-4" />
                         Cancelar
@@ -805,7 +805,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     <button
                       onClick={() => handleDeleteContrato(c)}
                       disabled={deletingContrato}
-                      className="flex items-center gap-1 px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                      className="flex items-center gap-1 px-2 py-1 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded transition-colors disabled:opacity-50"
                     >
                       <Trash2 className="w-4 h-4" />
                       Excluir
@@ -1059,7 +1059,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     <button
                       onClick={() => handleDeletePlanoContrato(contrato)}
                       disabled={deletingPlano}
-                      className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Excluir contrato"
                     >
                       {deletingPlano ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
@@ -1313,7 +1313,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     <button
                       onClick={() => handleDeleteServicoContrato(contrato)}
                       disabled={deletingServico}
-                      className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Excluir contrato"
                     >
                       {deletingServico ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}

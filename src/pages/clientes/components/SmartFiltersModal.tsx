@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import { Sparkles, Plus, X, Save, Filter, BookmarkCheck } from 'lucide-react'
 import type { SmartFilter, SmartFilterCondition } from '@/services/clientes'
 import { useAuth } from '@/contexts/AuthContext'
@@ -291,7 +291,7 @@ export default function SmartFiltersModal({
                               logicalOperator: e.target.value as 'AND' | 'OR',
                             })
                           }
-                          className="min-w-[8.5rem] w-36 px-3 py-2 border border-border rounded-lg text-sm"
+                          className="min-w-[8.5rem] w-36 px-3 py-2 bg-background text-foreground border border-border rounded-lg text-sm"
                         >
                           <option value="AND">E (AND)</option>
                           <option value="OR">OU (OR)</option>
@@ -314,7 +314,7 @@ export default function SmartFiltersModal({
                               value: '',
                             })
                           }}
-                          className="w-full px-3 py-2 border border-border rounded-lg text-sm"
+                          className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-lg text-sm"
                         >
                           <option value="">Selecione o campo</option>
                           {availableFields.map((f) => (
@@ -432,7 +432,7 @@ export default function SmartFiltersModal({
                     value={saveFilterName}
                     onChange={(e) => setSaveFilterName(e.target.value)}
                     placeholder="Ex: Clientes sem contrato"
-                    className="w-full px-4 py-2 border border-border rounded-lg"
+                    className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg"
                     autoFocus
                   />
                 </div>

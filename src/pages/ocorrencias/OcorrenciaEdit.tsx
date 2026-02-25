@@ -150,7 +150,7 @@ export default function OcorrenciaEdit() {
                   setSelectedGrupoId(e.target.value)
                   setFormData((prev) => ({ ...prev, grupo_id: e.target.value, tipo_id: '' }))
                 }}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.grupo_id ? 'border-red-500' : 'border-border'
                 }`}
                 required
@@ -175,7 +175,7 @@ export default function OcorrenciaEdit() {
                 value={formData.tipo_id}
                 onChange={(e) => setFormData((prev) => ({ ...prev, tipo_id: e.target.value }))}
                 disabled={!selectedGrupoId}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.tipo_id ? 'border-red-500' : 'border-border'
                 } ${!selectedGrupoId ? 'bg-muted cursor-not-allowed' : ''}`}
                 required
@@ -201,7 +201,7 @@ export default function OcorrenciaEdit() {
                 value={formData.ocorreu_em}
                 onChange={(e) => setFormData((prev) => ({ ...prev, ocorreu_em: e.target.value }))}
                 max={new Date().toISOString().split('T')[0]}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.ocorreu_em ? 'border-red-500' : 'border-border'
                 }`}
                 required
@@ -219,7 +219,7 @@ export default function OcorrenciaEdit() {
                 value={formData.notas}
                 onChange={(e) => setFormData((prev) => ({ ...prev, notas: e.target.value }))}
                 rows={6}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.notas ? 'border-red-500' : 'border-border'
                 }`}
                 required
@@ -236,7 +236,7 @@ export default function OcorrenciaEdit() {
                 id="responsavel_id"
                 value={formData.responsavel_id}
                 onChange={(e) => setFormData((prev) => ({ ...prev, responsavel_id: e.target.value }))}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.responsavel_id ? 'border-red-500' : 'border-border'
                 }`}
                 required
@@ -325,7 +325,7 @@ export default function OcorrenciaEdit() {
                   }))
                 }
                 disabled={!formData.reminder_at}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   !formData.reminder_at ? 'bg-muted cursor-not-allowed' : 'border-border'
                 }`}
               >

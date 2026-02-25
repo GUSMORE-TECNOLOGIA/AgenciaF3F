@@ -76,7 +76,7 @@ export default function ServicoNovo() {
                 type="text"
                 value={formData.nome}
                 onChange={(e) => setFormData((prev) => ({ ...prev, nome: e.target.value }))}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.nome ? 'border-red-500' : 'border-border'
                 }`}
                 placeholder="Ex: Tráfego, Estratégia, Página..."
@@ -117,7 +117,7 @@ export default function ServicoNovo() {
                     valor: e.target.value ? Number(e.target.value) : undefined,
                   }))
                 }
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.valor ? 'border-red-500' : 'border-border'
                 }`}
                 placeholder="0.00"

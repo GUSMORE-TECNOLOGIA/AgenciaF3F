@@ -428,7 +428,7 @@ export default function ClienteLinksManager({ clienteId, onSave }: ClienteLinksM
                       </button>
                       <button
                         onClick={() => handleDelete(link)}
-                        className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
                         title="Excluir link"
                       >
                         <Trash2 className="w-4 h-4" />

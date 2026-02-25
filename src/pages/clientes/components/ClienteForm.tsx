@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Cliente } from '@/types'
 import { clienteCreateSchema, clienteUpdateSchema, type ClienteCreateInput, type ClienteUpdateInput } from '@/lib/validators/cliente-schema'
 import { useAuth } from '@/contexts/AuthContext'
@@ -213,8 +213,8 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
 
       {/* Erro geral */}
       {errors.submit && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-600">{errors.submit}</p>
+        <div className="p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-lg">
+          <p className="text-sm text-red-600 dark:text-red-400">{errors.submit}</p>
         </div>
       )}
 

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import { Edit, Plus, Trash2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { OcorrenciaGrupo } from '@/types'
@@ -116,7 +116,7 @@ export default function OcorrenciaGruposTab() {
               <input
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 placeholder="Ex: Financeiro"
                 required
               />
@@ -126,7 +126,7 @@ export default function OcorrenciaGruposTab() {
               <select
                 value={isActive ? 'ativo' : 'inativo'}
                 onChange={(e) => setIsActive(e.target.value === 'ativo')}
-                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
               >
                 <option value="ativo">Ativo</option>
                 <option value="inativo">Inativo</option>
@@ -139,7 +139,7 @@ export default function OcorrenciaGruposTab() {
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
               rows={3}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
               placeholder="Descreva o objetivo do grupo"
             />
           </div>
@@ -192,7 +192,7 @@ export default function OcorrenciaGruposTab() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        grupo.is_active ? 'bg-green-100 text-green-800' : 'bg-muted text-foreground'
+                        grupo.is_active ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300' : 'bg-muted text-foreground'
                       }`}
                     >
                       {grupo.is_active ? 'Ativo' : 'Inativo'}

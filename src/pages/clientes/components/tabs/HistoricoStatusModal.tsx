@@ -45,9 +45,9 @@ export default function HistoricoStatusModal({
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { bg: string; text: string }> = {
-      ativo: { bg: 'bg-green-100', text: 'text-green-800' },
-      pausado: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
-      cancelado: { bg: 'bg-red-100', text: 'text-red-800' },
+      ativo: { bg: 'bg-green-100 dark:bg-green-900/40', text: 'text-green-800 dark:text-green-300' },
+      pausado: { bg: 'bg-yellow-100 dark:bg-yellow-900/40', text: 'text-yellow-800 dark:text-yellow-300' },
+      cancelado: { bg: 'bg-red-100 dark:bg-red-900/40', text: 'text-red-800 dark:text-red-300' },
       finalizado: { bg: 'bg-muted', text: 'text-foreground' },
     }
 

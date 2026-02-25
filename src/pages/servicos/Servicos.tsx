@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Search, Package, Edit, Trash2, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
 import { useServicos, useDeleteServico } from '@/hooks/usePlanos'
@@ -179,7 +179,7 @@ export default function Servicos() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {servico.ativo ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300">
                           <CheckCircle2 className="w-3 h-3" />
                           Ativo
                         </span>

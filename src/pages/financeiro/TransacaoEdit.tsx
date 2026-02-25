@@ -152,7 +152,7 @@ export default function TransacaoEdit() {
                 min="0.01"
                 value={formData.valor}
                 onChange={(e) => setFormData((prev) => ({ ...prev, valor: Number(e.target.value) }))}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.valor ? 'border-red-500' : 'border-border'
                 }`}
                 required
@@ -170,7 +170,7 @@ export default function TransacaoEdit() {
                 value={formData.descricao}
                 onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))}
                 rows={3}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.descricao ? 'border-red-500' : 'border-border'
                 }`}
                 required
@@ -188,7 +188,7 @@ export default function TransacaoEdit() {
                 type="date"
                 value={formData.data_vencimento}
                 onChange={(e) => setFormData((prev) => ({ ...prev, data_vencimento: e.target.value }))}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.data_vencimento ? 'border-red-500' : 'border-border'
                 }`}
                 required

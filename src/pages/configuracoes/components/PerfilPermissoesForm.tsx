@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import type { Perfil, PerfilPermissao, ModuloSistema } from '@/types'
 import { MODULOS_SISTEMA } from '@/services/perfis'
 
@@ -119,7 +119,7 @@ export default function PerfilPermissoesForm({
           <input
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
             placeholder="Ex: Atendimento"
             required
           />
@@ -129,7 +129,7 @@ export default function PerfilPermissoesForm({
           <input
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
-            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
             placeholder="Breve descrição do perfil"
           />
         </div>

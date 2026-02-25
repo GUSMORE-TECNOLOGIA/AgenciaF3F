@@ -78,7 +78,7 @@ export default function PlanoNovo() {
                 type="text"
                 value={formData.nome}
                 onChange={(e) => setFormData((prev) => ({ ...prev, nome: e.target.value }))}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.nome ? 'border-red-500' : 'border-border'
                 }`}
                 placeholder="Ex: Plano Fase 1, Plano Funil, Plano L.T..."
@@ -112,7 +112,7 @@ export default function PlanoNovo() {
                   id="valor"
                   value={formData.valor}
                   onValueChange={(v) => setFormData((prev) => ({ ...prev, valor: v ?? 0 }))}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                  className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                     errors.valor ? 'border-red-500' : 'border-border'
                   }`}
                   placeholder="0,00"
@@ -153,7 +153,7 @@ export default function PlanoNovo() {
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, recorrencia_meses: Number(e.target.value) || 12 }))
                   }
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                  className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                     errors.recorrencia_meses ? 'border-red-500' : 'border-border'
                   }`}
                   placeholder="12"

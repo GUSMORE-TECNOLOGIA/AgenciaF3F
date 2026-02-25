@@ -165,7 +165,7 @@ export default function AtendimentoEdit() {
                     tipo: e.target.value as 'email' | 'whatsapp' | 'telefone' | 'presencial',
                   }))
                 }
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.tipo ? 'border-red-500' : 'border-border'
                 }`}
                 required
@@ -188,7 +188,7 @@ export default function AtendimentoEdit() {
                 type="text"
                 value={formData.assunto}
                 onChange={(e) => setFormData((prev) => ({ ...prev, assunto: e.target.value }))}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.assunto ? 'border-red-500' : 'border-border'
                 }`}
                 required
@@ -206,7 +206,7 @@ export default function AtendimentoEdit() {
                 value={formData.descricao}
                 onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))}
                 rows={6}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.descricao ? 'border-red-500' : 'border-border'
                 }`}
                 required
@@ -229,7 +229,7 @@ export default function AtendimentoEdit() {
                     data_atendimento: parseDateTimeLocal(e.target.value),
                   }))
                 }
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                className={`w-full px-4 py-2 bg-background text-foreground border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
                   errors.data_atendimento ? 'border-red-500' : 'border-border'
                 }`}
                 required

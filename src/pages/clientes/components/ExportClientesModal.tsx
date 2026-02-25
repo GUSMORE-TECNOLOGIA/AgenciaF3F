@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { X, FileSpreadsheet, Loader2 } from 'lucide-react'
 import * as XLSX from 'xlsx'
 import type { Cliente } from '@/types'
@@ -262,7 +262,7 @@ export default function ExportClientesModal({
           </div>
 
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
+            <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-lg">{error}</p>
           )}
         </div>
 

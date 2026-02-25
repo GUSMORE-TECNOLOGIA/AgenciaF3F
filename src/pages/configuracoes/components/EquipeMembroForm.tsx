@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { EquipeMembro, Perfil } from '@/types'
 import type { EquipeMembroInput } from '@/services/equipe'
 
@@ -78,7 +78,7 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
           <input
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
             placeholder="Nome do membro"
             required
           />
@@ -89,7 +89,7 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
             placeholder="email@empresa.com"
             required={!initialData}
           />
@@ -104,7 +104,7 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
           <input
             value={telefone}
             onChange={(e) => setTelefone(e.target.value)}
-            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
             placeholder="(00) 00000-0000"
           />
         </div>
@@ -114,7 +114,7 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
             <select
               value={perfilId}
               onChange={(e) => setPerfilId(e.target.value)}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
               required
             >
               {perfis.map((p) => (
@@ -127,7 +127,7 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
             <select
               value={perfil}
               onChange={(e) => setPerfil(e.target.value as EquipeMembro['perfil'])}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
             >
               <option value="admin">Admin</option>
               <option value="gerente">Gerente</option>
@@ -141,7 +141,7 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as EquipeMembro['status'])}
-            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="ativo">Ativo</option>
             <option value="inativo">Inativo</option>

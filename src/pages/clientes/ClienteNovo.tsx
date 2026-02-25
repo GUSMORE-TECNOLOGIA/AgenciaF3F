@@ -46,8 +46,8 @@ export default function ClienteNovo() {
         </div>
 
         {/* Informação sobre Links Úteis */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800">
+        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 rounded-lg p-4">
+          <p className="text-sm text-blue-800 dark:text-blue-300">
             <strong>Dica:</strong> Após criar o cliente, você poderá adicionar links úteis (Instagram, Facebook, Dashboards, etc.) na página de edição do cliente, na aba "Links".
           </p>
         </div>
