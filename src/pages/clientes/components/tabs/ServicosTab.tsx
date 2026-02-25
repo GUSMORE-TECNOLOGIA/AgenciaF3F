@@ -556,7 +556,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       ativo: { bg: 'bg-green-100', text: 'text-green-800', icon: CheckCircle2 },
       pausado: { bg: 'bg-yellow-100', text: 'text-yellow-800', icon: Pause },
       cancelado: { bg: 'bg-red-100', text: 'text-red-800', icon: XCircle },
-      finalizado: { bg: 'bg-gray-100', text: 'text-gray-800', icon: CheckCircle2 },
+      finalizado: { bg: 'bg-muted', text: 'text-foreground', icon: CheckCircle2 },
     }
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.ativo
@@ -589,8 +589,8 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
   return (
     <div className="space-y-6">
       {/* Contratos */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-        <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow">
+        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <FileText className="w-5 h-5 text-primary" />
             Contratos
@@ -604,21 +604,21 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
               <ChevronDown className="w-4 h-4" />
             </button>
             {openMenu === 'contratos' && (
-              <div className="absolute right-0 top-full mt-1 w-52 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1">
+              <div className="absolute right-0 top-full mt-1 w-52 bg-card border border-border rounded-lg shadow-lg z-20 py-1">
                 <button
                   onClick={() => {
                     setShowAddContrato(true)
                     setDataInicioContrato(getTodayISO())
                     setOpenMenu(null)
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Adicionar Contrato
                 </button>
                 <button
                   disabled
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-400 cursor-not-allowed"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground cursor-not-allowed"
                   title="Utilize o botão no card do contrato"
                 >
                   <Ban className="w-4 h-4" />
@@ -626,7 +626,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 </button>
                 <button
                   disabled
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-400 cursor-not-allowed"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground cursor-not-allowed"
                   title="Utilize o botão no card do contrato"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -638,25 +638,25 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
         </div>
         <div className="p-6">
           {showAddContrato && (
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="mb-6 p-4 bg-muted rounded-lg border border-border">
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Nome / Identificador (opcional)</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Nome / Identificador (opcional)</label>
                   <input
                     type="text"
                     value={nomeContrato}
                     onChange={(e) => setNomeContrato(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     placeholder="Ex.: Contrato 2025-01"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Status</label>
                     <select
                       value={statusContrato}
                       onChange={(e) => setStatusContrato(e.target.value as 'ativo' | 'pausado' | 'cancelado' | 'finalizado')}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="ativo">Ativo</option>
                       <option value="pausado">Pausado</option>
@@ -665,7 +665,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Contrato</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Contrato</label>
                     <select
                       value={contratoAssinadoContrato}
                       onChange={(e) => {
@@ -675,7 +675,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                           setDataAssinaturaContrato(getTodayISO())
                         }
                       }}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="nao_assinado">Não assinado</option>
                       <option value="assinado">Assinado</option>
@@ -685,47 +685,47 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Início (opcional)</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Data de Início (opcional)</label>
                     <input
                       type="date"
                       value={dataInicioContrato}
                       onChange={(e) => setDataInicioContrato(e.target.value)}
                       min={DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Fim (opcional)</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Data de Fim (opcional)</label>
                     <input
                       type="date"
                       value={dataFimContrato}
                       onChange={(e) => setDataFimContrato(e.target.value)}
                       min={dataInicioContrato || DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Assinatura (opcional)</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Data de Assinatura (opcional)</label>
                     <input
                       type="date"
                       value={dataAssinaturaContrato}
                       onChange={(e) => setDataAssinaturaContrato(e.target.value)}
                       min={DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Cancelamento (opcional)</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Data de Cancelamento (opcional)</label>
                     <input
                       type="date"
                       value={dataCancelamentoContrato}
                       onChange={(e) => setDataCancelamentoContrato(e.target.value)}
                       min={DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     />
                   </div>
                 </div>
@@ -750,7 +750,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       setDataCancelamentoContrato('')
                       setObservacoesContrato('')
                     }}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
                   >
                     Cancelar
                   </button>
@@ -763,13 +763,13 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
           ) : clienteContratos.length === 0 ? (
-            <p className="text-gray-500 text-center py-6">Nenhum contrato cadastrado. Adicione um contrato para agrupar planos e serviços.</p>
+            <p className="text-muted-foreground text-center py-6">Nenhum contrato cadastrado. Adicione um contrato para agrupar planos e serviços.</p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {clienteContratos.map((c) => (
                 <div
                   key={c.id}
-                  className="p-4 rounded-lg border border-gray-200 bg-gray-50/50 hover:bg-gray-50 transition-colors flex flex-col"
+                  className="p-4 rounded-lg border border-border bg-muted/50 hover:bg-muted transition-colors flex flex-col"
                 >
                   <div className="flex items-center gap-3 mb-2 flex-wrap">
                     <div className="font-medium text-foreground">{c.nome || 'Contrato (sem nome)'}</div>
@@ -777,7 +777,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     {getContratoBadge(c.contrato_assinado)}
                   </div>
                   {(c.data_inicio || c.data_fim || c.data_assinatura || c.data_cancelamento) && (
-                    <div className="text-sm text-gray-600 mb-2 space-y-0.5">
+                    <div className="text-sm text-muted-foreground mb-2 space-y-0.5">
                       {c.data_inicio && <div>Início: {c.data_inicio}</div>}
                       {c.data_fim && <div>Fim: {c.data_fim}</div>}
                       {c.data_assinatura && <div>Assinatura: {c.data_assinatura}</div>}
@@ -819,8 +819,8 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       </div>
 
       {/* Planos Contratados */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-        <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow">
+        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Package className="w-5 h-5 text-primary" />
             Planos Contratados
@@ -834,20 +834,20 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
               <ChevronDown className="w-4 h-4" />
             </button>
             {openMenu === 'planos' && (
-              <div className="absolute right-0 top-full mt-1 w-52 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1">
+              <div className="absolute right-0 top-full mt-1 w-52 bg-card border border-border rounded-lg shadow-lg z-20 py-1">
                 <button
                   onClick={() => {
                     setShowAddPlano(true)
                     setOpenMenu(null)
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Adicionar Plano
                 </button>
                 <button
                   disabled
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-400 cursor-not-allowed"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground cursor-not-allowed"
                   title="Em breve"
                 >
                   <Package className="w-4 h-4" />
@@ -855,7 +855,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 </button>
                 <button
                   disabled
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-400 cursor-not-allowed"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground cursor-not-allowed"
                   title="Em breve"
                 >
                   <Ban className="w-4 h-4" />
@@ -863,7 +863,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 </button>
                 <button
                   disabled
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-400 cursor-not-allowed"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground cursor-not-allowed"
                   title="Utilize o botão no card do plano"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -877,11 +877,11 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
         <div className="p-6">
           {/* Formulário de Adicionar Plano */}
           {showAddPlano && (
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="mb-6 p-4 bg-muted rounded-lg border border-border">
               <div className="space-y-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Selecionar Plano
                     </label>
                     <select
@@ -893,7 +893,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                           setValorPlano(plano.valor)
                         }
                       }}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="">Selecione um plano...</option>
                       {planos.map((plano) => (
@@ -904,11 +904,11 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Vincular ao contrato (opcional)</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Vincular ao contrato (opcional)</label>
                     <select
                       value={contratoIdPlano}
                       onChange={(e) => setContratoIdPlano(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="">Nenhum</option>
                       {clienteContratos.map((c) => (
@@ -919,24 +919,24 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Valor do Contrato (R$) *
                     </label>
                     <InputMoeda
                       value={valorPlano}
                       onValueChange={(v) => setValorPlano(v ?? '')}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                       placeholder="0,00"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Status *
                     </label>
                     <select
                       value={statusPlano}
                       onChange={(e) => setStatusPlano(e.target.value as 'ativo' | 'pausado' | 'cancelado' | 'finalizado')}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="ativo">Ativo</option>
                       <option value="pausado">Pausado</option>
@@ -947,7 +947,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Data de Início *
                     </label>
                     <input
@@ -956,12 +956,12 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       onChange={(e) => setDataInicioPlano(e.target.value)}
                       min={DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Data de Fim (opcional)
                     </label>
                     <input
@@ -970,7 +970,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       onChange={(e) => setDataFimPlano(e.target.value)}
                       min={dataInicioPlano || DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     />
                   </div>
                 </div>
@@ -994,7 +994,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       setDataInicioPlano('')
                       setDataFimPlano('')
                     }}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
                   >
                     Cancelar
                   </button>
@@ -1007,11 +1007,11 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
           {loading ? (
             <div className="text-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mb-2" />
-              <p className="text-sm text-gray-500">Carregando planos...</p>
+              <p className="text-sm text-muted-foreground">Carregando planos...</p>
             </div>
           ) : clientePlanos.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+            <div className="text-center py-8 text-muted-foreground">
+              <Package className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
               <p>Nenhum plano contratado</p>
             </div>
           ) : (
@@ -1019,7 +1019,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
               {clientePlanos.map((contrato) => (
                 <div
                   key={contrato.id}
-                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted transition-colors"
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
@@ -1029,29 +1029,29 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       {getStatusBadge(contrato.status)}
                       {getContratoBadge((contrato.contrato_assinado ?? 'nao_assinado') as 'assinado' | 'nao_assinado' | 'cancelado')}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-muted-foreground">
                       Valor: {formatCurrency(contrato.valor)}
                       {contrato.plano && contrato.valor !== contrato.plano.valor && (
-                        <span className="ml-2 text-xs text-gray-500">
+                        <span className="ml-2 text-xs text-muted-foreground">
                           (Plano: {formatCurrency(contrato.plano.valor)})
                         </span>
                       )}
                     </div>
                     {contrato.observacoes && (
-                      <div className="text-sm text-gray-500 mt-1">{contrato.observacoes}</div>
+                      <div className="text-sm text-muted-foreground mt-1">{contrato.observacoes}</div>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setHistoricoPlano(contrato)}
-                      className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                       title="Ver histórico"
                     >
                       <Clock className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setEditingPlano(contrato)}
-                      className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                       title="Editar"
                     >
                       <Edit className="w-4 h-4" />
@@ -1073,8 +1073,8 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       </div>
 
       {/* Serviços Avulsos Contratados */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-        <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow">
+        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-primary" />
             Serviços Avulsos
@@ -1088,20 +1088,20 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
               <ChevronDown className="w-4 h-4" />
             </button>
             {openMenu === 'servicos' && (
-              <div className="absolute right-0 top-full mt-1 w-52 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1">
+              <div className="absolute right-0 top-full mt-1 w-52 bg-card border border-border rounded-lg shadow-lg z-20 py-1">
                 <button
                   onClick={() => {
                     setShowAddServico(true)
                     setOpenMenu(null)
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Adicionar Serviço
                 </button>
                 <button
                   disabled
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-400 cursor-not-allowed"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground cursor-not-allowed"
                   title="Em breve"
                 >
                   <Ban className="w-4 h-4" />
@@ -1109,7 +1109,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 </button>
                 <button
                   disabled
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-400 cursor-not-allowed"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground cursor-not-allowed"
                   title="Em breve"
                 >
                   <CheckCircle2 className="w-4 h-4" />
@@ -1117,7 +1117,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 </button>
                 <button
                   disabled
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-400 cursor-not-allowed"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground cursor-not-allowed"
                   title="Utilize o botão no card do serviço"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -1131,11 +1131,11 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
         <div className="p-6">
           {/* Formulário de Adicionar Serviço */}
           {showAddServico && (
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="mb-6 p-4 bg-muted rounded-lg border border-border">
               <div className="space-y-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Selecionar Serviço
                     </label>
                     <select
@@ -1147,7 +1147,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                           setValorServico(Number(servico.valor))
                         }
                       }}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="">Selecione um serviço...</option>
                       {servicos.map((servico) => (
@@ -1159,11 +1159,11 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Vincular ao contrato (opcional)</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Vincular ao contrato (opcional)</label>
                     <select
                       value={contratoIdServico}
                       onChange={(e) => setContratoIdServico(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="">Nenhum</option>
                       {clienteContratos.map((c) => (
@@ -1174,24 +1174,24 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Valor do Contrato (R$) *
                     </label>
                     <InputMoeda
                       value={valorServico}
                       onValueChange={(v) => setValorServico(v ?? '')}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                       placeholder="0,00"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Status *
                     </label>
                     <select
                       value={statusServico}
                       onChange={(e) => setStatusServico(e.target.value as 'ativo' | 'pausado' | 'cancelado' | 'finalizado')}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     >
                       <option value="ativo">Ativo</option>
                       <option value="pausado">Pausado</option>
@@ -1202,7 +1202,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Data de Início *
                     </label>
                     <input
@@ -1211,12 +1211,12 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       onChange={(e) => setDataInicioServico(e.target.value)}
                       min={DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Data de Fim (opcional)
                     </label>
                     <input
@@ -1225,7 +1225,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       onChange={(e) => setDataFimServico(e.target.value)}
                       min={dataInicioServico || DATE_MIN}
                       max={DATE_MAX}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     />
                   </div>
                 </div>
@@ -1248,7 +1248,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       setDataInicioServico('')
                       setDataFimServico('')
                     }}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
                   >
                     Cancelar
                   </button>
@@ -1261,11 +1261,11 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
           {loading ? (
             <div className="text-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mb-2" />
-              <p className="text-sm text-gray-500">Carregando serviços...</p>
+              <p className="text-sm text-muted-foreground">Carregando serviços...</p>
             </div>
           ) : clienteServicos.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <Briefcase className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+            <div className="text-center py-8 text-muted-foreground">
+              <Briefcase className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
               <p>Nenhum serviço avulso contratado</p>
             </div>
           ) : (
@@ -1273,7 +1273,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
               {clienteServicos.map((contrato) => (
                 <div
                   key={contrato.id}
-                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted transition-colors"
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
@@ -1283,29 +1283,29 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
                       {getStatusBadge(contrato.status)}
                       {getContratoBadge((contrato.contrato_assinado ?? 'nao_assinado') as 'assinado' | 'nao_assinado' | 'cancelado')}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-muted-foreground">
                       Valor: {formatCurrency(contrato.valor)}
                       {contrato.servico?.valor && contrato.valor !== contrato.servico.valor && (
-                        <span className="ml-2 text-xs text-gray-500">
+                        <span className="ml-2 text-xs text-muted-foreground">
                           (Serviço: {formatCurrency(contrato.servico.valor)})
                         </span>
                       )}
                     </div>
                     {contrato.observacoes && (
-                      <div className="text-sm text-gray-500 mt-1">{contrato.observacoes}</div>
+                      <div className="text-sm text-muted-foreground mt-1">{contrato.observacoes}</div>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setHistoricoServico(contrato)}
-                      className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                       title="Ver histórico"
                     >
                       <Clock className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setEditingServico(contrato)}
-                      className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                       title="Editar"
                     >
                       <Edit className="w-4 h-4" />

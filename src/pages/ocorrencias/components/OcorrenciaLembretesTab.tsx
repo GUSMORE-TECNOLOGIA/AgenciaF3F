@@ -43,35 +43,35 @@ export default function OcorrenciaLembretesTab() {
     <div className="space-y-4">
       <div>
         <h2 className="text-xl font-semibold text-foreground">Lembretes de Ocorrências</h2>
-        <p className="text-gray-600">Pendências programadas para acompanhamento</p>
+        <p className="text-muted-foreground">Pendências programadas para acompanhamento</p>
       </div>
 
       {loading ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-12 text-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-2" />
-          <span className="text-gray-600">Carregando lembretes...</span>
+          <span className="text-muted-foreground">Carregando lembretes...</span>
         </div>
       ) : lembretes.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-600">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-12 text-center text-muted-foreground">
           Nenhum lembrete pendente
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-muted">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grupo</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lembrete</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Cliente</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Grupo</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Tipo</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Lembrete</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Ações</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-card divide-y divide-border">
               {lembretes.map((ocorrencia) => {
                 const cliente = clientes.find((c) => c.id === ocorrencia.cliente_id)
                 return (
-                  <tr key={ocorrencia.id} className="hover:bg-gray-50">
+                  <tr key={ocorrencia.id} className="hover:bg-muted">
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <Link
                         to={`/clientes/${ocorrencia.cliente_id}/editar`}
@@ -80,13 +80,13 @@ export default function OcorrenciaLembretesTab() {
                         {cliente?.nome || 'Cliente não encontrado'}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-muted-foreground">
                       {grupoMap.get(ocorrencia.grupo_id) || '—'}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-muted-foreground">
                       {tipoMap.get(ocorrencia.tipo_id) || '—'}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-muted-foreground">
                       {ocorrencia.reminder_at ? formatDateTime(ocorrencia.reminder_at) : '—'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">

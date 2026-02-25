@@ -81,26 +81,26 @@ export default function TransacaoNovo() {
     <div>
       <Link
         to="/financeiro"
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-5 h-5" />
         Voltar para financeiro
       </Link>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="border-b border-gray-200 px-6 py-4">
+      <div className="bg-card rounded-lg shadow-sm border border-border">
+        <div className="border-b border-border px-6 py-4">
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <DollarSign className="w-6 h-6 text-primary" />
             Nova Transação
           </h1>
-          <p className="text-sm text-gray-600 mt-1">Cadastre uma nova transação financeira</p>
+          <p className="text-sm text-muted-foreground mt-1">Cadastre uma nova transação financeira</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-6">
             {/* Cliente */}
             <div>
-              <label htmlFor="cliente_id" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="cliente_id" className="block text-sm font-medium text-foreground mb-2">
                 Cliente <span className="text-red-500">*</span>
               </label>
               <select
@@ -108,7 +108,7 @@ export default function TransacaoNovo() {
                 value={formData.cliente_id}
                 onChange={(e) => setFormData((prev) => ({ ...prev, cliente_id: e.target.value }))}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.cliente_id ? 'border-red-500' : 'border-gray-300'
+                  errors.cliente_id ? 'border-red-500' : 'border-border'
                 }`}
                 required
               >
@@ -127,7 +127,7 @@ export default function TransacaoNovo() {
 
             {/* Categoria */}
             <div>
-              <label htmlFor="categoria" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="categoria" className="block text-sm font-medium text-foreground mb-2">
                 Categoria <span className="text-red-500">*</span>
               </label>
               <select
@@ -135,7 +135,7 @@ export default function TransacaoNovo() {
                 value={formData.categoria}
                 onChange={(e) => setFormData((prev) => ({ ...prev, categoria: e.target.value }))}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.categoria ? 'border-red-500' : 'border-gray-300'
+                  errors.categoria ? 'border-red-500' : 'border-border'
                 }`}
                 required
               >
@@ -151,14 +151,14 @@ export default function TransacaoNovo() {
 
             {/* Serviço (opcional) */}
             <div>
-              <label htmlFor="servico_id" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="servico_id" className="block text-sm font-medium text-foreground mb-2">
                 Serviço (opcional)
               </label>
               <select
                 id="servico_id"
                 value={formData.servico_id}
                 onChange={(e) => setFormData((prev) => ({ ...prev, servico_id: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               >
                 <option value="">Nenhum serviço</option>
                 {servicos.map((servico) => (
@@ -171,7 +171,7 @@ export default function TransacaoNovo() {
 
             {/* Valor */}
             <div>
-              <label htmlFor="valor" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="valor" className="block text-sm font-medium text-foreground mb-2">
                 Valor (R$) <span className="text-red-500">*</span>
               </label>
               <input
@@ -182,7 +182,7 @@ export default function TransacaoNovo() {
                 value={formData.valor}
                 onChange={(e) => setFormData((prev) => ({ ...prev, valor: Number(e.target.value) }))}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.valor ? 'border-red-500' : 'border-gray-300'
+                  errors.valor ? 'border-red-500' : 'border-border'
                 }`}
                 placeholder="0.00"
                 required
@@ -192,7 +192,7 @@ export default function TransacaoNovo() {
 
             {/* Descrição */}
             <div>
-              <label htmlFor="descricao" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
                 Descrição <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -201,7 +201,7 @@ export default function TransacaoNovo() {
                 onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))}
                 rows={3}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.descricao ? 'border-red-500' : 'border-gray-300'
+                  errors.descricao ? 'border-red-500' : 'border-border'
                 }`}
                 placeholder="Descreva a transação..."
                 required
@@ -211,7 +211,7 @@ export default function TransacaoNovo() {
 
             {/* Data de Vencimento */}
             <div>
-              <label htmlFor="data_vencimento" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="data_vencimento" className="block text-sm font-medium text-foreground mb-2">
                 Data de Vencimento <span className="text-red-500">*</span>
               </label>
               <input
@@ -220,7 +220,7 @@ export default function TransacaoNovo() {
                 value={formData.data_vencimento}
                 onChange={(e) => setFormData((prev) => ({ ...prev, data_vencimento: e.target.value }))}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.data_vencimento ? 'border-red-500' : 'border-gray-300'
+                  errors.data_vencimento ? 'border-red-500' : 'border-border'
                 }`}
                 required
               />
@@ -229,7 +229,7 @@ export default function TransacaoNovo() {
 
             {/* Status */}
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="status" className="block text-sm font-medium text-foreground mb-2">
                 Status
               </label>
               <select
@@ -241,7 +241,7 @@ export default function TransacaoNovo() {
                     status: e.target.value as 'pendente' | 'pago' | 'vencido' | 'cancelado' | 'reembolsado',
                   }))
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               >
                 <option value="pendente">Pendente</option>
                 <option value="pago">Pago</option>
@@ -254,14 +254,14 @@ export default function TransacaoNovo() {
             {/* Método de Pagamento */}
             {formData.status === 'pago' && (
               <div>
-                <label htmlFor="metodo_pagamento" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="metodo_pagamento" className="block text-sm font-medium text-foreground mb-2">
                   Método de Pagamento
                 </label>
                 <select
                   id="metodo_pagamento"
                   value={formData.metodo_pagamento}
                   onChange={(e) => setFormData((prev) => ({ ...prev, metodo_pagamento: e.target.value }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 >
                   <option value="">Selecione...</option>
                   <option value="PIX">PIX</option>
@@ -277,7 +277,7 @@ export default function TransacaoNovo() {
             {/* Data de Pagamento */}
             {formData.status === 'pago' && (
               <div>
-                <label htmlFor="data_pagamento" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="data_pagamento" className="block text-sm font-medium text-foreground mb-2">
                   Data de Pagamento
                 </label>
                 <input
@@ -285,17 +285,17 @@ export default function TransacaoNovo() {
                   type="date"
                   value={formData.data_pagamento}
                   onChange={(e) => setFormData((prev) => ({ ...prev, data_pagamento: e.target.value }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 />
               </div>
             )}
           </div>
 
           {/* Botões */}
-          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/financeiro"
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
             >
               Cancelar
             </Link>

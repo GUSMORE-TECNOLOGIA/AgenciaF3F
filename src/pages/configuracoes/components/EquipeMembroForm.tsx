@@ -60,13 +60,13 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <form onSubmit={handleSubmit} className="bg-card rounded-lg shadow-sm border border-border p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-foreground">
           {initialData ? 'Editar membro' : 'Novo membro'}
         </h3>
         {onCancel && (
-          <button type="button" onClick={onCancel} className="text-gray-600 hover:text-gray-900">
+          <button type="button" onClick={onCancel} className="text-muted-foreground hover:text-foreground">
             Cancelar
           </button>
         )}
@@ -74,47 +74,47 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nome completo</label>
+          <label className="block text-sm font-medium text-foreground mb-1">Nome completo</label>
           <input
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
             placeholder="Nome do membro"
             required
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label className="block text-sm font-medium text-foreground mb-1">Email</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
             placeholder="email@empresa.com"
             required={!initialData}
           />
           {!initialData && (
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-muted-foreground">
               Será criado usuário de acesso com senha padrão 123456. O membro precisará alterar no primeiro login.
             </p>
           )}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+          <label className="block text-sm font-medium text-foreground mb-1">Telefone</label>
           <input
             value={telefone}
             onChange={(e) => setTelefone(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
             placeholder="(00) 00000-0000"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Perfil</label>
+          <label className="block text-sm font-medium text-foreground mb-1">Perfil</label>
           {perfis.length > 0 ? (
             <select
               value={perfilId}
               onChange={(e) => setPerfilId(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
               required
             >
               {perfis.map((p) => (
@@ -127,7 +127,7 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
             <select
               value={perfil}
               onChange={(e) => setPerfil(e.target.value as EquipeMembro['perfil'])}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
             >
               <option value="admin">Admin</option>
               <option value="gerente">Gerente</option>
@@ -137,11 +137,11 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
           )}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <label className="block text-sm font-medium text-foreground mb-1">Status</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as EquipeMembro['status'])}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="ativo">Ativo</option>
             <option value="inativo">Inativo</option>
@@ -161,7 +161,7 @@ export default function EquipeMembroForm({ initialData, perfis = [], onSubmit, o
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 border border-border rounded-lg hover:bg-muted"
           >
             Voltar
           </button>

@@ -53,7 +53,7 @@ export default function Planos() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Planos</h1>
-          <p className="text-gray-600 mt-1">Cadastro de planos da agência (pacotes de serviços)</p>
+          <p className="text-muted-foreground mt-1">Cadastro de planos da agência (pacotes de serviços)</p>
         </div>
         <Link
           to="/planos/novo"
@@ -65,18 +65,18 @@ export default function Planos() {
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Busca */}
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <input
                 type="text"
                 placeholder="Buscar planos..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               />
             </div>
           </div>
@@ -88,7 +88,7 @@ export default function Planos() {
               className={`px-4 py-2 rounded-lg border transition-colors ${
                 filterAtivo === undefined
                   ? 'bg-primary text-white border-primary'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  : 'bg-card text-foreground border-border hover:bg-muted'
               }`}
             >
               Todos
@@ -98,7 +98,7 @@ export default function Planos() {
               className={`px-4 py-2 rounded-lg border transition-colors ${
                 filterAtivo === true
                   ? 'bg-green-600 text-white border-green-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  : 'bg-card text-foreground border-border hover:bg-muted'
               }`}
             >
               Ativos
@@ -108,7 +108,7 @@ export default function Planos() {
               className={`px-4 py-2 rounded-lg border transition-colors ${
                 filterAtivo === false
                   ? 'bg-gray-600 text-white border-gray-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  : 'bg-card text-foreground border-border hover:bg-muted'
               }`}
             >
               Inativos
@@ -119,16 +119,16 @@ export default function Planos() {
 
       {/* Lista de Planos */}
       {loading ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-12">
           <div className="flex items-center justify-center">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="ml-3 text-gray-600">Carregando planos...</span>
+            <span className="ml-3 text-muted-foreground">Carregando planos...</span>
           </div>
         </div>
       ) : filteredPlanos.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-          <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 text-lg mb-2">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-12 text-center">
+          <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground text-lg mb-2">
             {searchTerm || filterAtivo !== undefined
               ? 'Nenhum plano encontrado com os filtros aplicados'
               : 'Nenhum plano cadastrado'}
@@ -148,29 +148,29 @@ export default function Planos() {
           {filteredPlanos.map((plano) => (
             <div
               key={plano.id}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow overflow-hidden"
+              className="bg-card rounded-lg shadow-sm border border-border hover:shadow-md transition-shadow overflow-hidden"
             >
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-foreground mb-1">{plano.nome}</h3>
                     {plano.descricao && (
-                      <p className="text-sm text-gray-600 line-clamp-2">{plano.descricao}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{plano.descricao}</p>
                     )}
                   </div>
                   {plano.ativo ? (
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 ml-2" />
                   ) : (
-                    <XCircle className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
+                    <XCircle className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
                   )}
                 </div>
 
                 <div className="mb-4">
                   <div className="text-2xl font-bold text-primary">{formatCurrency(plano.valor)}</div>
-                  <div className="text-xs text-gray-500 mt-1">Valor fixo do plano</div>
+                  <div className="text-xs text-muted-foreground mt-1">Valor fixo do plano</div>
                 </div>
 
-                <div className="flex items-center gap-2 pt-4 border-t border-gray-200">
+                <div className="flex items-center gap-2 pt-4 border-t border-border">
                   <Link
                     to={`/planos/${plano.id}`}
                     className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors"
@@ -180,7 +180,7 @@ export default function Planos() {
                   </Link>
                   <Link
                     to={`/planos/${plano.id}/editar`}
-                    className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                     title="Editar"
                   >
                     <Edit className="w-4 h-4" />

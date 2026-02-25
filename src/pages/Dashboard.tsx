@@ -70,7 +70,7 @@ export default function Dashboard() {
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-          <p className="text-gray-500">Carregando indicadores...</p>
+          <p className="text-muted-foreground">Carregando indicadores...</p>
         </div>
       </div>
     )
@@ -165,13 +165,13 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-primary to-indigo-600 bg-clip-text text-transparent">
             Olá, {user?.name ?? 'Admin'}!
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-muted-foreground mt-1">
             Visão geral da agência · dados em tempo real
           </p>
         </div>
         <button
           onClick={refetch}
-          className="self-start px-4 py-2 rounded-xl border border-gray-200 hover:border-primary/40 hover:bg-primary/5 transition-all text-sm font-medium text-gray-700"
+          className="self-start px-4 py-2 rounded-xl border border-border hover:border-primary/40 hover:bg-primary/5 transition-all text-sm font-medium text-foreground"
         >
           Atualizar
         </button>
@@ -184,12 +184,12 @@ export default function Dashboard() {
             <Link
               key={k.label}
               to={k.href}
-              className={`group relative overflow-hidden rounded-2xl border border-gray-200/80 p-6 ${k.bg} hover:shadow-lg hover:shadow-gray-200/50 hover:border-gray-300 transition-all duration-300 animate-slide-up`}
+              className={`group relative overflow-hidden rounded-2xl border border-border/80 p-6 ${k.bg} hover:shadow-lg hover:shadow-border/50 hover:border-border transition-all duration-300 animate-slide-up`}
               style={{ animationDelay: `${idx * 60}ms`, animationFillMode: 'both' }}
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">{k.label}</p>
+                  <p className="text-sm font-medium text-muted-foreground">{k.label}</p>
                   <p className="mt-2 text-2xl font-bold text-foreground tabular-nums">
                     {k.value}
                   </p>
@@ -200,14 +200,14 @@ export default function Dashboard() {
                   <Icon className="w-6 h-6" />
                 </div>
               </div>
-              <ArrowUpRight className="absolute bottom-4 right-4 w-4 h-4 text-gray-300 group-hover:text-primary transition-colors" />
+              <ArrowUpRight className="absolute bottom-4 right-4 w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
             </Link>
           )
         })}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <BarChart3 className="w-5 h-5 text-primary" />
             <h2 className="text-lg font-semibold text-foreground">
@@ -215,7 +215,7 @@ export default function Dashboard() {
             </h2>
           </div>
           {clientes.porResponsavel.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">Nenhum dado ainda</p>
+            <p className="text-muted-foreground text-center py-8">Nenhum dado ainda</p>
           ) : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart
@@ -245,7 +245,7 @@ export default function Dashboard() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <PieChart className="w-5 h-5 text-primary" />
             <h2 className="text-lg font-semibold text-foreground">
@@ -255,17 +255,17 @@ export default function Dashboard() {
           <div className="flex flex-wrap gap-4">
             <div className="flex items-center gap-3 rounded-xl bg-emerald-50 px-4 py-3 border border-emerald-100">
               <div className="w-3 h-3 rounded-full bg-emerald-500" />
-              <span className="text-sm text-gray-600">Ativos</span>
+              <span className="text-sm text-muted-foreground">Ativos</span>
               <span className="font-bold text-emerald-700">{clientes.ativos}</span>
             </div>
-            <div className="flex items-center gap-3 rounded-xl bg-gray-100 px-4 py-3 border border-gray-200">
+            <div className="flex items-center gap-3 rounded-xl bg-muted px-4 py-3 border border-border">
               <div className="w-3 h-3 rounded-full bg-gray-400" />
-              <span className="text-sm text-gray-600">Inativos</span>
-              <span className="font-bold text-gray-700">{clientes.inativos}</span>
+              <span className="text-sm text-muted-foreground">Inativos</span>
+              <span className="font-bold text-foreground">{clientes.inativos}</span>
             </div>
             <div className="flex items-center gap-3 rounded-xl bg-amber-50 px-4 py-3 border border-amber-100">
               <div className="w-3 h-3 rounded-full bg-amber-500" />
-              <span className="text-sm text-gray-600">Pausados</span>
+              <span className="text-sm text-muted-foreground">Pausados</span>
               <span className="font-bold text-amber-700">{clientes.pausados}</span>
             </div>
           </div>
@@ -273,7 +273,7 @@ export default function Dashboard() {
       </div>
 
       {podeFinanceiro && (
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <DollarSign className="w-5 h-5 text-primary" />
             <h2 className="text-lg font-semibold text-foreground">
@@ -327,11 +327,11 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+              <h3 className="text-sm font-semibold text-foreground mb-4">
                 Atrasados por responsável
               </h3>
               {financeiro.atrasadosPorResponsavel.length === 0 ? (
-                <p className="text-gray-500 text-sm py-4">Nenhum título atrasado</p>
+                <p className="text-muted-foreground text-sm py-4">Nenhum título atrasado</p>
               ) : (
                 <div className="space-y-2">
                   {financeiro.atrasadosPorResponsavel
@@ -341,7 +341,7 @@ export default function Dashboard() {
                         key={r.responsavelId}
                         className="flex items-center justify-between rounded-lg bg-rose-50/50 px-4 py-3 border border-rose-100"
                       >
-                        <span className="font-medium text-gray-800">{r.responsavelNome}</span>
+                        <span className="font-medium text-foreground">{r.responsavelNome}</span>
                         <div className="flex items-center gap-3">
                           <span className="text-sm text-rose-600">{r.qtd} título(s)</span>
                           <span className="font-bold text-rose-700 tabular-nums">
@@ -354,11 +354,11 @@ export default function Dashboard() {
               )}
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+              <h3 className="text-sm font-semibold text-foreground mb-4">
                 Em abertos por responsável
               </h3>
               {financeiro.emAbertosPorResponsavel.length === 0 ? (
-                <p className="text-gray-500 text-sm py-4">Nenhum título em aberto</p>
+                <p className="text-muted-foreground text-sm py-4">Nenhum título em aberto</p>
               ) : (
                 <div className="space-y-2">
                   {financeiro.emAbertosPorResponsavel
@@ -368,7 +368,7 @@ export default function Dashboard() {
                         key={r.responsavelId}
                         className="flex items-center justify-between rounded-lg bg-blue-50/50 px-4 py-3 border border-blue-100"
                       >
-                        <span className="font-medium text-gray-800">{r.responsavelNome}</span>
+                        <span className="font-medium text-foreground">{r.responsavelNome}</span>
                         <div className="flex items-center gap-3">
                           <span className="text-sm text-blue-600">{r.qtd} título(s)</span>
                           <span className="font-bold text-blue-700 tabular-nums">
@@ -384,7 +384,7 @@ export default function Dashboard() {
 
           {financeiro.atrasadosPorResponsavel.length > 0 && (
             <div className="mt-8">
-              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+              <h3 className="text-sm font-semibold text-foreground mb-4">
                 Gráfico · Atrasados por responsável
               </h3>
               <ResponsiveContainer width="100%" height={260}>
@@ -505,7 +505,7 @@ function ContratosPanel({
     : 'Todos'
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-2">
           <div className="rounded-xl p-2.5 bg-indigo-50 text-indigo-600">
@@ -515,18 +515,18 @@ function ContratosPanel({
             <h2 className="text-lg font-semibold text-foreground">
               Contratos · visão para decisão
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Analise por responsável e por vencimento para renovar e priorizar
             </p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-500" />
+            <Filter className="w-4 h-4 text-muted-foreground" />
             <select
               value={filterResponsavel}
               onChange={(e) => setFilterResponsavel(e.target.value)}
-              className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               title="Filtrar por responsável (agente)"
             >
               <option value="">Todos os responsáveis</option>
@@ -540,7 +540,7 @@ function ContratosPanel({
           <select
             value={filterFaixa}
             onChange={(e) => setFilterFaixa(e.target.value)}
-            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             title="Filtrar por faixa de vencimento"
           >
             {faixaKeys.map((f) => (
@@ -554,11 +554,11 @@ function ContratosPanel({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">
+          <h3 className="text-sm font-semibold text-foreground mb-4">
             Por responsável {filterFaixa !== 'todos' ? `· ${faixaKeys.find((f) => f.key === filterFaixa)?.label}` : ''}
           </h3>
           {chartPorResponsavelData.length === 0 ? (
-            <div className="rounded-xl bg-gray-50 border border-gray-100 py-12 text-center text-gray-500 text-sm">
+            <div className="rounded-xl bg-muted border border-border py-12 text-center text-muted-foreground text-sm">
               Nenhum contrato nesta combinação de filtros
             </div>
           ) : (
@@ -591,11 +591,11 @@ function ContratosPanel({
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">
+          <h3 className="text-sm font-semibold text-foreground mb-4">
             Por faixa de vencimento {filterResponsavel ? `· ${responsavelLabel}` : ''}
           </h3>
           {chartPorFaixaData.every((d) => d.count === 0) ? (
-            <div className="rounded-xl bg-gray-50 border border-gray-100 py-12 text-center text-gray-500 text-sm">
+            <div className="rounded-xl bg-muted border border-border py-12 text-center text-muted-foreground text-sm">
               Nenhum contrato com data de vencimento nesta seleção
             </div>
           ) : (
@@ -628,7 +628,7 @@ function ContratosPanel({
       </div>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-gradient-to-r from-indigo-50 to-violet-50 border border-indigo-100 px-4 py-3">
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-foreground">
           <strong>Dica:</strong> Use &quot;Próximos 30 dias&quot; para ver quem renovar primeiro; filtre por responsável para acompanhar sua carteira.
         </p>
         <Link

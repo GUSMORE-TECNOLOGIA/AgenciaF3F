@@ -82,26 +82,26 @@ export default function AtendimentoNovo() {
     <div>
       <Link
         to="/atendimento"
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-5 h-5" />
         Voltar para atendimento
       </Link>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="border-b border-gray-200 px-6 py-4">
+      <div className="bg-card rounded-lg shadow-sm border border-border">
+        <div className="border-b border-border px-6 py-4">
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <MessageSquare className="w-6 h-6 text-primary" />
             Novo Atendimento
           </h1>
-          <p className="text-sm text-gray-600 mt-1">Registre um novo atendimento ao cliente</p>
+          <p className="text-sm text-muted-foreground mt-1">Registre um novo atendimento ao cliente</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-6">
             {/* Cliente */}
             <div>
-              <label htmlFor="cliente_id" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="cliente_id" className="block text-sm font-medium text-foreground mb-2">
                 Cliente <span className="text-red-500">*</span>
               </label>
               <select
@@ -109,7 +109,7 @@ export default function AtendimentoNovo() {
                 value={formData.cliente_id}
                 onChange={(e) => setFormData((prev) => ({ ...prev, cliente_id: e.target.value }))}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.cliente_id ? 'border-red-500' : 'border-gray-300'
+                  errors.cliente_id ? 'border-red-500' : 'border-border'
                 }`}
                 required
               >
@@ -125,7 +125,7 @@ export default function AtendimentoNovo() {
 
             {/* Usuário */}
             <div>
-              <label htmlFor="usuario_id" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="usuario_id" className="block text-sm font-medium text-foreground mb-2">
                 Atendente <span className="text-red-500">*</span>
               </label>
               <select
@@ -133,7 +133,7 @@ export default function AtendimentoNovo() {
                 value={formData.usuario_id}
                 onChange={(e) => setFormData((prev) => ({ ...prev, usuario_id: e.target.value }))}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.usuario_id ? 'border-red-500' : 'border-gray-300'
+                  errors.usuario_id ? 'border-red-500' : 'border-border'
                 }`}
                 required
               >
@@ -149,7 +149,7 @@ export default function AtendimentoNovo() {
 
             {/* Tipo */}
             <div>
-              <label htmlFor="tipo" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="tipo" className="block text-sm font-medium text-foreground mb-2">
                 Tipo de Atendimento <span className="text-red-500">*</span>
               </label>
               <select
@@ -162,7 +162,7 @@ export default function AtendimentoNovo() {
                   }))
                 }
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.tipo ? 'border-red-500' : 'border-gray-300'
+                  errors.tipo ? 'border-red-500' : 'border-border'
                 }`}
                 required
               >
@@ -176,7 +176,7 @@ export default function AtendimentoNovo() {
 
             {/* Assunto */}
             <div>
-              <label htmlFor="assunto" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="assunto" className="block text-sm font-medium text-foreground mb-2">
                 Assunto <span className="text-red-500">*</span>
               </label>
               <input
@@ -185,7 +185,7 @@ export default function AtendimentoNovo() {
                 value={formData.assunto}
                 onChange={(e) => setFormData((prev) => ({ ...prev, assunto: e.target.value }))}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.assunto ? 'border-red-500' : 'border-gray-300'
+                  errors.assunto ? 'border-red-500' : 'border-border'
                 }`}
                 placeholder="Ex: Dúvida sobre serviço, Solicitação de alteração..."
                 required
@@ -195,7 +195,7 @@ export default function AtendimentoNovo() {
 
             {/* Descrição */}
             <div>
-              <label htmlFor="descricao" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="descricao" className="block text-sm font-medium text-foreground mb-2">
                 Descrição <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -204,7 +204,7 @@ export default function AtendimentoNovo() {
                 onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))}
                 rows={6}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.descricao ? 'border-red-500' : 'border-gray-300'
+                  errors.descricao ? 'border-red-500' : 'border-border'
                 }`}
                 placeholder="Descreva o atendimento em detalhes..."
                 required
@@ -214,7 +214,7 @@ export default function AtendimentoNovo() {
 
             {/* Data/Hora do Atendimento */}
             <div>
-              <label htmlFor="data_atendimento" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="data_atendimento" className="block text-sm font-medium text-foreground mb-2">
                 Data e Hora do Atendimento <span className="text-red-500">*</span>
               </label>
               <input
@@ -228,7 +228,7 @@ export default function AtendimentoNovo() {
                   }))
                 }
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.data_atendimento ? 'border-red-500' : 'border-gray-300'
+                  errors.data_atendimento ? 'border-red-500' : 'border-border'
                 }`}
                 required
               />
@@ -237,7 +237,7 @@ export default function AtendimentoNovo() {
 
             {/* Duração */}
             <div>
-              <label htmlFor="duracao_minutos" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="duracao_minutos" className="block text-sm font-medium text-foreground mb-2">
                 Duração (minutos)
               </label>
               <input
@@ -252,18 +252,18 @@ export default function AtendimentoNovo() {
                     duracao_minutos: e.target.value ? Number(e.target.value) : undefined,
                   }))
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 placeholder="Ex: 30"
               />
-              <p className="mt-1 text-xs text-gray-500">Tempo de duração do atendimento em minutos</p>
+              <p className="mt-1 text-xs text-muted-foreground">Tempo de duração do atendimento em minutos</p>
             </div>
           </div>
 
           {/* Botões */}
-          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <Link
               to="/atendimento"
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
             >
               Cancelar
             </Link>

@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -15,10 +16,28 @@ export default {
         'slide-up': 'slide-up 0.4s ease-out',
       },
       colors: {
-        primary: '#5B7CFA',
-        accent: '#22D3EE',
-        background: '#F8FAFC',
-        foreground: '#0F172A',
+        primary: 'var(--primary)',
+        accent: 'var(--accent)',
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        card: {
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)',
+        },
+        border: 'var(--border)',
+        input: 'var(--input)',
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
+        },
+        sidebar: {
+          DEFAULT: 'var(--sidebar)',
+          foreground: 'var(--sidebar-foreground)',
+          border: 'var(--sidebar-border)',
+          active: 'var(--sidebar-active)',
+          'active-foreground': 'var(--sidebar-active-foreground)',
+          hover: 'var(--sidebar-hover)',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

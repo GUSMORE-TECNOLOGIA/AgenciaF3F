@@ -53,7 +53,7 @@ export default function Servicos() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Serviços</h1>
-          <p className="text-gray-600 mt-1">Cadastro mestre de serviços disponíveis na agência</p>
+          <p className="text-muted-foreground mt-1">Cadastro mestre de serviços disponíveis na agência</p>
         </div>
         <Link
           to="/servicos/novo"
@@ -65,18 +65,18 @@ export default function Servicos() {
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Busca */}
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <input
                 type="text"
                 placeholder="Buscar serviços..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               />
             </div>
           </div>
@@ -88,7 +88,7 @@ export default function Servicos() {
               className={`px-4 py-2 rounded-lg border transition-colors ${
                 filterAtivo === undefined
                   ? 'bg-primary text-white border-primary'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  : 'bg-card text-foreground border-border hover:bg-muted'
               }`}
             >
               Todos
@@ -98,7 +98,7 @@ export default function Servicos() {
               className={`px-4 py-2 rounded-lg border transition-colors ${
                 filterAtivo === true
                   ? 'bg-green-600 text-white border-green-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  : 'bg-card text-foreground border-border hover:bg-muted'
               }`}
             >
               Ativos
@@ -108,7 +108,7 @@ export default function Servicos() {
               className={`px-4 py-2 rounded-lg border transition-colors ${
                 filterAtivo === false
                   ? 'bg-gray-600 text-white border-gray-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  : 'bg-card text-foreground border-border hover:bg-muted'
               }`}
             >
               Inativos
@@ -119,16 +119,16 @@ export default function Servicos() {
 
       {/* Lista de Serviços */}
       {loading ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-12">
           <div className="flex items-center justify-center">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="ml-3 text-gray-600">Carregando serviços...</span>
+            <span className="ml-3 text-muted-foreground">Carregando serviços...</span>
           </div>
         </div>
       ) : filteredServicos.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-          <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 text-lg mb-2">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-12 text-center">
+          <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground text-lg mb-2">
             {searchTerm || filterAtivo !== undefined
               ? 'Nenhum serviço encontrado com os filtros aplicados'
               : 'Nenhum serviço cadastrado'}
@@ -144,38 +144,38 @@ export default function Servicos() {
           )}
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-muted border-b border-border">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Serviço
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Valor
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Ações
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {filteredServicos.map((servico) => (
-                  <tr key={servico.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={servico.id} className="hover:bg-muted transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="text-sm font-medium text-foreground">{servico.nome}</div>
                         {servico.descricao && (
-                          <div className="text-sm text-gray-500 mt-1">{servico.descricao}</div>
+                          <div className="text-sm text-muted-foreground mt-1">{servico.descricao}</div>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{formatCurrency(servico.valor)}</div>
+                      <div className="text-sm text-foreground">{formatCurrency(servico.valor)}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {servico.ativo ? (
@@ -184,7 +184,7 @@ export default function Servicos() {
                           Ativo
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-foreground">
                           <XCircle className="w-3 h-3" />
                           Inativo
                         </span>

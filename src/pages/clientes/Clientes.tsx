@@ -280,7 +280,7 @@ export default function Clientes() {
           <button
             type="button"
             onClick={() => setExportModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted focus:ring-2 focus:ring-primary focus:border-transparent"
             title="Exportar para Excel"
           >
             <FileSpreadsheet className="w-5 h-5 text-green-600" />
@@ -289,7 +289,7 @@ export default function Clientes() {
           <button
             type="button"
             onClick={() => setViewMode(viewMode === 'clientes' ? 'contratos' : 'clientes')}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted focus:ring-2 focus:ring-primary focus:border-transparent"
             title={viewMode === 'clientes' ? 'Ver todos os contratos' : 'Voltar para lista de clientes'}
           >
             <FileText className="w-5 h-5 text-blue-600" />
@@ -307,22 +307,22 @@ export default function Clientes() {
 
       {viewMode === 'contratos' ? (
         <>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+          <div className="bg-card rounded-lg shadow-sm border border-border p-4 mb-6">
             <div className="flex flex-col md:flex-row gap-4 flex-wrap">
               <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Buscar por nome do cliente..."
                   value={contratosSearch}
                   onChange={(e) => setContratosSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               <select
                 value={contratosStatusFilter}
                 onChange={(e) => setContratosStatusFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               >
                 <option value="">Todos os status</option>
                 <option value="ativo">Ativo</option>
@@ -332,7 +332,7 @@ export default function Clientes() {
               </select>
             </div>
             {contratosFiltrados.length > 0 && (
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 {contratosFiltrados.length}{' '}
                 {contratosFiltrados.length === 1 ? 'contrato encontrado' : 'contratos encontrados'}
               </p>
@@ -359,12 +359,12 @@ export default function Clientes() {
               </button>
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+            <div className="bg-card rounded-lg shadow-sm border border-border overflow-x-auto">
               <table className="w-full min-w-[900px]">
-                <thead className="bg-gray-50">
+                <thead className="bg-muted">
                   <tr>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted select-none"
                       onClick={() => handleContratosSort('cliente')}
                     >
                       <span className="inline-flex items-center gap-1">
@@ -374,7 +374,7 @@ export default function Clientes() {
                       </span>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted select-none"
                       onClick={() => handleContratosSort('numero')}
                     >
                       <span className="inline-flex items-center gap-1">
@@ -384,7 +384,7 @@ export default function Clientes() {
                       </span>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted select-none"
                       onClick={() => handleContratosSort('plano')}
                     >
                       <span className="inline-flex items-center gap-1">
@@ -394,7 +394,7 @@ export default function Clientes() {
                       </span>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted select-none"
                       onClick={() => handleContratosSort('data_inicio')}
                     >
                       <span className="inline-flex items-center gap-1">
@@ -404,7 +404,7 @@ export default function Clientes() {
                       </span>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted select-none"
                       onClick={() => handleContratosSort('data_fim')}
                     >
                       <span className="inline-flex items-center gap-1">
@@ -414,7 +414,7 @@ export default function Clientes() {
                       </span>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted select-none"
                       onClick={() => handleContratosSort('valor')}
                     >
                       <span className="inline-flex items-center gap-1">
@@ -424,7 +424,7 @@ export default function Clientes() {
                       </span>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                      className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted select-none"
                       onClick={() => handleContratosSort('status')}
                     >
                       <span className="inline-flex items-center gap-1">
@@ -433,15 +433,15 @@ export default function Clientes() {
                           (contratosSortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
                       </span>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Ações
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-card divide-y divide-border">
                   {contratosOrdenados.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
+                      <td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">
                         {contratosSearch || contratosStatusFilter
                           ? 'Nenhum contrato encontrado com os filtros aplicados'
                           : 'Nenhum contrato cadastrado'}
@@ -449,8 +449,8 @@ export default function Clientes() {
                     </tr>
                   ) : (
                     contratosOrdenados.map((cp) => (
-                      <tr key={cp.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <tr key={cp.id} className="hover:bg-muted">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                           <Link
                             to={`/clientes/${cp.cliente_id}/editar`}
                             className="text-primary hover:text-primary/80 hover:underline"
@@ -459,19 +459,19 @@ export default function Clientes() {
                             {cp.cliente?.nome ?? '-'}
                           </Link>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                           {cp.contrato?.nome ?? cp.id.slice(0, 8)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                           {cp.plano?.nome ?? '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                           {formatarData(cp.data_inicio)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                           {formatarData(cp.data_fim)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                           {formatarMoeda(cp.valor, cp.moeda)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -483,7 +483,7 @@ export default function Clientes() {
                                 ? 'bg-yellow-100 text-yellow-800'
                                 : cp.status === 'cancelado'
                                 ? 'bg-red-100 text-red-800'
-                                : 'bg-gray-100 text-gray-800'
+                                : 'bg-muted text-foreground'
                             }`}
                           >
                             {cp.status}
@@ -509,22 +509,22 @@ export default function Clientes() {
         </>
       ) : (
         <>
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4 flex-wrap">
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <input
               type="text"
               placeholder="Buscar clientes por nome, email ou telefone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           >
             <option value="">Todos os status</option>
             <option value="ativo">Ativo</option>
@@ -535,7 +535,7 @@ export default function Clientes() {
             <select
               value={responsavelFilter}
               onChange={(e) => setResponsavelFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               title="Filtrar por responsável"
             >
               <option value="">Todos os responsáveis</option>
@@ -549,7 +549,7 @@ export default function Clientes() {
           <button
             type="button"
             onClick={() => setSmartFiltersOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted focus:ring-2 focus:ring-primary focus:border-transparent"
             title="Filtros Inteligentes"
           >
             <Sparkles className="w-5 h-5 text-purple-500" />
@@ -562,18 +562,18 @@ export default function Clientes() {
           </button>
         </div>
         {clientes.length > 0 && (
-          <p className="text-sm text-gray-600 mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             {clientes.length} {clientes.length === 1 ? 'cliente encontrado' : 'clientes encontrados'}
           </p>
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+      <div className="bg-card rounded-lg shadow-sm border border-border overflow-x-auto">
         <table className="w-full min-w-[800px]">
-          <thead className="bg-gray-50">
+          <thead className="bg-muted">
             <tr>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted select-none"
                 onClick={() => handleSort('nome')}
               >
                 <span className="inline-flex items-center gap-1">
@@ -582,7 +582,7 @@ export default function Clientes() {
                 </span>
               </th>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted select-none"
                 onClick={() => handleSort('email')}
               >
                 <span className="inline-flex items-center gap-1">
@@ -591,7 +591,7 @@ export default function Clientes() {
                 </span>
               </th>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted select-none"
                 onClick={() => handleSort('telefone')}
               >
                 <span className="inline-flex items-center gap-1">
@@ -600,7 +600,7 @@ export default function Clientes() {
                 </span>
               </th>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted select-none"
                 onClick={() => handleSort('plano')}
               >
                 <span className="inline-flex items-center gap-1">
@@ -609,7 +609,7 @@ export default function Clientes() {
                 </span>
               </th>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted select-none"
                 onClick={() => handleSort('responsavel')}
               >
                 <span className="inline-flex items-center gap-1">
@@ -618,7 +618,7 @@ export default function Clientes() {
                 </span>
               </th>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted select-none"
                 onClick={() => handleSort('status')}
               >
                 <span className="inline-flex items-center gap-1">
@@ -626,15 +626,15 @@ export default function Clientes() {
                   {sortBy === 'status' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
                 </span>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Ações
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-card divide-y divide-border">
             {clientes.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
                   {searchTerm || statusFilter || responsavelFilter
                     ? 'Nenhum cliente encontrado com os filtros aplicados'
                     : 'Nenhum cliente cadastrado ainda'}
@@ -642,8 +642,8 @@ export default function Clientes() {
               </tr>
             ) : (
               sortedClientes.map((cliente) => (
-                <tr key={cliente.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <tr key={cliente.id} className="hover:bg-muted">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                     <Link
                       to={`/clientes/${cliente.id}/editar`}
                       className="text-primary hover:text-primary/80 hover:underline"
@@ -652,16 +652,16 @@ export default function Clientes() {
                       {cliente.nome}
                     </Link>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                     {cliente.email || '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                     {cliente.telefone || '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                     {planosAtivos.get(cliente.id) || '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                     {responsavelPorClienteMap.get(cliente.id) ?? '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -671,7 +671,7 @@ export default function Clientes() {
                           ? 'bg-green-100 text-green-800'
                           : cliente.status === 'pausado'
                           ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-gray-100 text-gray-800'
+                          : 'bg-muted text-foreground'
                       }`}
                     >
                       {cliente.status}

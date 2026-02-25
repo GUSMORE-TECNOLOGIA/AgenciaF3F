@@ -101,7 +101,7 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Nome */}
       <div>
-        <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="nome" className="block text-sm font-medium text-foreground mb-2">
           Nome do Cliente <span className="text-red-500">*</span>
         </label>
         <input
@@ -130,7 +130,7 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
             }
           }}
           className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-            errors.nome ? 'border-red-500' : 'border-gray-300'
+            errors.nome ? 'border-red-500' : 'border-border'
           }`}
           placeholder="Nome completo do cliente"
           required
@@ -140,7 +140,7 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
 
       {/* Email */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
           E-mail
         </label>
         <input
@@ -171,7 +171,7 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
             }
           }}
           className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-            errors.email ? 'border-red-500' : 'border-gray-300'
+            errors.email ? 'border-red-500' : 'border-border'
           }`}
           placeholder="email@exemplo.com"
         />
@@ -180,7 +180,7 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
 
       {/* Telefone */}
       <div>
-        <label htmlFor="telefone" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="telefone" className="block text-sm font-medium text-foreground mb-2">
           Telefone
         </label>
         <input
@@ -188,21 +188,21 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
           type="tel"
           value={telefone}
           onChange={(e) => setTelefone(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           placeholder="(11) 99999-9999"
         />
       </div>
 
       {/* Status */}
       <div>
-        <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="status" className="block text-sm font-medium text-foreground mb-2">
           Status <span className="text-red-500">*</span>
         </label>
         <select
           id="status"
           value={status}
           onChange={(e) => setStatus(e.target.value as 'ativo' | 'inativo' | 'pausado')}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
           required
         >
           <option value="ativo">Ativo</option>
@@ -219,13 +219,13 @@ export default function ClienteForm({ mode, initialData, onSubmit, onCancel, loa
       )}
 
       {/* Botões */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+      <div className="flex justify-end gap-3 pt-4 border-t border-border">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
             disabled={loading || externalLoading}
-            className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancelar
           </button>

@@ -89,12 +89,12 @@ export default function EditClienteServicoModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-foreground">Editar Contrato de Serviço</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
             disabled={loading}
           >
             <X className="w-5 h-5" />
@@ -104,13 +104,13 @@ export default function EditClienteServicoModal({
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-6">
             {/* Informações do Serviço */}
-            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="text-sm font-medium text-gray-700 mb-2">Serviço</div>
+            <div className="p-4 bg-muted rounded-lg border border-border">
+              <div className="text-sm font-medium text-foreground mb-2">Serviço</div>
               <div className="text-lg font-semibold text-foreground">
                 {contrato.servico?.nome || 'Serviço não encontrado'}
               </div>
               {contrato.servico?.valor && (
-                <div className="text-sm text-gray-600 mt-1">
+                <div className="text-sm text-muted-foreground mt-1">
                   Valor original: R$ {contrato.servico.valor.toFixed(2).replace('.', ',')}
                 </div>
               )}
@@ -118,10 +118,10 @@ export default function EditClienteServicoModal({
 
             {/* Valor (apenas Super Edit) */}
             <div>
-              <label htmlFor="valor" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="valor" className="block text-sm font-medium text-foreground mb-2">
                 Valor do Contrato (R$) <span className="text-red-500">*</span>
                 {!canSuperEditPlanos && (
-                  <span className="ml-2 text-xs text-gray-500">(apenas troca de status)</span>
+                  <span className="ml-2 text-xs text-muted-foreground">(apenas troca de status)</span>
                 )}
               </label>
               <InputMoeda
@@ -130,8 +130,8 @@ export default function EditClienteServicoModal({
                 onValueChange={(v) => setFormData((prev) => ({ ...prev, valor: v ?? 0 }))}
                 readOnly={!canSuperEditPlanos}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  errors.valor ? 'border-red-500' : 'border-gray-300'
-                } ${!canSuperEditPlanos ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                  errors.valor ? 'border-red-500' : 'border-border'
+                } ${!canSuperEditPlanos ? 'bg-muted cursor-not-allowed' : ''}`}
                 aria-invalid={!!errors.valor}
                 aria-describedby={errors.valor ? 'valor-error-serv' : undefined}
               />
@@ -140,7 +140,7 @@ export default function EditClienteServicoModal({
 
             {/* Moeda (apenas Super Edit) */}
             <div>
-              <label htmlFor="moeda" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="moeda" className="block text-sm font-medium text-foreground mb-2">
                 Moeda
               </label>
               <select
@@ -148,8 +148,8 @@ export default function EditClienteServicoModal({
                 value={formData.moeda}
                 onChange={(e) => setFormData((prev) => ({ ...prev, moeda: e.target.value }))}
                 disabled={!canSuperEditPlanos}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                  !canSuperEditPlanos ? 'bg-gray-100 cursor-not-allowed' : ''
+                className={`w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
+                  !canSuperEditPlanos ? 'bg-muted cursor-not-allowed' : ''
                 }`}
               >
                 <option value="BRL">BRL - Real Brasileiro</option>
@@ -161,7 +161,7 @@ export default function EditClienteServicoModal({
             {/* Data Início / Data Fim (apenas Super Edit) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="data_inicio_serv" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="data_inicio_serv" className="block text-sm font-medium text-foreground mb-2">
                   Data de Início
                 </label>
                 <input
@@ -175,15 +175,15 @@ export default function EditClienteServicoModal({
                   max={DATE_MAX}
                   readOnly={!canSuperEditPlanos}
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                    errors.data_inicio ? 'border-red-500' : 'border-gray-300'
-                  } ${!canSuperEditPlanos ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                    errors.data_inicio ? 'border-red-500' : 'border-border'
+                  } ${!canSuperEditPlanos ? 'bg-muted cursor-not-allowed' : ''}`}
                 />
                 {errors.data_inicio && (
                   <p className="mt-1 text-sm text-red-600">{errors.data_inicio}</p>
                 )}
               </div>
               <div>
-                <label htmlFor="data_fim_serv" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="data_fim_serv" className="block text-sm font-medium text-foreground mb-2">
                   Data de Fim
                 </label>
                 <input
@@ -197,8 +197,8 @@ export default function EditClienteServicoModal({
                   max={DATE_MAX}
                   readOnly={!canSuperEditPlanos}
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                    errors.data_fim ? 'border-red-500' : 'border-gray-300'
-                  } ${!canSuperEditPlanos ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                    errors.data_fim ? 'border-red-500' : 'border-border'
+                  } ${!canSuperEditPlanos ? 'bg-muted cursor-not-allowed' : ''}`}
                 />
                 {errors.data_fim && <p className="mt-1 text-sm text-red-600">{errors.data_fim}</p>}
               </div>
@@ -207,7 +207,7 @@ export default function EditClienteServicoModal({
             {canSuperEditPlanos && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="data_assinatura_serv" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="data_assinatura_serv" className="block text-sm font-medium text-foreground mb-2">
                     Data de Assinatura
                   </label>
                   <input
@@ -220,13 +220,13 @@ export default function EditClienteServicoModal({
                     min={DATE_MIN}
                     max={DATE_MAX}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                      errors.data_assinatura ? 'border-red-500' : 'border-gray-300'
+                      errors.data_assinatura ? 'border-red-500' : 'border-border'
                     }`}
                   />
                   {errors.data_assinatura && <p className="mt-1 text-sm text-red-600">{errors.data_assinatura}</p>}
                 </div>
                 <div>
-                  <label htmlFor="data_cancelamento_serv" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="data_cancelamento_serv" className="block text-sm font-medium text-foreground mb-2">
                     Data de Cancelamento
                   </label>
                   <input
@@ -239,7 +239,7 @@ export default function EditClienteServicoModal({
                     min={DATE_MIN}
                     max={DATE_MAX}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-                      errors.data_cancelamento ? 'border-red-500' : 'border-gray-300'
+                      errors.data_cancelamento ? 'border-red-500' : 'border-border'
                     }`}
                   />
                   {errors.data_cancelamento && <p className="mt-1 text-sm text-red-600">{errors.data_cancelamento}</p>}
@@ -249,7 +249,7 @@ export default function EditClienteServicoModal({
 
             {/* Status */}
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="status" className="block text-sm font-medium text-foreground mb-2">
                 Status <span className="text-red-500">*</span>
               </label>
               <select
@@ -261,7 +261,7 @@ export default function EditClienteServicoModal({
                     status: e.target.value as 'ativo' | 'pausado' | 'cancelado' | 'finalizado',
                   }))
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 required
               >
                 <option value="ativo">Ativo</option>
@@ -273,7 +273,7 @@ export default function EditClienteServicoModal({
 
             {/* Observações */}
             <div>
-              <label htmlFor="observacoes" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="observacoes" className="block text-sm font-medium text-foreground mb-2">
                 Observações
               </label>
               <textarea
@@ -281,19 +281,19 @@ export default function EditClienteServicoModal({
                 value={formData.observacoes ?? ''}
                 onChange={(e) => setFormData((prev) => ({ ...prev, observacoes: e.target.value }))}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                 placeholder="Observações sobre o contrato..."
               />
             </div>
           </div>
 
           {/* Botões */}
-          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-border">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
             >
               Cancelar
             </button>

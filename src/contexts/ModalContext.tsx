@@ -114,12 +114,12 @@ function ModalOverlay({ modal, onClose }: { modal: ModalState; onClose: (result:
         role="dialog"
         aria-modal="true"
         aria-describedby={messageId}
-        className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg"
+        className="w-full max-w-md rounded-lg bg-card p-6 shadow-lg"
       >
-        <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+        <h2 className="text-lg font-semibold text-foreground">{title}</h2>
         <div
           id={messageId}
-          className="mt-3 whitespace-pre-line text-sm text-slate-600"
+          className="mt-3 whitespace-pre-line text-sm text-muted-foreground"
         >
           {modal.message}
         </div>
@@ -129,7 +129,7 @@ function ModalOverlay({ modal, onClose }: { modal: ModalState; onClose: (result:
             value={value}
             placeholder={promptOptions?.placeholder}
             onChange={(event) => setValue(event.target.value)}
-            className="mt-4 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="mt-4 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
         ) : null}
         <div className="mt-6 flex items-center justify-end gap-3">
@@ -137,7 +137,7 @@ function ModalOverlay({ modal, onClose }: { modal: ModalState; onClose: (result:
             <button
               type="button"
               onClick={() => onClose(false)}
-              className="rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-slate-50"
+              className="rounded-lg border border-border px-4 py-2 text-sm text-foreground transition-colors hover:bg-muted"
             >
               {cancelLabel}
             </button>
