@@ -4,6 +4,19 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 
 ---
 
+## 2026-02-24 – Admin não consegue adicionar responsável ao cliente (RESOLVIDO)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-02-24 |
+| **Descrição do erro** | Admin recebia "Erro ao adicionar responsável. Tente novamente ou verifique permissões." ao tentar adicionar responsável na aba Responsáveis de qualquer cliente. |
+| **Arquivo(s)/módulo** | RLS tabela `cliente_responsaveis`; migrations `20260210110000` e `20260224180000`. |
+| **Causa raiz** | Duas causas combinadas: (1) **Políticas duplicadas e conflitantes** — a migration `20260210110000` criou `cliente_responsaveis_admin_insert`, e a migration `20260224180000` criou `cliente_responsaveis_insert` sem remover a anterior. Com duas políticas INSERT ativas, o PostgREST aplica AND entre elas, causando conflito. (2) **Deadlock circular no INSERT** — a política `cliente_responsaveis_insert` usava `is_responsavel_do_cliente(cliente_id)` no `WITH CHECK`, mas essa função verifica se o usuário já está em `cliente_responsaveis` para aquele cliente. Para um admin que nunca foi vinculado ao cliente, retorna `false`, bloqueando o INSERT. |
+| **Solução aplicada** | Migration `20260224220000_fix_cliente_responsaveis_rls_insert.sql`: remove **todas** as políticas existentes de `cliente_responsaveis` via loop dinâmico e recria 4 políticas limpas (`cr_select`, `cr_insert`, `cr_update`, `cr_delete`). A política `cr_insert` usa `role = 'admin'` como primeira condição (sem depender de `is_responsavel_do_cliente`), eliminando o deadlock circular. Aplicada via MCP `apply_migration` no projeto F3F (`rhnkffeyspymjpellmnd`). |
+| **Lição aprendida** | Nunca usar `is_responsavel_do_cliente` no `WITH CHECK` de INSERT em `cliente_responsaveis` — cria dependência circular (a função consulta a própria tabela que está sendo inserida). Para admin, sempre usar `role = 'admin'` diretamente. Ao criar nova migration de RLS, sempre dropar explicitamente as políticas anteriores do mesmo nome para evitar duplicatas. |
+
+---
+
 ## 2026-02-24 – Agente vê zero no dashboard após migração responsável (RESOLVIDO)
 
 | Campo | Conteúdo |
@@ -12,8 +25,8 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 | **Descrição do erro** | Após a migração que passou a usar apenas `cliente_responsaveis` para visibilidade, usuários com perfil **agente** (ex.: Raphael Leça) passaram a ver dashboard e lista de clientes zerados — "Nenhum dado ainda", "Nenhum contrato nesta combinação de filtros". |
 | **Arquivo(s)/módulo** | RLS e função `is_responsavel_do_cliente`; tabela `cliente_responsaveis` vs `clientes.responsavel_id`. |
 | **Causa raiz** | A migração `20260224180000` considerou **somente** `cliente_responsaveis` para decidir se o usuário é responsável. Clientes que tinham apenas `clientes.responsavel_id` preenchido (legado) deixaram de ser visíveis para o agente, pois não havia linha correspondente em `cliente_responsaveis`. |
-| **Solução aplicada** | Migration `20260224190000_fix_agente_visibilidade_responsavel.sql`: (1) **Fallback** em `is_responsavel_do_cliente`: além de cliente_responsaveis, considerar `(SELECT c.responsavel_id FROM clientes c WHERE c.id = p_cliente_id AND c.deleted_at IS NULL) = auth.uid()`. (2) **Backfill**: INSERT em `cliente_responsaveis` (role principal) para cada cliente que tem `clientes.responsavel_id` preenchido e ainda não possui vínculo; ON CONFLICT DO UPDATE para restaurar linhas soft-deleted. Assim o agente volta a ver seus clientes e os dados ficam unificados em `cliente_responsaveis`. |
-| **Referência** | [analise-responsavel-por-cliente.md](./analise-responsavel-por-cliente.md). |
+| **Solução aplicada** | (1) Migration `20260224190000_fix_agente_visibilidade_responsavel.sql`: **Fallback** em `is_responsavel_do_cliente` para `clientes.responsavel_id = auth.uid()`; **Backfill** em `cliente_responsaveis`. (2) Dashboard: não enviar `responsavelId`; assim `fetchClientes` usa query direta na tabela e a RLS (`is_responsavel_do_cliente`) decide o que o agente vê. (3) **Importante:** a migration deve ser aplicada **no projeto Supabase F3F** (Project ID `rhnkffeyspymjpellmnd`). Se o MCP ou o deploy apontar para outro projeto, executar o SQL manualmente no SQL Editor do projeto correto. Ver [APLICAR_FIX_AGENTE_DASHBOARD.md](./guias/APLICAR_FIX_AGENTE_DASHBOARD.md). |
+| **Referência** | [analise-responsavel-por-cliente.md](./analise-responsavel-por-cliente.md), [APLICAR_FIX_AGENTE_DASHBOARD.md](./guias/APLICAR_FIX_AGENTE_DASHBOARD.md). |
 
 ---
 
