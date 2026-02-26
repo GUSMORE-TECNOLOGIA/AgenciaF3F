@@ -42,6 +42,14 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
 
   const handleAddResponsavel = async () => {
     if (!selectedResponsavelId || selectedRoles.length === 0) return
+    if (selectedRoles.includes('principal') && jaTemPrincipal) {
+      await alertModal({
+        title: 'Apenas 1 principal permitido',
+        message: 'Este cliente já possui um responsável principal. Remova o atual antes de definir outro, ou escolha outro papel (Comercial, Suporte, Backup).',
+        variant: 'danger',
+      })
+      return
+    }
 
     try {
       await createClienteResponsavel({
@@ -54,7 +62,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
       await refetch?.()
       setShowAddModal(false)
       setSelectedResponsavelId('')
-      setSelectedRoles(['principal'])
+      setSelectedRoles(['comercial'])
       setObservacao('')
     } catch (error) {
       console.error('Erro ao adicionar responsável:', error)
@@ -119,6 +127,8 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
     backup: responsaveis.filter((r) => r.roles.includes('backup')),
   }
 
+  const jaTemPrincipal = responsaveisPorPapel.principal.length > 0
+
   if (loading) {
     return <div className="text-center py-12">Carregando...</div>
   }
@@ -133,7 +143,10 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
           </p>
         </div>
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={() => {
+            setSelectedRoles(jaTemPrincipal ? ['comercial'] : ['principal'])
+            setShowAddModal(true)
+          }}
           className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
         >
           <Plus className="w-5 h-5" />
@@ -246,21 +259,33 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Papéis
                 </label>
+                {jaTemPrincipal && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400 mb-2">
+                    Este cliente já possui um responsável principal. Apenas 1 principal é permitido por cliente.
+                  </p>
+                )}
                 <div className="flex flex-wrap gap-2">
-                  {['principal', 'comercial', 'suporte', 'backup'].map((role) => (
-                    <button
-                      key={role}
-                      type="button"
-                      onClick={() => toggleRole(role)}
-                      className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                        selectedRoles.includes(role)
-                          ? getRoleColor(role)
-                          : 'bg-muted text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      {getRoleLabel(role)}
-                    </button>
-                  ))}
+                  {['principal', 'comercial', 'suporte', 'backup'].map((role) => {
+                    const isPrincipalBloqueado = role === 'principal' && jaTemPrincipal
+                    return (
+                      <button
+                        key={role}
+                        type="button"
+                        onClick={() => !isPrincipalBloqueado && toggleRole(role)}
+                        disabled={isPrincipalBloqueado}
+                        title={isPrincipalBloqueado ? 'Já existe um responsável principal para este cliente' : undefined}
+                        className={`px-3 py-1 text-sm rounded-full transition-colors ${
+                          isPrincipalBloqueado
+                            ? 'bg-muted text-muted-foreground opacity-40 cursor-not-allowed'
+                            : selectedRoles.includes(role)
+                              ? getRoleColor(role)
+                              : 'bg-muted text-muted-foreground hover:bg-muted'
+                        }`}
+                      >
+                        {getRoleLabel(role)}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
 
@@ -283,7 +308,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                 onClick={() => {
                   setShowAddModal(false)
                   setSelectedResponsavelId('')
-                  setSelectedRoles(['principal'])
+                  setSelectedRoles(['comercial'])
                   setObservacao('')
                 }}
                 className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
