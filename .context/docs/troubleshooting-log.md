@@ -4,6 +4,19 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 
 ---
 
+## 2026-03-02 – Erro ao cadastrar novo usuário: usuarios_perfil_check violation (RESOLVIDO)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-03-02 |
+| **Descrição do erro** | Ao criar um novo membro na tela Equipe, aparecia o erro: `new row for relation "usuarios" violates check constraint "usuarios_perfil_check"`. |
+| **Arquivo(s)/módulo** | `supabase/functions/create-team-user/index.ts`; constraint `usuarios_perfil_check` na tabela `usuarios`. |
+| **Causa raiz** | A migration `20260209140000_perfil_financeiro.sql` adicionou o perfil `financeiro` ao sistema. A migration `20260209220000_equipe_membros_perfil_allow_financeiro.sql` atualizou o constraint de `equipe_membros` para aceitar `financeiro`, mas **nunca foi criada a migration equivalente para a tabela `usuarios`**. O constraint de `usuarios` permaneceu restrito a `('admin', 'gerente', 'agente', 'suporte')`. Quando a Edge Function `create-team-user` tentava inserir um usuário com `perfil = 'financeiro'` (ou qualquer slug vindo de `perfis`), o banco rejeitava com violação de constraint. |
+| **Solução aplicada** | Criada migration `20260302120000_fix_usuarios_perfil_allow_financeiro.sql` e aplicada via MCP: `DROP CONSTRAINT usuarios_perfil_check` + `ADD CONSTRAINT usuarios_perfil_check CHECK (perfil = ANY (ARRAY['admin','gerente','agente','suporte','financeiro']))`. |
+| **Lição aprendida** | Ao adicionar novo valor de enum/check em uma tabela, verificar se há tabelas relacionadas com constraints similares que também precisam ser atualizadas (ex.: `equipe_membros` e `usuarios` compartilham o campo `perfil` com os mesmos valores). |
+
+---
+
 ## 2026-02-25 – Admin ainda não consegue adicionar responsável (upsert bloqueado por RLS cr_insert) (RESOLVIDO)
 
 | Campo | Conteúdo |
