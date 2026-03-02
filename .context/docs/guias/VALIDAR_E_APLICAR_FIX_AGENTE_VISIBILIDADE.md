@@ -1,6 +1,6 @@
-# Validação e fix: agente vê 0 clientes no dashboard
+# Validação e fix: agente (ou perfil comercial) vê 0 clientes no dashboard
 
-Guia **único** para validar e corrigir o problema em que o **admin** vê os clientes e o **agente** vê 0.  
+Guia **único** para validar e corrigir o problema em que o **admin** vê os clientes e o **agente** (ou outro perfil, ex.: **comercial**) vê 0. A visibilidade de clientes não depende do nome do perfil e sim da **atribuição como responsável**: o usuário vê apenas clientes em que consta como responsável principal (`clientes.responsavel_id`) ou em `cliente_responsaveis`.  
 Sempre executar no **projeto Supabase F3F** (`rhnkffeyspymjpellmnd`). Ver [PROJECT_INTEGRATIONS.md](../PROJECT_INTEGRATIONS.md).
 
 ---
