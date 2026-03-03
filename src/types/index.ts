@@ -9,12 +9,15 @@ export type ModuloSistema =
   | 'atendimento'
   | 'equipe'
 
+export type EscopoVisibilidade = 'todos' | 'nenhum' | 'responsavel'
+
 // Perfil de acesso (cadastrável pelo admin)
 export interface Perfil {
   id: string
   nome: string
   descricao?: string
   slug?: string
+  escopo_visibilidade: EscopoVisibilidade
   created_at: string
   updated_at: string
 }
@@ -38,6 +41,7 @@ export interface User {
   role: 'admin' | 'user'
   perfil: 'admin' | 'gerente' | 'agente' | 'suporte' | 'financeiro'
   perfil_id?: string | null
+  escopo_visibilidade?: EscopoVisibilidade
   must_reset_password: boolean
   password_reset_at?: string
   created_at: string

@@ -8,6 +8,13 @@ import {
   deleteTransacao,
   baixarTitulo,
   calcularPrevisaoRecebimento,
+  fetchFontesFinanceirasCliente,
+  gerarLancamentoClienteIndividual,
+  gerarLancamentosClienteLote,
+  type FinanceiroFonteCliente,
+  type GerarLancamentoIndividualInput,
+  type GerarLancamentosLoteInput,
+  type GeracaoLoteResultado,
 } from '@/services/financeiro'
 import { createTransacao, type TransacaoCreateInput } from '@/services/transacoes'
 
@@ -271,4 +278,77 @@ export function usePrevisaoRecebimento(clienteId: string | null) {
   }, [loadPrevisao])
 
   return { previsao, loading, error, refetch: loadPrevisao }
+}
+
+export function useFinanceiroFontesCliente(clienteId: string | null) {
+  const [fontes, setFontes] = useState<FinanceiroFonteCliente[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+
+  const loadFontes = useCallback(async () => {
+    if (!clienteId) {
+      setFontes([])
+      setLoading(false)
+      return
+    }
+    try {
+      setLoading(true)
+      setError(null)
+      const data = await fetchFontesFinanceirasCliente(clienteId)
+      setFontes(data)
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Erro desconhecido'))
+      console.error('Erro ao carregar fontes financeiras do cliente:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [clienteId])
+
+  useEffect(() => {
+    loadFontes()
+  }, [loadFontes])
+
+  return { fontes, loading, error, refetch: loadFontes }
+}
+
+export function useGerarLancamentoFinanceiroIndividual() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  const gerar = useCallback(async (input: GerarLancamentoIndividualInput) => {
+    try {
+      setLoading(true)
+      setError(null)
+      return await gerarLancamentoClienteIndividual(input)
+    } catch (err) {
+      const e = err instanceof Error ? err : new Error('Erro desconhecido')
+      setError(e)
+      throw e
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  return { gerar, loading, error }
+}
+
+export function useGerarLancamentosFinanceiroLote() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  const gerar = useCallback(async (input: GerarLancamentosLoteInput): Promise<GeracaoLoteResultado> => {
+    try {
+      setLoading(true)
+      setError(null)
+      return await gerarLancamentosClienteLote(input)
+    } catch (err) {
+      const e = err instanceof Error ? err : new Error('Erro desconhecido')
+      setError(e)
+      throw e
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  return { gerar, loading, error }
 }

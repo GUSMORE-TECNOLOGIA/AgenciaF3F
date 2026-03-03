@@ -29,6 +29,12 @@ import { useModal } from '@/contexts/ModalContext'
 
 type TabType = 'membros' | 'perfis'
 
+function labelEscopoVisibilidade(escopo: Perfil['escopo_visibilidade']): string {
+  if (escopo === 'responsavel') return 'Responsável'
+  if (escopo === 'nenhum') return 'Nenhum'
+  return 'Todos'
+}
+
 export default function Equipe() {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState<TabType>('membros')
@@ -330,13 +336,21 @@ export default function Equipe() {
     try {
       setPerfisSaving(true)
       if (editingPerfil) {
-        await updatePerfil(editingPerfil.id, { nome: data.nome, descricao: data.descricao })
+        await updatePerfil(editingPerfil.id, {
+          nome: data.nome,
+          descricao: data.descricao,
+          escopo_visibilidade: data.escopo_visibilidade,
+        })
         await savePermissoes(
           editingPerfil.id,
           data.permissoes.map((p) => ({ ...p, perfil_id: editingPerfil.id }))
         )
       } else {
-        const novo = await createPerfil({ nome: data.nome, descricao: data.descricao })
+        const novo = await createPerfil({
+          nome: data.nome,
+          descricao: data.descricao,
+          escopo_visibilidade: data.escopo_visibilidade,
+        })
         await savePermissoes(
           novo.id,
           data.permissoes.map((p) => ({ ...p, perfil_id: novo.id }))
@@ -549,6 +563,7 @@ export default function Equipe() {
                   <tr className="bg-muted border-b border-border">
                     <th className="text-left py-3 px-4 font-medium text-foreground">Nome</th>
                     <th className="text-left py-3 px-4 font-medium text-foreground">Descrição</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Visibilidade</th>
                     <th className="text-right py-3 px-4 font-medium text-foreground">Ações</th>
                   </tr>
                 </thead>
@@ -557,6 +572,7 @@ export default function Equipe() {
                     <tr key={p.id} className="border-b border-border hover:bg-muted/50">
                       <td className="py-3 px-4 font-medium text-foreground">{p.nome}</td>
                       <td className="py-3 px-4 text-muted-foreground">{p.descricao ?? ''}</td>
+                      <td className="py-3 px-4 text-muted-foreground">{labelEscopoVisibilidade(p.escopo_visibilidade)}</td>
                       <td className="py-3 px-4 text-right">
                         <button
                           type="button"

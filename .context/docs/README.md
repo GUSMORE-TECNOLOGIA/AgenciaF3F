@@ -19,6 +19,7 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 - [Análise: Responsável por cliente](.context/docs/analise-responsavel-por-cliente.md) – Conceito, modelo de dados, onde é usado (backend/frontend/RLS), skills envolvidas.
 - [Contrato: entidade vs. campo (aba Serviços)](./requisitos/contrato-entidade-vs-campo-servicos.md) – Análise: contrato como campo (Assinado/Não assinado/Cancelado) vs. contrato como entidade com painel próprio; recomendação e critérios de aceite.
 - [Contrato: cascade ao cancelar e datas (assinatura/cancelamento)](./requisitos/contrato-cascade-e-datas.md) – Regra de cascade ao cancelar contrato (planos/serviços vinculados); campos data_assinatura e data_cancelamento em contrato, plano e serviço.
+- [Financeiro Premium por cliente](./requisitos/financeiro-premium-por-cliente.md) – Regras de geração individual/lote, integração com Serviços, idempotência por competência e checklist operacional.
 
 ## Lições aprendidas (evitar repetir)
 - [Lições aprendidas](./licoes-aprendidas.md) – erros de codificação e regras para não repetir (ex.: não gravar null em campo opcional quando o cliente não envia).
@@ -53,6 +54,7 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 ## Document Map
 | Guide | File | Primary Inputs |
 | --- | --- | --- |
+| Financeiro Premium por cliente | [requisitos/financeiro-premium-por-cliente.md](./requisitos/financeiro-premium-por-cliente.md) | Aba Financeiro do cliente, geração individual/lote, planos/contratos ativos |
 | Fluxo Perfil → Usuário → Responsável | [requisitos/fluxo-perfil-usuario-responsavel.md](./requisitos/fluxo-perfil-usuario-responsavel.md) | Perfil, Equipe, Responsável, Dashboard, Filtros (cadeia única) |
 | Análise Responsável por cliente | [.context/docs/analise-responsavel-por-cliente.md](.context/docs/analise-responsavel-por-cliente.md) | Modelo de dados, services, RLS, frontend, skills |
 | Fluxo ciclo de vida cliente | [fluxo-ciclo-vida-cliente.md](./fluxo-ciclo-vida-cliente.md) | Processos 1.1–1.5; validar com Arthur |

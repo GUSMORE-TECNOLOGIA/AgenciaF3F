@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import type { Perfil, PerfilPermissao, ModuloSistema } from '@/types'
+import type { Perfil, PerfilPermissao, ModuloSistema, EscopoVisibilidade } from '@/types'
 import { MODULOS_SISTEMA } from '@/services/perfis'
 
 export interface PerfilFormInput {
   nome: string
   descricao?: string
+  escopo_visibilidade: EscopoVisibilidade
   permissoes: PerfilPermissao[]
 }
 
@@ -54,6 +55,7 @@ export default function PerfilPermissoesForm({
 }: PerfilPermissoesFormProps) {
   const [nome, setNome] = useState('')
   const [descricao, setDescricao] = useState('')
+  const [escopoVisibilidade, setEscopoVisibilidade] = useState<EscopoVisibilidade>('todos')
   const [permissoes, setPermissoes] = useState<PerfilPermissao[]>([])
 
   const perfilId = initialPerfil?.id ?? ''
@@ -62,6 +64,9 @@ export default function PerfilPermissoesForm({
     if (initialPerfil) {
       setNome(initialPerfil.nome)
       setDescricao(initialPerfil.descricao ?? '')
+      setEscopoVisibilidade(initialPerfil.escopo_visibilidade ?? 'todos')
+    } else {
+      setEscopoVisibilidade('todos')
     }
     if (initialPerfil && initialPermissoes.length > 0) {
       setPermissoes(
@@ -93,6 +98,7 @@ export default function PerfilPermissoesForm({
     await onSubmit({
       nome: nome.trim(),
       descricao: descricao.trim() || undefined,
+      escopo_visibilidade: escopoVisibilidade,
       permissoes: permissoes.map((p) => ({
         ...p,
         perfil_id: perfilId || (p.perfil_id as string),
@@ -132,6 +138,21 @@ export default function PerfilPermissoesForm({
             className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
             placeholder="Breve descrição do perfil"
           />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">Visibilidade global no sistema</label>
+          <select
+            value={escopoVisibilidade}
+            onChange={(e) => setEscopoVisibilidade(e.target.value as EscopoVisibilidade)}
+            className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          >
+            <option value="todos">Todos</option>
+            <option value="nenhum">Nenhum</option>
+            <option value="responsavel">Responsável</option>
+          </select>
+          <p className="text-xs text-muted-foreground mt-1">
+            Esta regra controla a visibilidade de dados em todos os módulos.
+          </p>
         </div>
       </div>
 

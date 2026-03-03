@@ -8,6 +8,7 @@ import IdentificacaoTab from './components/tabs/IdentificacaoTab'
 import LinksUteisTab from './components/tabs/LinksUteisTab'
 import ClienteResponsaveisTab from './ClienteResponsaveisTab'
 import ServicosTab from './components/tabs/ServicosTab'
+import { isEscopoResponsavel } from '@/utils/visibilidade'
 
 export default function ClienteEdit() {
   const { id } = useParams<{ id: string }>()
@@ -99,8 +100,8 @@ export default function ClienteEdit() {
     )
   }
 
-  const isAgenteOperacional = user?.perfil === 'agente' && user?.role !== 'admin'
-  if (isAgenteOperacional && cliente.responsavel_id !== user?.id) {
+  const isResponsavelScope = isEscopoResponsavel(user)
+  if (isResponsavelScope && cliente.responsavel_id !== user?.id) {
     return <Navigate to="/clientes" replace />
   }
 

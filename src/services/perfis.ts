@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Perfil, PerfilPermissao, ModuloSistema } from '@/types'
+import type { Perfil, PerfilPermissao, ModuloSistema, EscopoVisibilidade } from '@/types'
 
 export const MODULOS_SISTEMA: { value: ModuloSistema; label: string }[] = [
   { value: 'dashboard', label: 'Dashboard' },
@@ -18,6 +18,7 @@ function mapPerfil(row: Record<string, unknown>): Perfil {
     nome: row.nome as string,
     descricao: (row.descricao as string) ?? undefined,
     slug: (row.slug as string) ?? undefined,
+    escopo_visibilidade: ((row.escopo_visibilidade as EscopoVisibilidade) ?? 'todos'),
     created_at: row.created_at as string,
     updated_at: row.updated_at as string,
   }
@@ -61,13 +62,14 @@ export async function fetchPermissoesByPerfil(perfilId: string): Promise<PerfilP
   return (data || []).map(mapPermissao)
 }
 
-export async function createPerfil(input: { nome: string; descricao?: string; slug?: string }): Promise<Perfil> {
+export async function createPerfil(input: { nome: string; descricao?: string; slug?: string; escopo_visibilidade?: EscopoVisibilidade }): Promise<Perfil> {
   const { data, error } = await supabase
     .from('perfis')
     .insert({
       nome: input.nome,
       descricao: input.descricao ?? null,
       slug: input.slug ?? null,
+      escopo_visibilidade: input.escopo_visibilidade ?? 'todos',
     })
     .select()
     .single()
@@ -81,7 +83,7 @@ export async function createPerfil(input: { nome: string; descricao?: string; sl
 
 export async function updatePerfil(
   id: string,
-  input: { nome: string; descricao?: string; slug?: string }
+  input: { nome: string; descricao?: string; slug?: string; escopo_visibilidade?: EscopoVisibilidade }
 ): Promise<Perfil> {
   const updates: Record<string, unknown> = {
     nome: input.nome,
@@ -91,6 +93,9 @@ export async function updatePerfil(
   // Só sobrescrever slug se foi explicitamente enviado; nunca gravar null para não apagar slug existente
   if (input.slug !== undefined && input.slug !== null && input.slug !== '') {
     updates.slug = input.slug
+  }
+  if (input.escopo_visibilidade !== undefined) {
+    updates.escopo_visibilidade = input.escopo_visibilidade
   }
   const { data, error } = await supabase
     .from('perfis')

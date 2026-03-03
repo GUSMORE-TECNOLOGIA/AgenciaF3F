@@ -110,7 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { data: raw, error } = await supabase
         .from('usuarios')
-        .select('id, email, name, role, perfil, perfil_id, must_reset_password, password_reset_at, created_at, updated_at, perfis(slug)')
+        .select('id, email, name, role, perfil, perfil_id, must_reset_password, password_reset_at, created_at, updated_at, perfis(slug, escopo_visibilidade)')
         .eq('id', userId)
         .single()
       const data = raw as any
@@ -153,6 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           role: data.role,
           perfil: (perfilSlug ?? data.perfil ?? 'agente') as User['perfil'],
           perfil_id: data.perfil_id ?? undefined,
+          escopo_visibilidade: (data?.perfis?.escopo_visibilidade ?? 'todos'),
           must_reset_password: !!data.must_reset_password,
           password_reset_at: data.password_reset_at || undefined,
           created_at: data.created_at,
@@ -202,6 +203,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       name: authUser.user_metadata?.name ?? authUser.email?.split('@')[0] ?? 'Usuário',
       role: 'user',
       perfil: 'agente',
+      escopo_visibilidade: 'todos',
       must_reset_password: true,
       created_at: authUser.created_at ?? new Date().toISOString(),
       updated_at: new Date().toISOString(),

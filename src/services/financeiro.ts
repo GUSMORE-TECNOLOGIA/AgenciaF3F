@@ -2,6 +2,266 @@ import { supabase } from './supabase'
 import { Transacao, ClientePlano, ClienteServico } from '@/types'
 import { createTransacao } from './transacoes'
 
+export interface FinanceiroFonteCliente {
+  cliente_plano_id: string
+  plano_id: string
+  plano_nome: string
+  plano_valor: number
+  contrato_id?: string
+  contrato_nome?: string
+}
+
+export interface GerarLancamentoIndividualInput {
+  cliente_id: string
+  categoria: string
+  valor: number
+  descricao: string
+  status: 'pendente' | 'pago' | 'vencido' | 'cancelado' | 'reembolsado'
+  data_vencimento: string
+  origem: 'plano' | 'avulso'
+  cliente_plano_id?: string
+  contrato_id?: string
+}
+
+export interface GerarLancamentosLoteInput {
+  cliente_id: string
+  categoria: string
+  valor: number
+  descricao_base: string
+  status: 'pendente' | 'pago' | 'vencido' | 'cancelado' | 'reembolsado'
+  data_inicio: string
+  data_fim: string
+  dia_vencimento: number
+  origem: 'plano' | 'avulso'
+  cliente_plano_id?: string
+  contrato_id?: string
+}
+
+export interface GeracaoLoteResultado {
+  total_competencias: number
+  criados: number
+  ignorados: number
+  competencias: string[]
+  transacoes_ids: string[]
+}
+
+function clampDiaParaMes(year: number, monthZeroBased: number, diaDesejado: number): number {
+  const lastDay = new Date(year, monthZeroBased + 1, 0).getDate()
+  return Math.min(Math.max(1, diaDesejado), lastDay)
+}
+
+function toYmd(date: Date): string {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
+function toYm(date: Date): string {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  return `${y}-${m}`
+}
+
+export function calcularCompetenciasMensais(
+  dataInicio: string,
+  dataFim: string,
+  diaVencimento: number
+): Array<{ competencia: string; dataVencimento: string }> {
+  const inicio = new Date(`${dataInicio}T00:00:00`)
+  const fim = new Date(`${dataFim}T00:00:00`)
+  if (Number.isNaN(inicio.getTime()) || Number.isNaN(fim.getTime()) || fim < inicio) return []
+
+  const cursor = new Date(inicio.getFullYear(), inicio.getMonth(), 1)
+  const output: Array<{ competencia: string; dataVencimento: string }> = []
+
+  while (cursor <= fim) {
+    const y = cursor.getFullYear()
+    const m = cursor.getMonth()
+    const dia = clampDiaParaMes(y, m, diaVencimento)
+    const venc = new Date(y, m, dia)
+    if (venc >= inicio && venc <= fim) {
+      output.push({ competencia: toYm(venc), dataVencimento: toYmd(venc) })
+    }
+    cursor.setMonth(cursor.getMonth() + 1)
+  }
+
+  return output
+}
+
+export async function fetchFontesFinanceirasCliente(clienteId: string): Promise<FinanceiroFonteCliente[]> {
+  const { data, error } = await supabase.rpc('get_financeiro_fontes_cliente', { p_cliente_id: clienteId })
+  if (error) {
+    console.error('Erro ao buscar fontes financeiras do cliente:', error)
+    throw error
+  }
+
+  const rows = Array.isArray(data) ? data : []
+  return rows.map((r: any) => ({
+    cliente_plano_id: String(r.cliente_plano_id),
+    plano_id: String(r.plano_id),
+    plano_nome: String(r.plano_nome ?? ''),
+    plano_valor: Number(r.plano_valor ?? 0),
+    contrato_id: r.contrato_id ? String(r.contrato_id) : undefined,
+    contrato_nome: r.contrato_nome ? String(r.contrato_nome) : undefined,
+  }))
+}
+
+async function validarContratoAtivoCliente(clienteId: string, contratoId: string): Promise<void> {
+  const { data, error } = await supabase
+    .from('cliente_contratos')
+    .select('id, status, contrato_assinado')
+    .eq('id', contratoId)
+    .eq('cliente_id', clienteId)
+    .is('deleted_at', null)
+    .maybeSingle()
+
+  if (error) {
+    console.error('Erro ao validar contrato ativo:', error)
+    throw error
+  }
+  if (!data) throw new Error('Contrato não encontrado para este cliente.')
+  if (data.status !== 'ativo' || data.contrato_assinado === 'cancelado') {
+    throw new Error('Somente contratos ativos podem ser vinculados à geração financeira.')
+  }
+}
+
+async function validarPlanoFonteAtiva(
+  clienteId: string,
+  clientePlanoId: string,
+  contratoId?: string
+): Promise<void> {
+  const fontes = await fetchFontesFinanceirasCliente(clienteId)
+  const fonte = fontes.find((f) => f.cliente_plano_id === clientePlanoId)
+  if (!fonte) {
+    throw new Error('Plano selecionado não está ativo ou não é elegível para geração financeira.')
+  }
+  if (contratoId && fonte.contrato_id && contratoId !== fonte.contrato_id) {
+    throw new Error('Contrato informado não corresponde ao vínculo ativo deste plano.')
+  }
+}
+
+export async function gerarLancamentoClienteIndividual(input: GerarLancamentoIndividualInput): Promise<Transacao> {
+  if (input.origem === 'plano' && !input.cliente_plano_id) {
+    throw new Error('Selecione um plano ativo para gerar lançamento vinculado a plano.')
+  }
+  if (input.origem === 'plano' && input.cliente_plano_id) {
+    await validarPlanoFonteAtiva(input.cliente_id, input.cliente_plano_id, input.contrato_id)
+  }
+  if (input.contrato_id) {
+    await validarContratoAtivoCliente(input.cliente_id, input.contrato_id)
+  }
+
+  const metadata: Record<string, unknown> = {
+    origem: 'manual_individual',
+    origem_ref: input.origem,
+  }
+  if (input.cliente_plano_id) metadata.cliente_plano_id = input.cliente_plano_id
+  if (input.contrato_id) metadata.contrato_id = input.contrato_id
+
+  return createTransacao({
+    cliente_id: input.cliente_id,
+    tipo: 'receita',
+    categoria: input.categoria,
+    valor: input.valor,
+    descricao: input.descricao,
+    status: input.status,
+    data_vencimento: input.data_vencimento,
+    metadata,
+  })
+}
+
+async function existeLancamentoLoteCompetencia(
+  clienteId: string,
+  categoria: string,
+  competencia: string,
+  origem: 'plano' | 'avulso',
+  clientePlanoId?: string
+): Promise<boolean> {
+  let query = supabase
+    .from('transacoes')
+    .select('id', { head: true, count: 'exact' })
+    .eq('cliente_id', clienteId)
+    .eq('tipo', 'receita')
+    .eq('categoria', categoria)
+    .eq('metadata->>origem', 'geracao_lote')
+    .eq('metadata->>mes_competencia', competencia)
+    .is('deleted_at', null)
+
+  if (origem === 'plano' && clientePlanoId) {
+    query = query.eq('metadata->>cliente_plano_id', clientePlanoId)
+  } else {
+    query = query.eq('metadata->>origem_ref', 'avulso')
+  }
+
+  const { count, error } = await query
+  if (error) {
+    console.error('Erro ao verificar idempotência de lote:', error)
+    throw error
+  }
+  return (count ?? 0) > 0
+}
+
+export async function gerarLancamentosClienteLote(input: GerarLancamentosLoteInput): Promise<GeracaoLoteResultado> {
+  if (input.origem === 'plano' && !input.cliente_plano_id) {
+    throw new Error('Selecione um plano ativo para geração em lote.')
+  }
+  if (input.origem === 'plano' && input.cliente_plano_id) {
+    await validarPlanoFonteAtiva(input.cliente_id, input.cliente_plano_id, input.contrato_id)
+  }
+  if (input.contrato_id) {
+    await validarContratoAtivoCliente(input.cliente_id, input.contrato_id)
+  }
+
+  const competencias = calcularCompetenciasMensais(input.data_inicio, input.data_fim, input.dia_vencimento)
+  const resultado: GeracaoLoteResultado = {
+    total_competencias: competencias.length,
+    criados: 0,
+    ignorados: 0,
+    competencias: competencias.map((c) => c.competencia),
+    transacoes_ids: [],
+  }
+
+  for (const item of competencias) {
+    const existe = await existeLancamentoLoteCompetencia(
+      input.cliente_id,
+      input.categoria,
+      item.competencia,
+      input.origem,
+      input.cliente_plano_id
+    )
+    if (existe) {
+      resultado.ignorados += 1
+      continue
+    }
+
+    const metadata: Record<string, unknown> = {
+      origem: 'geracao_lote',
+      origem_ref: input.origem,
+      mes_competencia: item.competencia,
+      dia_vencimento: input.dia_vencimento,
+    }
+    if (input.cliente_plano_id) metadata.cliente_plano_id = input.cliente_plano_id
+    if (input.contrato_id) metadata.contrato_id = input.contrato_id
+
+    const transacao = await createTransacao({
+      cliente_id: input.cliente_id,
+      tipo: 'receita',
+      categoria: input.categoria,
+      valor: input.valor,
+      descricao: `${input.descricao_base} - ${item.competencia}`,
+      status: input.status,
+      data_vencimento: item.dataVencimento,
+      metadata,
+    })
+
+    resultado.criados += 1
+    resultado.transacoes_ids.push(transacao.id)
+  }
+
+  return resultado
+}
+
 /**
  * Conta lançamentos financeiros em aberto (pendente/vencido) vinculados a um contrato de plano ou serviço.
  */

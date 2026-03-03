@@ -13,13 +13,14 @@ import ExportClientesModal from './components/ExportClientesModal'
 import { fetchPrincipaisParaLista } from '@/services/usuarios'
 import { fetchClientePlanos, fetchTodosContratosPlanos } from '@/services/planos'
 import type { ClientePlano } from '@/types'
+import { isEscopoResponsavel } from '@/utils/visibilidade'
 
 type ViewMode = 'clientes' | 'contratos'
 
 export default function Clientes() {
   const [searchParams] = useSearchParams()
   const { user } = useAuth()
-  const isAgenteOperacional = user?.perfil === 'agente' && user?.role !== 'admin'
+  const isResponsavelScope = isEscopoResponsavel(user)
   const [viewMode, setViewMode] = useState<ViewMode>(() =>
     searchParams.get('view') === 'contratos' ? 'contratos' : 'clientes'
   )
@@ -531,7 +532,7 @@ export default function Clientes() {
             <option value="pausado">Pausado</option>
             <option value="inativo">Inativo</option>
           </select>
-          {!isAgenteOperacional && (
+          {!isResponsavelScope && (
             <select
               value={responsavelFilter}
               onChange={(e) => setResponsavelFilter(e.target.value)}
