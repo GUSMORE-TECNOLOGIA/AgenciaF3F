@@ -8,6 +8,7 @@ import IdentificacaoTab from './components/tabs/IdentificacaoTab'
 import LinksUteisTab from './components/tabs/LinksUteisTab'
 import ClienteResponsaveisTab from './ClienteResponsaveisTab'
 import ServicosTab from './components/tabs/ServicosTab'
+import FinanceiroTab from './components/tabs/FinanceiroTab'
 import { isEscopoResponsavel } from '@/utils/visibilidade'
 
 export default function ClienteEdit() {
@@ -169,9 +170,7 @@ export default function ClienteEdit() {
           )}
 
           {podeFinanceiro && activeTab === 'financeiro' && (
-            <div className="text-center py-12 text-muted-foreground">
-              Módulo Financeiro em desenvolvimento
-            </div>
+            <FinanceiroTab clienteId={cliente.id} clienteNome={cliente.nome} />
           )}
 
           {activeTab === 'ocorrencias' && (
