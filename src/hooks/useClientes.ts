@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Cliente } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import { fetchClientes, ClienteFilters, ClientesResponse } from '@/services/clientes'
+import { getEscopoVisibilidade } from '@/utils/visibilidade'
 
 interface UseClientesOptions extends ClienteFilters {
   autoFetch?: boolean
@@ -24,16 +25,6 @@ interface UseClientesReturn {
 /**
  * Hook para gerenciar listagem de clientes
  */
-/**
- * Apenas perfil agente operacional é restrito aos clientes em que é responsável.
- * Administradores (role === 'admin' ou perfil === 'admin') e demais perfis veem TODOS os clientes.
- */
-function deveRestringirAoResponsavel(user: { role?: string; perfil?: string; id?: string } | null): boolean {
-  if (!user?.id) return false
-  if (user.role === 'admin' || user.perfil === 'admin') return false
-  return user.perfil === 'agente'
-}
-
 export function useClientes(options: UseClientesOptions = {}): UseClientesReturn {
   const { user } = useAuth()
   const { autoFetch = true, ...filters } = options
@@ -61,7 +52,13 @@ export function useClientes(options: UseClientesOptions = {}): UseClientesReturn
         limit: pageSize,
         offset: (page - 1) * pageSize,
       }
-      if (deveRestringirAoResponsavel(user)) {
+      const escopoVisibilidade = getEscopoVisibilidade(user)
+      if (escopoVisibilidade === 'nenhum') {
+        setClientes([])
+        setTotal(0)
+        return
+      }
+      if (escopoVisibilidade === 'responsavel' && user?.id) {
         effectiveFilters.responsavel_id = user!.id
       }
 
@@ -77,7 +74,7 @@ export function useClientes(options: UseClientesOptions = {}): UseClientesReturn
     } finally {
       setLoading(false)
     }
-  }, [currentFilters, page, pageSize, user?.id, user?.perfil, user?.role])
+  }, [currentFilters, page, pageSize, user?.escopo_visibilidade, user?.id, user?.role])
 
   useEffect(() => {
     if (autoFetch) {

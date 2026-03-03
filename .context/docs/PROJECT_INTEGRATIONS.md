@@ -70,11 +70,11 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 | Campo | Valor |
 |-------|-------|
 | **Team** | GUSMORE TECNOLOGIA |
-| **Projeto** | agenciaf3f (a criar) |
+| **Projeto** | agenciaf3f |
 | **Domínio** | agenciaf3f.app |
-| **URL de Produção** | https://agenciaf3f.app (após configurar) |
+| **URL de Produção** | https://www.agenciaf3f.app |
 | **Framework** | Vite (React + TypeScript) |
-| **Status** | ⏳ Configuração pronta, aguardando deploy |
+| **Status** | ✅ Projeto ativo em produção |
 | **Configuração** | `vercel.json` criado |
 | **Guia de Deploy** | Ver `VERCEL_DEPLOY.md` |
 

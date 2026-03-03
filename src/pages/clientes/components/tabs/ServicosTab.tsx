@@ -77,6 +77,14 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
   const [cancellingContrato, setCancellingContrato] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
+  const getErrorMessage = (error: unknown): string => {
+    if (error && typeof error === 'object' && 'message' in error) {
+      const msg = String((error as { message?: unknown }).message ?? '')
+      if (msg.trim()) return msg
+    }
+    return 'Erro inesperado. Verifique permissões e tente novamente.'
+  }
+
   // Close dropdown menu on click outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -251,7 +259,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       console.error('Erro ao adicionar plano:', error)
       await alert({
         title: 'Erro',
-        message: 'Erro ao adicionar plano. Tente novamente.',
+        message: `Erro ao adicionar plano: ${getErrorMessage(error)}`,
         variant: 'danger',
       })
     }
@@ -311,7 +319,7 @@ export default function ServicosTab({ cliente, onSave }: ServicosTabProps) {
       console.error('Erro ao adicionar serviço:', error)
       await alert({
         title: 'Erro',
-        message: 'Erro ao adicionar serviço. Tente novamente.',
+        message: `Erro ao adicionar serviço: ${getErrorMessage(error)}`,
         variant: 'danger',
       })
     }
