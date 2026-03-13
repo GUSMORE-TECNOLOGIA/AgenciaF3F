@@ -40,3 +40,7 @@ supabase/.temp/
 
 # Context images/debug
 .context/docs/guias/image/
+.context/docs/image/
+
+# Cursor plans (local/temporary)
+.cursor/plans/
