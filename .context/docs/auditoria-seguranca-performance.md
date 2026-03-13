@@ -82,8 +82,63 @@ As funções abaixo não definem `search_path` fixo, o que pode ser um vetor de 
 
 ---
 
-## 5. Referências
+## 5. Auditoria RLS – sistema completo (plano de ação)
 
+Data: 2026-03-13. Parte do [plano de ação RLS](./plano-acao-rls-sistema.md). **Skill F3F-security-performance:** auditoria e reporte; correções pela F3F-supabase-data-engineer.
+
+### 5.1 Inventário resumido: tabelas com RLS e critério “quem pode”
+
+| Tabela | SELECT | INSERT | UPDATE | DELETE | Critério atual (admin) |
+|--------|--------|--------|--------|--------|--------------------------|
+| **planos** | autenticado (deleted_at null) | só admin | só admin | só admin | **Inline** `usuarios.role = 'admin'` |
+| **servicos** | autenticado (deleted_at null) | só admin | só admin | só admin | **Inline** `usuarios.role = 'admin'` |
+| **plano_servicos** | autenticado | só admin (ALL) | — | — | **Inline** `usuarios.role = 'admin'` |
+| **clientes** | responsável ou admin / vis_global | responsável ou admin | responsável ou admin | (soft delete RPC) | is_admin() + responsavel / visibilidade |
+| **cliente_planos** | vis_global + responsável | vis_global (responsável ou admin) | vis_global | (RPC) | is_admin() no RPC |
+| **cliente_servicos** | idem | idem | idem | (RPC) | idem |
+| **cliente_contratos** | responsável ou admin | responsável ou admin | responsável ou admin | (RPC) | is_admin() |
+| **cliente_responsaveis** | is_admin ou responsável | is_admin ou condição cr_insert | is_admin ou responsável | is_admin ou responsável | **is_admin()** |
+| **usuarios** | próprio ou is_admin() | — | is_admin() | — | **is_admin()** |
+| **perfis** | autenticado | **Inline** role admin | **Inline** role admin | **Inline** role admin | **Inline** `usuarios.role = 'admin'` |
+| **perfil_permissoes** | autenticado | **Inline** role admin | **Inline** role admin | **Inline** role admin | **Inline** `usuarios.role = 'admin'` |
+| **ocorrencia_* / ocorrencias** | responsável ou admin | idem | idem | — | **Inline** `usuarios.role = 'admin'` |
+| **transacoes / atendimentos / servicos_prestados** | responsável ou admin | idem | idem | — | Inline ou is_admin conforme migration |
+| **equipe_membros** | is_admin ou próprio | is_admin | is_admin | — | **is_admin()** (backfill) |
+| **contrato_status_historico** | responsável ou role admin | **WITH CHECK (true)** | — | — | **Permissivo** – qualquer autenticado pode INSERT |
+
+### 5.2 Inconsistências (correções sugeridas)
+
+1. **Cadastros mestres (planos, servicos, plano_servicos)**  
+   - **Problema:** Usam `EXISTS (SELECT 1 FROM usuarios WHERE id = auth.uid() AND role = 'admin')`. A função `is_admin()` considera também **perfil** (perfis.slug = 'admin'). Usuário com perfil Administrador mas `role != 'admin'` **não** consegue criar/editar plano ou serviço → erro genérico na UI.  
+   - **Sugestão:** Substituir todas as políticas de planos, servicos e plano_servicos para usar `is_admin()` em vez da subquery inline. Responsável: F3F-supabase-data-engineer.
+
+2. **perfis e perfil_permissoes**  
+   - **Problema:** Políticas de INSERT/UPDATE/DELETE usam `usuarios.role = 'admin'` inline; mesmo efeito que acima para usuário admin por perfil.  
+   - **Sugestão:** Usar `is_admin()` nas políticas de perfis e perfil_permissoes. Responsável: F3F-supabase-data-engineer.
+
+3. **ocorrencia_grupos, ocorrencia_tipos, ocorrencias**  
+   - **Problema:** Usam `EXISTS (SELECT 1 FROM public.usuarios u WHERE u.id = auth.uid() AND u.role = 'admin')` inline.  
+   - **Sugestão:** Padronizar com `is_admin()` para alinhar ao restante do sistema. Responsável: F3F-supabase-data-engineer.
+
+4. **contrato_status_historico (INSERT)**  
+   - **Problema:** Política "Sistema pode inserir histórico" com `WITH CHECK (true)` → qualquer usuário autenticado pode inserir.  
+   - **Sugestão:** Restringir INSERT a chamada por trigger ou remover política de INSERT e usar apenas trigger/RPC com SECURITY DEFINER. Responsável: F3F-supabase-data-engineer.
+
+5. **UI vs RLS**  
+   - A tela Planos mostra "Novo Plano" a todos que têm acesso ao módulo (visualizar). Quem tem perfil admin mas não role admin vê o botão e recebe erro ao salvar. Após correção 1, RLS ficará alinhado a `is_admin()`. Opcional: mostrar "Novo Plano" apenas para quem tem `pode('planos','editar')` (F3F-frontend).
+
+### 5.3 Matriz esperada (Tabela × Operação × Quem pode)
+
+Ver documento definitivo: [matriz-rls-quem-pode.md](./matriz-rls-quem-pode.md) (saída da Fase 2 do plano de ação). Resumo para cadastros mestres:
+
+- **planos, servicos, plano_servicos:** SELECT = autenticado (planos/servicos: deleted_at null); INSERT/UPDATE/DELETE = **is_admin()** (role admin ou perfil slug admin).
+
+---
+
+## 6. Referências
+
+- [plano-acao-rls-sistema.md](./plano-acao-rls-sistema.md) – plano de ação RLS e ordem das skills.
+- [matriz-rls-quem-pode.md](./matriz-rls-quem-pode.md) – fonte de verdade Entidade × Operação × Quem pode.
 - [Supabase Database Linter](https://supabase.com/docs/guides/database/database-linter) (security)
 - [.context/docs/security.md](./security.md) – notas de segurança do projeto
 - Skill [F3F-supabase-data-engineer](.cursor/skills/F3F-supabase-data-engineer/SKILL.md) – implementação de RLS e migrations

@@ -28,6 +28,8 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 - [Fluxo e ciclo de vida do cliente](./fluxo-ciclo-vida-cliente.md) – Verdade do Negócio (processos 1.1–1.5; validar com Arthur).
 - [Skills Map (Quando usar cada skill)](./skills-map.md)
 - [Plano de varredura e atualização do projeto](./plano-varredura-atualizacao-projeto.md) – ordem das skills para varredura total (organização, docs, limpeza, segurança).
+- [**Plano de ação: RLS em todo o sistema**](./plano-acao-rls-sistema.md) – sanar erros de permissão na raiz: auditoria → definição de quem pode o quê → documentação → migrations RLS → frontend/regressão.
+- [Matriz RLS (quem pode o quê)](./matriz-rls-quem-pode.md) – fonte de verdade Entidade × Operação × Quem pode; uso de is_admin().
 - [Auditoria de segurança e performance](./auditoria-seguranca-performance.md) – relatório RLS, dados sensíveis no client, N+1 (Fase 4).
 - [ADR – Evolução de services](./adr-evolucao-services.md) – planejamento (flat vs camadas).
 - [Verificação Frontend/Componentes](./verificacao-frontend-componentes.md) – conformidade com componentes padronizados.
@@ -69,6 +71,8 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 | Security & Compliance Notes | [security.md](./security.md) | Auth model, secrets management, compliance requirements |
 | Tooling & Productivity Guide | [tooling.md](./tooling.md) | CLI scripts, IDE configs, automation workflows |
 | Project integrations (Supabase/GitHub/Vercel) | [PROJECT_INTEGRATIONS.md](./PROJECT_INTEGRATIONS.md) | IDs do projeto, aviso template |
+| Plano de ação RLS (sistema inteiro) | [plano-acao-rls-sistema.md](./plano-acao-rls-sistema.md) | Auditoria RLS, matriz quem-pode-o-quê, migrations, frontend |
+| Matriz RLS (quem pode o quê) | [matriz-rls-quem-pode.md](./matriz-rls-quem-pode.md) | Fonte de verdade Entidade × Operação × Quem pode |
 | Auditoria segurança/performance | [auditoria-seguranca-performance.md](./auditoria-seguranca-performance.md) | RLS, client-side, N+1 |
 | ADR evolução services | [adr-evolucao-services.md](./adr-evolucao-services.md) | Planejamento backend |
 | Changelog varredura | [changelog-varredura.md](./changelog-varredura.md) | Resumo das fases aplicadas |

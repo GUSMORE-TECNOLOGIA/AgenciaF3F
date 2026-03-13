@@ -5,6 +5,7 @@ import { usePlanos } from '@/hooks/usePlanos'
 import { useDeletePlano } from '@/hooks/usePlanos'
 import { Plano } from '@/types'
 import { useModal } from '@/contexts/ModalContext'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function Planos() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -12,6 +13,8 @@ export default function Planos() {
   const { planos, loading, refetch } = usePlanos(filterAtivo)
   const { remove: deletePlano, loading: deleting } = useDeletePlano()
   const { confirm, alert } = useModal()
+  const { pode } = useAuth()
+  const podeCriarPlano = pode('planos', 'editar')
 
   const handleDelete = async (plano: Plano) => {
     const ok = await confirm({
@@ -55,13 +58,15 @@ export default function Planos() {
           <h1 className="text-3xl font-bold text-foreground">Planos</h1>
           <p className="text-muted-foreground mt-1">Cadastro de planos da agência (pacotes de serviços)</p>
         </div>
-        <Link
-          to="/planos/novo"
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          Novo Plano
-        </Link>
+        {podeCriarPlano && (
+          <Link
+            to="/planos/novo"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            Novo Plano
+          </Link>
+        )}
       </div>
 
       {/* Filtros */}
@@ -133,7 +138,7 @@ export default function Planos() {
               ? 'Nenhum plano encontrado com os filtros aplicados'
               : 'Nenhum plano cadastrado'}
           </p>
-          {!searchTerm && filterAtivo === undefined && (
+          {!searchTerm && filterAtivo === undefined && podeCriarPlano && (
             <Link
               to="/planos/novo"
               className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"

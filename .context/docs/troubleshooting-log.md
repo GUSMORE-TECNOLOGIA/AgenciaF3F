@@ -4,6 +4,20 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 
 ---
 
+## 2026-03-13 – Erro genérico ao criar/editar plano ou serviço (falha de RLS) (RESOLVIDO)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-03-13 |
+| **Descrição do erro** | Usuário (ex.: Ryan) preenche formulário "Novo Plano" ou "Novo Serviço" e ao clicar em Salvar vê apenas "Erro ao criar plano. Tente novamente." (ou equivalente para serviço), sem detalhe da causa. |
+| **Arquivo(s)/módulo** | RLS nas tabelas `planos`, `servicos`, `plano_servicos`; páginas `PlanoNovo.tsx`, `ServicoNovo.tsx`; políticas que usavam apenas `usuarios.role = 'admin'`. |
+| **Causa raiz** | (1) **RLS:** As políticas de INSERT/UPDATE/DELETE em planos e servicos usavam subquery inline `EXISTS (SELECT 1 FROM usuarios WHERE id = auth.uid() AND role = 'admin')`. A função `is_admin()` do sistema considera também **perfil** (perfis.slug = 'admin'). Usuários com perfil Administrador mas `role != 'admin'` eram bloqueados pela RLS. (2) **UI:** A mensagem de erro genérica escondia a causa; em dev o console não deixava óbvio que era RLS. (3) **UX:** Botão "Novo Plano" / "Novo Serviço" era exibido a qualquer um com acesso ao módulo (visualizar), mesmo sem permissão de editar. |
+| **Solução aplicada** | (1) Migration `20260313120000_rls_planos_servicos_perfis_ocorrencias_use_is_admin.sql`: substituição em todas as políticas de planos, servicos, plano_servicos, perfis, perfil_permissoes e ocorrencia_* da subquery inline por `public.is_admin()`. (2) Frontend: em PlanoNovo e ServicoNovo, detecção de erro de permissão (code 42501 ou mensagem contendo "row-level security" / "policy") e exibição de mensagem específica: "Você não tem permissão para criar planos/serviços. Apenas administradores podem cadastrar." (3) Em dev, log completo do erro no console. (4) Botão "Novo Plano" / "Novo Serviço" (e links de empty state) exibidos apenas quando `pode('planos'|'servicos', 'editar')`. |
+| **Como identificar** | Console (dev): `error.code === '42501'` ou `message` contendo "row-level security" ou "policy". Network: resposta do PostgREST com status 403 ou mensagem de RLS. |
+| **Referência** | [plano-acao-rls-sistema.md](./plano-acao-rls-sistema.md), [matriz-rls-quem-pode.md](./matriz-rls-quem-pode.md), [auditoria-seguranca-performance.md](./auditoria-seguranca-performance.md) (seção 5). |
+
+---
+
 ## 2026-03-02 – Erro ao cadastrar novo usuário: usuarios_perfil_check violation (RESOLVIDO)
 
 | Campo | Conteúdo |

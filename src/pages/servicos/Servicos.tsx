@@ -4,6 +4,7 @@ import { Plus, Search, Package, Edit, Trash2, CheckCircle2, XCircle, Loader2 } f
 import { useServicos, useDeleteServico } from '@/hooks/usePlanos'
 import { Servico } from '@/types'
 import { useModal } from '@/contexts/ModalContext'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function Servicos() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -11,6 +12,8 @@ export default function Servicos() {
   const { servicos, loading, refetch } = useServicos(filterAtivo)
   const { remove: deleteServico, loading: deleting } = useDeleteServico()
   const { confirm, alert } = useModal()
+  const { pode } = useAuth()
+  const podeCriarServico = pode('servicos', 'editar')
 
   const handleDelete = async (servico: Servico) => {
     const ok = await confirm({
@@ -55,13 +58,15 @@ export default function Servicos() {
           <h1 className="text-3xl font-bold text-foreground">Serviços</h1>
           <p className="text-muted-foreground mt-1">Cadastro mestre de serviços disponíveis na agência</p>
         </div>
-        <Link
-          to="/servicos/novo"
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          Novo Serviço
-        </Link>
+        {podeCriarServico && (
+          <Link
+            to="/servicos/novo"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            Novo Serviço
+          </Link>
+        )}
       </div>
 
       {/* Filtros */}
@@ -133,7 +138,7 @@ export default function Servicos() {
               ? 'Nenhum serviço encontrado com os filtros aplicados'
               : 'Nenhum serviço cadastrado'}
           </p>
-          {!searchTerm && filterAtivo === undefined && (
+          {!searchTerm && filterAtivo === undefined && podeCriarServico && (
             <Link
               to="/servicos/novo"
               className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"

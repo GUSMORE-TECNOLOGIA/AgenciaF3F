@@ -40,10 +40,20 @@ export default function PlanoNovo() {
         })
         setErrors(zodErrors)
       } else {
-        console.error('Erro ao criar plano:', error)
+        const msg = error?.message ?? ''
+        const code = error?.code ?? ''
+        const isPermissionError =
+          code === '42501' ||
+          String(msg).toLowerCase().includes('row-level security') ||
+          String(msg).toLowerCase().includes('policy')
+        if (import.meta.env.DEV) {
+          console.error('Erro ao criar plano:', { error, message: msg, code })
+        }
         await alert({
           title: 'Erro',
-          message: 'Erro ao criar plano. Tente novamente.',
+          message: isPermissionError
+            ? 'Você não tem permissão para criar planos. Apenas administradores podem cadastrar planos.'
+            : 'Erro ao criar plano. Tente novamente.',
           variant: 'danger',
         })
       }

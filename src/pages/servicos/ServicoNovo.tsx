@@ -38,10 +38,20 @@ export default function ServicoNovo() {
         })
         setErrors(zodErrors)
       } else {
-        console.error('Erro ao criar serviço:', error)
+        const msg = error?.message ?? ''
+        const code = error?.code ?? ''
+        const isPermissionError =
+          code === '42501' ||
+          String(msg).toLowerCase().includes('row-level security') ||
+          String(msg).toLowerCase().includes('policy')
+        if (import.meta.env.DEV) {
+          console.error('Erro ao criar serviço:', { error, message: msg, code })
+        }
         await alert({
           title: 'Erro',
-          message: 'Erro ao criar serviço. Tente novamente.',
+          message: isPermissionError
+            ? 'Você não tem permissão para criar serviços. Apenas administradores podem cadastrar serviços.'
+            : 'Erro ao criar serviço. Tente novamente.',
           variant: 'danger',
         })
       }
