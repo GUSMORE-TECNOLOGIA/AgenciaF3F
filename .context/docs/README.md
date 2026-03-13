@@ -30,6 +30,7 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 - [Plano de varredura e atualização do projeto](./plano-varredura-atualizacao-projeto.md) – ordem das skills para varredura total (organização, docs, limpeza, segurança).
 - [**Plano de ação: RLS em todo o sistema**](./plano-acao-rls-sistema.md) – sanar erros de permissão na raiz: auditoria → definição de quem pode o quê → documentação → migrations RLS → frontend/regressão.
 - [Matriz RLS (quem pode o quê)](./matriz-rls-quem-pode.md) – fonte de verdade Entidade × Operação × Quem pode; uso de is_admin().
+- [**Validação: Módulo Equipe, Perfis e Admin em tudo**](./validacao-modulo-equipe-perfis-admin.md) – checklist Equipe/perfis/planos/serviços; perfil Admin = admin em todo o sistema.
 - [Auditoria de segurança e performance](./auditoria-seguranca-performance.md) – relatório RLS, dados sensíveis no client, N+1 (Fase 4).
 - [ADR – Evolução de services](./adr-evolucao-services.md) – planejamento (flat vs camadas).
 - [Verificação Frontend/Componentes](./verificacao-frontend-componentes.md) – conformidade com componentes padronizados.
@@ -73,6 +74,7 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 | Project integrations (Supabase/GitHub/Vercel) | [PROJECT_INTEGRATIONS.md](./PROJECT_INTEGRATIONS.md) | IDs do projeto, aviso template |
 | Plano de ação RLS (sistema inteiro) | [plano-acao-rls-sistema.md](./plano-acao-rls-sistema.md) | Auditoria RLS, matriz quem-pode-o-quê, migrations, frontend |
 | Matriz RLS (quem pode o quê) | [matriz-rls-quem-pode.md](./matriz-rls-quem-pode.md) | Fonte de verdade Entidade × Operação × Quem pode |
+| Validação Equipe/Perfis/Admin | [validacao-modulo-equipe-perfis-admin.md](./validacao-modulo-equipe-perfis-admin.md) | Checklist Equipe, perfis, planos, serviços; perfil Admin = admin em tudo |
 | Auditoria segurança/performance | [auditoria-seguranca-performance.md](./auditoria-seguranca-performance.md) | RLS, client-side, N+1 |
 | ADR evolução services | [adr-evolucao-services.md](./adr-evolucao-services.md) | Planejamento backend |
 | Changelog varredura | [changelog-varredura.md](./changelog-varredura.md) | Resumo das fases aplicadas |
