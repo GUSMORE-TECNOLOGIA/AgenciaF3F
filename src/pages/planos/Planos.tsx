@@ -19,7 +19,7 @@ export default function Planos() {
   const handleDelete = async (plano: Plano) => {
     const ok = await confirm({
       title: 'Excluir plano',
-      message: `Deseja realmente excluir o plano \"${plano.nome}\"?\n\nEsta ação é irreversível.`,
+      message: `Deseja realmente excluir o plano "${plano.nome}"?\n\nEsta ação é irreversível.`,
       confirmLabel: 'Excluir',
       variant: 'danger',
     })

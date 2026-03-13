@@ -29,7 +29,7 @@ export default function ClienteDetail() {
   const handleStatusChange = async (newStatus: 'ativo' | 'inativo' | 'pausado') => {
     const ok = await confirm({
       title: 'Confirmar alteração',
-      message: `Deseja alterar o status do cliente para \"${newStatus}\"?`,
+      message: `Deseja alterar o status do cliente para "${newStatus}"?`,
     })
     if (!ok) return
 

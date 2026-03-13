@@ -35,7 +35,7 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 - [ADR – Evolução de services](./adr-evolucao-services.md) – planejamento (flat vs camadas).
 - [Verificação Frontend/Componentes](./verificacao-frontend-componentes.md) – conformidade com componentes padronizados.
 - [Verificação QA – Build e testes](./verificacao-qa-build-testes.md) – build e planejamento de testes.
-- [Changelog da varredura](./changelog-varredura.md) – o que foi aplicado em cada fase.
+- [Changelog da varredura](./changelog-varredura.md) – o que foi aplicado em cada fase; inclui [warnings de build e deps (2026-03-13)](./changelog-varredura.md#2026-03-13--warnings-de-build-e-dependências-deprecated-resolvido) (ESLint 9, flat config, chunk size).
 - [Project Overview](./project-overview.md)
 - [Architecture Notes](./architecture.md)
 - [Development Workflow](./development-workflow.md)

@@ -24,6 +24,7 @@ export default function Atendimento() {
   })
 
   const { clientes } = useClientes({ autoFetch: true, limit: 1000 })
+  const { remove: deleteAtendimento, loading: deleting } = useDeleteAtendimento()
 
   if (isEmDesenvolvimento) {
     return (
@@ -35,7 +36,6 @@ export default function Atendimento() {
       </div>
     )
   }
-  const { remove: deleteAtendimento, loading: deleting } = useDeleteAtendimento()
 
   const handleDelete = async (atendimento: AtendimentoType) => {
     const ok = await confirm({

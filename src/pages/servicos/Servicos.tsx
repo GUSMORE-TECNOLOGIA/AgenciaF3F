@@ -18,7 +18,7 @@ export default function Servicos() {
   const handleDelete = async (servico: Servico) => {
     const ok = await confirm({
       title: 'Excluir serviço',
-      message: `Deseja realmente excluir o serviço \"${servico.nome}\"?\n\nEsta ação é irreversível.`,
+      message: `Deseja realmente excluir o serviço "${servico.nome}"?\n\nEsta ação é irreversível.`,
       confirmLabel: 'Excluir',
       variant: 'danger',
     })

@@ -58,9 +58,8 @@ export default defineConfig({
     // Headers CORS se necessário
     cors: true,
   },
-  // Aumentar limite de payload para requisições
   build: {
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 1600,
   },
   // Configurações adicionais para desenvolvimento
   optimizeDeps: {

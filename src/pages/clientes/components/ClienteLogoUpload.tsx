@@ -77,7 +77,7 @@ export default function ClienteLogoUpload({
         // Em produção, você deve configurar o bucket 'clientes-logos' no Supabase
         await alert({
           title: 'Erro de upload',
-          message: 'Erro ao fazer upload. Configure o bucket \"clientes-logos\" no Supabase Storage.',
+          message: 'Erro ao fazer upload. Configure o bucket "clientes-logos" no Supabase Storage.',
           variant: 'danger',
         })
         setUploading(false)

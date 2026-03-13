@@ -31,7 +31,7 @@ export default function EditClienteContratoModal({
     data_cancelamento: contrato.data_cancelamento ?? undefined,
     observacoes: contrato.observacoes ?? '',
   })
-  const [_errors, setErrors] = useState<Record<string, string>>({})
+  const [, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
     if (isOpen && contrato) {

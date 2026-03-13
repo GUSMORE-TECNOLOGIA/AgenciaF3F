@@ -18,7 +18,7 @@ function appendToLocalStorage(payload: object): void {
     const arr = JSON.parse(raw) as unknown[]
     arr.push(payload)
     localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(arr))
-  } catch (_) {}
+  } catch { /* ignore */ }
 }
 
 export function debugLog(tag: string, data: Record<string, unknown>): void {
@@ -34,7 +34,7 @@ export function debugLog(tag: string, data: Record<string, unknown>): void {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       }).catch(() => {})
-    } catch (_) {}
+    } catch { /* ignore */ }
   }
 }
 

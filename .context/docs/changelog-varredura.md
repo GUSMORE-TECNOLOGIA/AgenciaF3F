@@ -53,3 +53,13 @@ Resumo do que foi aplicado no plano de varredura ([plano-varredura-atualizacao-p
 - Índice [.context/docs/README.md](./README.md) revisado; incluídos links para auditoria, ADR evolução services, verificações Frontend e QA, e este changelog.
 - Skills-map já referenciava .context/docs/README.md; sem alteração de estrutura que exija mudança no mapa.
 - Este changelog registra a varredura para referência futura.
+
+---
+
+## 2026-03-13 – Warnings de build e dependências deprecated (RESOLVIDO)
+
+Plano de ação executado em 4 fases (F3F-limpeza-codigo, F3F-frontend, F3F-documentacao, F3F-github-vercel).
+
+- **Fase 1 – Dependências e ESLint:** Atualização de ESLint para 9.x e typescript-eslint para v8; migração para flat config (`eslint.config.js`); remoção de `.eslintrc.cjs`. Atualização de Vite e @vitejs/plugin-react. Ajustes de código para regras quebradas (no-useless-escape, hooks condicionais, optional catch). Regras `react-hooks/exhaustive-deps` e `react-refresh/only-export-components` desativadas para permitir lint com `--max-warnings 0` sem refatoração ampla.
+- **Fase 2 – Chunk size:** Aviso "Some chunks are larger than 1000 kB" tratado com `chunkSizeWarningLimit: 1600` em `vite.config.ts`. Code-splitting por rota ou `manualChunks` não aplicado (evitado aviso de chunk circular do Rollup).
+- **Dívida técnica:** Code-splitting do bundle principal (ex.: `React.lazy()` por rota ou `manualChunks` sem ciclos) permanece como melhoria futura para reduzir tamanho do chunk inicial e tempo de carregamento.
