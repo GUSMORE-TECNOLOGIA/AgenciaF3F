@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { X, FileSpreadsheet, Loader2 } from 'lucide-react'
-import * as XLSX from 'xlsx'
+import ExcelJS from 'exceljs'
 import type { Cliente } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import { fetchClienteLinks } from '@/services/clienteLinks'
@@ -58,6 +58,18 @@ export default function ExportClientesModal({
     })
   }
 
+  function addSheetFromRows(
+    wb: ExcelJS.Workbook,
+    rows: Array<Record<string, string | number>>,
+    sheetName: string
+  ) {
+    if (rows.length === 0) return
+    const ws = wb.addWorksheet(sheetName)
+    const headers = Object.keys(rows[0])
+    ws.addRow(headers)
+    rows.forEach((r) => ws.addRow(headers.map((h) => r[h])))
+  }
+
   async function handleExport() {
     if (selected.size === 0 || clientes.length === 0) {
       setError('Selecione pelo menos uma seção e certifique-se de que há clientes para exportar.')
@@ -66,7 +78,7 @@ export default function ExportClientesModal({
     setError(null)
     setExporting(true)
     try {
-      const wb = XLSX.utils.book_new()
+      const wb = new ExcelJS.Workbook()
       const clientePorId = new Map(clientes.map((c) => [c.id, c]))
 
       if (selected.has('dados_pessoais')) {
@@ -79,8 +91,7 @@ export default function ExportClientesModal({
           Plano_Atual: planosAtivos.get(c.id) ?? '',
           Responsavel: responsavelPorClienteMap.get(c.id) ?? '',
         }))
-        const ws = XLSX.utils.json_to_sheet(rows)
-        XLSX.utils.book_append_sheet(wb, ws, 'Dados Pessoais')
+        addSheetFromRows(wb, rows, 'Dados Pessoais')
       }
 
       if (selected.has('links_uteis')) {
@@ -98,10 +109,7 @@ export default function ExportClientesModal({
             })
           }
         }
-        if (allLinks.length > 0) {
-          const ws = XLSX.utils.json_to_sheet(allLinks)
-          XLSX.utils.book_append_sheet(wb, ws, 'Links')
-        }
+        if (allLinks.length > 0) addSheetFromRows(wb, allLinks, 'Links')
       }
 
       if (selected.has('responsaveis')) {
@@ -118,10 +126,7 @@ export default function ExportClientesModal({
             })
           }
         }
-        if (allResp.length > 0) {
-          const ws = XLSX.utils.json_to_sheet(allResp)
-          XLSX.utils.book_append_sheet(wb, ws, 'Responsaveis')
-        }
+        if (allResp.length > 0) addSheetFromRows(wb, allResp, 'Responsaveis')
       }
 
       if (selected.has('servicos')) {
@@ -153,14 +158,8 @@ export default function ExportClientesModal({
             })
           }
         }
-        if (allPlanos.length > 0) {
-          const ws = XLSX.utils.json_to_sheet(allPlanos)
-          XLSX.utils.book_append_sheet(wb, ws, 'Planos')
-        }
-        if (allServicos.length > 0) {
-          const ws = XLSX.utils.json_to_sheet(allServicos)
-          XLSX.utils.book_append_sheet(wb, ws, 'Servicos')
-        }
+        if (allPlanos.length > 0) addSheetFromRows(wb, allPlanos, 'Planos')
+        if (allServicos.length > 0) addSheetFromRows(wb, allServicos, 'Servicos')
       }
 
       if (podeFinanceiro && selected.has('financeiro')) {
@@ -181,10 +180,7 @@ export default function ExportClientesModal({
             })
           }
         }
-        if (allTrans.length > 0) {
-          const ws = XLSX.utils.json_to_sheet(allTrans)
-          XLSX.utils.book_append_sheet(wb, ws, 'Financeiro')
-        }
+        if (allTrans.length > 0) addSheetFromRows(wb, allTrans, 'Financeiro')
       }
 
       if (selected.has('ocorrencias')) {
@@ -199,18 +195,26 @@ export default function ExportClientesModal({
             Prioridade: o.prioridade ?? '',
             Status: o.status ?? '',
           }))
-          const ws = XLSX.utils.json_to_sheet(rows)
-          XLSX.utils.book_append_sheet(wb, ws, 'Ocorrencias')
+          addSheetFromRows(wb, rows, 'Ocorrencias')
         }
       }
 
-      if (wb.SheetNames.length === 0) {
+      if (wb.worksheets.length === 0) {
         setError('Nenhum dado encontrado para as seções selecionadas.')
         return
       }
 
+      const buffer = await wb.xlsx.writeBuffer()
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      })
       const filename = `clientes_export_${new Date().toISOString().slice(0, 10)}.xlsx`
-      XLSX.writeFile(wb, filename)
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      a.click()
+      URL.revokeObjectURL(url)
       onClose()
     } catch (err) {
       console.error('Erro ao exportar:', err)

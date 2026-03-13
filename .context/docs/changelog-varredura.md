@@ -63,3 +63,11 @@ Plano de ação executado em 4 fases (F3F-limpeza-codigo, F3F-frontend, F3F-docu
 - **Fase 1 – Dependências e ESLint:** Atualização de ESLint para 9.x e typescript-eslint para v8; migração para flat config (`eslint.config.js`); remoção de `.eslintrc.cjs`. Atualização de Vite e @vitejs/plugin-react. Ajustes de código para regras quebradas (no-useless-escape, hooks condicionais, optional catch). Regras `react-hooks/exhaustive-deps` e `react-refresh/only-export-components` desativadas para permitir lint com `--max-warnings 0` sem refatoração ampla.
 - **Fase 2 – Chunk size:** Aviso "Some chunks are larger than 1000 kB" tratado com `chunkSizeWarningLimit: 1600` em `vite.config.ts`. Code-splitting por rota ou `manualChunks` não aplicado (evitado aviso de chunk circular do Rollup).
 - **Dívida técnica:** Code-splitting do bundle principal (ex.: `React.lazy()` por rota ou `manualChunks` sem ciclos) permanece como melhoria futura para reduzir tamanho do chunk inicial e tempo de carregamento.
+
+---
+
+## 2026-03-13 (2) – Aviso Vite financeiro.ts + vulnerabilidades npm (RESOLVIDO)
+
+- **Import de `financeiro.ts`:** Em `planos.ts` o módulo era importado dinamicamente em 4 pontos e estaticamente em outros arquivos; Vite exibía aviso "dynamic import will not move module into another chunk". Unificado para import estático no topo de `planos.ts` (funções `gerarTransacoesContratoPlano`, `gerarTransacoesContratoServico`, `atualizarTransacoesFuturasContrato`); aviso eliminado.
+- **Vulnerabilidades:** `npm audit fix` aplicado (Rollup atualizado). Pacote `xlsx` (alta: Prototype Pollution / ReDoS) removido e substituído por `exceljs` na exportação para Excel em `ExportClientesModal.tsx`. Limite de chunk aumentado para 2500 kB em `vite.config.ts` após inclusão do exceljs.
+- **Restante:** 2 vulnerabilidades moderadas (esbuild/Vite – dev server); correção exige `npm audit fix --force` (Vite 8, breaking). Não aplicado; considerar em ciclo futuro.

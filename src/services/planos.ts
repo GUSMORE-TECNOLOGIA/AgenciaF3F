@@ -1,4 +1,9 @@
 import { supabase } from './supabase'
+import {
+  gerarTransacoesContratoPlano,
+  gerarTransacoesContratoServico,
+  atualizarTransacoesFuturasContrato,
+} from './financeiro'
 import { Servico, Plano, PlanoServico, ClientePlano, ClienteServico, Cliente, ClienteContrato } from '@/types'
 import type {
   ServicoCreateInput,
@@ -1038,7 +1043,6 @@ export async function createClientePlano(input: ClientePlanoCreateInput): Promis
     // Gerar transações automáticas se tiver data de início
     if (contrato.data_inicio) {
       try {
-        const { gerarTransacoesContratoPlano } = await import('./financeiro')
         await gerarTransacoesContratoPlano(contrato)
       } catch (error) {
         console.error('Erro ao gerar transações automáticas:', error)
@@ -1142,7 +1146,6 @@ export async function updateClientePlano(
     // Atualizar transações futuras se o status mudou
     if (input.status !== undefined && contratoAtual && input.status !== contratoAtual.status) {
       try {
-        const { atualizarTransacoesFuturasContrato } = await import('./financeiro')
         await atualizarTransacoesFuturasContrato(id, 'plano', input.status)
       } catch (error) {
         console.error('Erro ao atualizar transações futuras:', error)
@@ -1331,7 +1334,6 @@ export async function createClienteServico(input: ClienteServicoCreateInput): Pr
     // Gerar transações automáticas se tiver data de início
     if (contrato.data_inicio) {
       try {
-        const { gerarTransacoesContratoServico } = await import('./financeiro')
         await gerarTransacoesContratoServico(contrato)
       } catch (error) {
         console.error('Erro ao gerar transações automáticas:', error)
@@ -1433,7 +1435,6 @@ export async function updateClienteServico(
     // Atualizar transações futuras se o status mudou
     if (input.status !== undefined && contratoAtual && input.status !== contratoAtual.status) {
       try {
-        const { atualizarTransacoesFuturasContrato } = await import('./financeiro')
         await atualizarTransacoesFuturasContrato(id, 'servico', input.status)
       } catch (error) {
         console.error('Erro ao atualizar transações futuras:', error)

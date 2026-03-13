@@ -59,7 +59,7 @@ export default defineConfig({
     cors: true,
   },
   build: {
-    chunkSizeWarningLimit: 1600,
+    chunkSizeWarningLimit: 2500,
   },
   // Configurações adicionais para desenvolvimento
   optimizeDeps: {
