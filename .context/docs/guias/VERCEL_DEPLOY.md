@@ -118,6 +118,17 @@ Após o deploy:
 3. Verifique se o domínio está configurado
 4. Teste a aplicação em: https://agenciaf3f.app
 
+## 🐛 Erro "Invalid API key" só em produção
+
+Se o login funciona **localmente** mas em **produção** (online) aparece **"Invalid API key"**:
+
+1. **Variáveis no Vercel:** No dashboard Vercel → projeto `agenciaf3f` → **Settings** → **Environment Variables**.
+2. Confira que existem **as duas** variáveis e que estão disponíveis para **Production** (e Preview, se usar):
+   - `VITE_SUPABASE_URL` = `https://rhnkffeyspymjpellmnd.supabase.co`
+   - `VITE_SUPABASE_ANON_KEY` = a chave anon do projeto F3F (ver valor em [PROJECT_INTEGRATIONS.md](../PROJECT_INTEGRATIONS.md)).
+3. **Redeploy obrigatório:** No Vite, as variáveis são embutidas no build. Depois de adicionar ou corrigir as variáveis, é preciso **gerar um novo deploy** (Deployments → ⋮ no último deploy → Redeploy, ou fazer um novo push no `main`).
+4. Se o projeto foi clonado de outro (ex.: Uploaders), confira se a chave é **do projeto F3F** (ref `rhnkffeyspymjpellmnd`), não de outro Supabase.
+
 ## 📝 Notas Importantes
 
 - ⚠️ **Nunca commite o arquivo `.env`** - variáveis devem ser configuradas na Vercel

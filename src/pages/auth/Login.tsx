@@ -29,6 +29,10 @@ export default function Login() {
         setError(
           'Problema temporário de conexão. Tente novamente em instantes ou contate o administrador.'
         )
+      } else if (msg.toLowerCase().includes('invalid api key')) {
+        setError(
+          'Chave da API inválida. Em produção, verifique no Vercel (Settings → Environment Variables) se VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY estão corretas para o projeto F3F e faça um novo deploy.'
+        )
       } else {
         setError(msg)
       }
