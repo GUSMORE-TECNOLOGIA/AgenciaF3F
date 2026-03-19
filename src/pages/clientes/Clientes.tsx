@@ -253,23 +253,11 @@ export default function Clientes() {
     return d.toLocaleDateString('pt-BR')
   }
 
-  if (loading && viewMode === 'clientes') {
-    return <div className="text-center py-12">Carregando...</div>
-  }
-
-  if (error && viewMode === 'clientes') {
-    return (
-      <div className="text-center py-12">
-        <p className="text-red-600 mb-4">Erro ao carregar clientes: {error.message}</p>
-        <button
-          onClick={() => refetch()}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
-        >
-          Tentar novamente
-        </button>
-      </div>
-    )
-  }
+  // Não fazer early return em loading/error no modo clientes: manter busca e filtros
+  // sempre montados para o campo de busca não perder foco a cada tecla (loadClientes
+  // dispara a cada mudança de searchTerm e setLoading(true) desmontaria o input).
+  const showClientesError = error && viewMode === 'clientes'
+  const showClientesLoading = loading && viewMode === 'clientes'
 
   return (
     <div>
@@ -569,6 +557,19 @@ export default function Clientes() {
         )}
       </div>
 
+      {showClientesError && (
+        <div className="bg-card rounded-lg border border-border p-4 mb-6">
+          <p className="text-red-600 dark:text-red-400 mb-4">Erro ao carregar clientes: {error?.message}</p>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      )}
+
       <div className="bg-card rounded-lg shadow-sm border border-border overflow-x-auto">
         <table className="w-full min-w-[800px]">
           <thead className="bg-muted">
@@ -633,7 +634,13 @@ export default function Clientes() {
             </tr>
           </thead>
           <tbody className="bg-card divide-y divide-border">
-            {clientes.length === 0 ? (
+            {showClientesLoading ? (
+              <tr>
+                <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
+                  Carregando...
+                </td>
+              </tr>
+            ) : clientes.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
                   {searchTerm || statusFilter || responsavelFilter
