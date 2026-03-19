@@ -66,7 +66,13 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
       setObservacao('')
     } catch (error) {
       console.error('Erro ao adicionar responsável:', error)
-      const msg = error instanceof Error ? error.message : 'Erro ao adicionar responsável. Tente novamente ou verifique permissões.'
+      const errMsg = error as Error | { message?: string; details?: string } | null
+      const msg =
+        errMsg instanceof Error
+          ? errMsg.message
+          : typeof errMsg?.message === 'string'
+            ? errMsg.message
+            : (errMsg as any)?.details ?? 'Erro ao adicionar responsável. Tente novamente ou verifique permissões.'
       await alertModal({ title: 'Erro ao adicionar responsável', message: msg, variant: 'danger' })
     }
   }
