@@ -302,7 +302,7 @@ export interface ClienteResponsavel {
   id: string
   cliente_id: string
   responsavel_id: string
-  roles: ('principal' | 'comercial' | 'suporte' | 'backup')[]
+  roles: ('principal' | 'editor_video' | 'designer' | 'webdesigner' | 'comercial' | 'suporte' | 'backup')[]
   observacao?: string
   created_at: string
   updated_at: string

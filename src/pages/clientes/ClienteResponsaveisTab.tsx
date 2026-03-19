@@ -45,7 +45,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
     if (selectedRoles.includes('principal') && jaTemPrincipal) {
       await alertModal({
         title: 'Apenas 1 principal permitido',
-        message: 'Este cliente já possui um responsável principal. Remova o atual antes de definir outro, ou escolha outro papel (Comercial, Suporte, Backup).',
+        message: 'Este cliente já possui um responsável principal. Remova o atual antes de definir outro, ou escolha outro papel (Editor de vídeo, Designer, Webdesigner).',
         variant: 'danger',
       })
       return
@@ -62,7 +62,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
       await refetch?.()
       setShowAddModal(false)
       setSelectedResponsavelId('')
-      setSelectedRoles(['comercial'])
+      setSelectedRoles(['editor_video'])
       setObservacao('')
     } catch (error) {
       console.error('Erro ao adicionar responsável:', error)
@@ -103,6 +103,10 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
   const getRoleLabel = (role: string) => {
     const labels: Record<string, string> = {
       principal: 'Principal',
+      editor_video: 'Editor de vídeo',
+      designer: 'Designer',
+      webdesigner: 'Webdesigner',
+      // legado (exibição de dados antigos)
       comercial: 'Comercial',
       suporte: 'Suporte',
       backup: 'Backup',
@@ -113,6 +117,9 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
   const getRoleColor = (role: string) => {
     const colors: Record<string, string> = {
       principal: 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300',
+      editor_video: 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300',
+      designer: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300',
+      webdesigner: 'bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300',
       comercial: 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300',
       suporte: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300',
       backup: 'bg-muted text-foreground',
@@ -122,9 +129,9 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
 
   const responsaveisPorPapel = {
     principal: responsaveis.filter((r) => r.roles.includes('principal')),
-    comercial: responsaveis.filter((r) => r.roles.includes('comercial')),
-    suporte: responsaveis.filter((r) => r.roles.includes('suporte')),
-    backup: responsaveis.filter((r) => r.roles.includes('backup')),
+    editor_video: responsaveis.filter((r) => r.roles.includes('editor_video')),
+    designer: responsaveis.filter((r) => r.roles.includes('designer')),
+    webdesigner: responsaveis.filter((r) => r.roles.includes('webdesigner')),
   }
 
   const jaTemPrincipal = responsaveisPorPapel.principal.length > 0
@@ -144,7 +151,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
         </div>
         <button
           onClick={() => {
-            setSelectedRoles(jaTemPrincipal ? ['comercial'] : ['principal'])
+            setSelectedRoles(jaTemPrincipal ? ['editor_video'] : ['principal'])
             setShowAddModal(true)
           }}
           className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
@@ -265,7 +272,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                   </p>
                 )}
                 <div className="flex flex-wrap gap-2">
-                  {['principal', 'comercial', 'suporte', 'backup'].map((role) => {
+                  {['principal', 'editor_video', 'designer', 'webdesigner'].map((role) => {
                     const isPrincipalBloqueado = role === 'principal' && jaTemPrincipal
                     return (
                       <button
@@ -308,7 +315,7 @@ export default function ClienteResponsaveisTab({ cliente, refetch }: ClienteResp
                 onClick={() => {
                   setShowAddModal(false)
                   setSelectedResponsavelId('')
-                  setSelectedRoles(['comercial'])
+                  setSelectedRoles(['editor_video'])
                   setObservacao('')
                 }}
                 className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"

@@ -37,7 +37,7 @@ export async function fetchClienteResponsaveis(clienteId: string): Promise<Clien
           id: r.id,
           cliente_id: r.cliente_id,
           responsavel_id: r.responsavel_id,
-          roles: r.roles as ('principal' | 'comercial' | 'suporte' | 'backup')[],
+          roles: r.roles as ('principal' | 'editor_video' | 'designer' | 'webdesigner')[],
           observacao: r.observacao ?? undefined,
           created_at: r.created_at,
           updated_at: r.updated_at,
@@ -57,7 +57,7 @@ export async function fetchClienteResponsaveis(clienteId: string): Promise<Clien
   }
 }
 
-const ROLES_VALIDOS = ['principal', 'comercial', 'suporte', 'backup'] as const
+const ROLES_VALIDOS = ['principal', 'editor_video', 'designer', 'webdesigner'] as const
 
 export interface CreateClienteResponsavelInput {
   cliente_id: string
@@ -74,7 +74,7 @@ export interface CreateClienteResponsavelInput {
 export async function createClienteResponsavel(input: CreateClienteResponsavelInput): Promise<ClienteResponsavel> {
   const roles = input.roles.filter((r) => ROLES_VALIDOS.includes(r as (typeof ROLES_VALIDOS)[number]))
   if (roles.length === 0) {
-    throw new Error('Selecione pelo menos um papel válido: principal, comercial, suporte ou backup.')
+    throw new Error('Selecione pelo menos um papel válido: principal, editor de vídeo, designer ou webdesigner.')
   }
 
   const now = new Date().toISOString()
@@ -136,7 +136,7 @@ export async function createClienteResponsavel(input: CreateClienteResponsavelIn
       id: data.id,
       cliente_id: data.cliente_id,
       responsavel_id: data.responsavel_id,
-      roles: data.roles as ('principal' | 'comercial' | 'suporte' | 'backup')[],
+      roles: data.roles as ('principal' | 'editor_video' | 'designer' | 'webdesigner')[],
       observacao: data.observacao ?? undefined,
       created_at: data.created_at,
       updated_at: data.updated_at,
