@@ -10,6 +10,7 @@ export const MODULOS_SISTEMA: { value: ModuloSistema; label: string }[] = [
   { value: 'ocorrencias', label: 'Ocorrências' },
   { value: 'atendimento', label: 'Atendimento' },
   { value: 'equipe', label: 'Equipe' },
+  { value: 'ads', label: 'Meta Ads' },
 ]
 
 function mapPerfil(row: Record<string, unknown>): Perfil {

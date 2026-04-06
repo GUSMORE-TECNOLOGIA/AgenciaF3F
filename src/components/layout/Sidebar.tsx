@@ -10,6 +10,7 @@ import {
   Settings,
   Lock,
   LogOut,
+  Megaphone,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import type { ModuloSistema } from '@/types'
@@ -22,6 +23,7 @@ const menuItems: { path: string; label: string; modulo: ModuloSistema; icon: typ
   { path: '/financeiro', label: 'Financeiro', modulo: 'financeiro', icon: DollarSign },
   { path: '/ocorrencias', label: 'Ocorrências', modulo: 'ocorrencias', icon: AlertCircle },
   { path: '/atendimento', label: 'Atendimento', modulo: 'atendimento', icon: MessageSquare },
+  { path: '/ads', label: 'Meta Ads', modulo: 'ads', icon: Megaphone },
   { path: '/configuracoes/equipe', label: 'Equipe', modulo: 'equipe', icon: Settings },
 ]
 

@@ -84,6 +84,7 @@ Configure estas variáveis no painel da Vercel:
 
 - `VITE_SUPABASE_URL`: `https://rhnkffeyspymjpellmnd.supabase.co`
 - `VITE_SUPABASE_ANON_KEY`: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJobmtmZmV5c3B5bWpwZWxsbW5kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY5NjA0MDAsImV4cCI6MjA1MjUzNjQwMH0.5OiPMqz8dPoC9O-qJMx_DkSxS21bZJZI9mEINJlgYFQ`
+- `VITE_ADS_META_OAUTH_REDIRECT_URI` (opcional): URL exata do callback OAuth Meta, ex. `https://www.agenciaf3f.app/ads/auth/meta/callback`
 
 ---
 
@@ -109,6 +110,23 @@ Configure estas variáveis no painel da Vercel:
 | `equipe_membros` | Membros da equipe |
 | `cliente_responsaveis` | Responsáveis de clientes |
 | `contrato_status_historico` | Histórico de status |
+| `meta_connections` | Token Meta (Marketing API) por usuário — módulo **Ads** (`/ads`) |
+| `publish_jobs` | Idempotência / histórico de publicações Meta — módulo Ads |
+| `message_templates` | Modelos de mensagem WhatsApp (Fase 3) — módulo Ads |
+
+### Módulo Meta Ads (`/ads`)
+
+| Item | Detalhe |
+|------|---------|
+| **Front** | `src/modules/ads/`, rotas `/ads`, `/ads/configuracoes`, `/ads/auth/meta/callback` |
+| **Edge Functions** | `supabase/functions/meta-*` (OAuth, publish, validação, diagnósticos). Ver `supabase/config.toml`. |
+| **Secrets (Supabase)** | `META_APP_SECRET` (obrigatório), `META_APP_ID` (obrigatório), `META_OAUTH_REDIRECT_URI` (ex.: `https://www.agenciaf3f.app/ads/auth/meta/callback`) |
+| **Front (Vercel)** | `VITE_ADS_META_OAUTH_REDIRECT_URI` opcional; se vazio, usa `origin + /ads/auth/meta/callback` |
+| **Meta for Developers** | Valid OAuth Redirect URIs deve incluir a mesma URL de `META_OAUTH_REDIRECT_URI` |
+| **Permissões** | Módulo `ads` em `perfil_permissoes`; ver migration `20260406120000_ads_modulo_perfil_permissoes.sql` |
+| **Mapa de migração** | [.context/docs/migracao/mapa-traducao-adify-ads.md](./migracao/mapa-traducao-adify-ads.md) |
+
+**Segurança (próximo hardening):** hoje `verify_jwt = false` nas `meta-*` (compatível com o legado). Recomenda-se evoluir para JWT obrigatório onde a função usa o usuário autenticado.
 
 ### RPCs relevantes
 

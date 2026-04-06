@@ -28,6 +28,10 @@ import AtendimentoNovo from './pages/atendimento/AtendimentoNovo'
 import AtendimentoEdit from './pages/atendimento/AtendimentoEdit'
 import Equipe from './pages/configuracoes/Equipe'
 import Layout from './components/layout/Layout'
+import AdsLayout from './pages/ads/AdsLayout'
+import AdsHomePage from './pages/ads/AdsHomePage'
+import AdsSettingsPage from './pages/ads/AdsSettingsPage'
+import AdsMetaCallbackPage from './pages/ads/AdsMetaCallbackPage'
 
 function App() {
   return (
@@ -90,6 +94,18 @@ function App() {
             <Route path="atendimento/novo" element={<AtendimentoNovo />} />
             <Route path="atendimento/:id/editar" element={<AtendimentoEdit />} />
             <Route path="configuracoes/equipe" element={<Equipe />} />
+            <Route
+              path="ads"
+              element={
+                <ModuleGuard modulo="ads" acao="visualizar">
+                  <AdsLayout />
+                </ModuleGuard>
+              }
+            >
+              <Route index element={<AdsHomePage />} />
+              <Route path="configuracoes" element={<AdsSettingsPage />} />
+              <Route path="auth/meta/callback" element={<AdsMetaCallbackPage />} />
+            </Route>
           </Route>
           </Routes>
         </ModalProvider>
