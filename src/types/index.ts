@@ -8,6 +8,7 @@ export type ModuloSistema =
   | 'ocorrencias'
   | 'atendimento'
   | 'equipe'
+  | 'ads'
 
 export type EscopoVisibilidade = 'todos' | 'nenhum' | 'responsavel'
 

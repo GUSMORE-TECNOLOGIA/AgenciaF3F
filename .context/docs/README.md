@@ -13,6 +13,9 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 
 **Comandos e playbooks:** pasta [Commands/](../../Commands/) na raiz do repositório (Git, migrações, segurança).
 
+## Migração de legado
+- [Mapa de tradução ADIFY → módulo Ads (F3F)](./migracao/mapa-traducao-adify-ads.md) — incorporação Meta Ads na rota `/ads`.
+
 ## Requisitos (processos de negócio)
 - [Fluxo Perfil → Usuário → Responsável](./requisitos/fluxo-perfil-usuario-responsavel.md) – Cadeia interconectada: criar perfil, vincular ao usuário na Equipe, usar como responsável no cliente, exibir nome correto no dashboard e filtros.
 - [Status do fluxo Perfil → Usuário → Responsável](./requisitos/status-fluxo-perfil-usuario-responsavel.md) – Conferência requisitos vs implementação; o que já está OK e o que validar.

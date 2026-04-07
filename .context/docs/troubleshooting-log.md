@@ -4,6 +4,17 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 
 ---
 
+## 2026-04-06 – Módulo Ads: Edge Function retorna non-2xx (Supabase client)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-04-06 |
+| **Descrição** | Cliente mostra `Edge Function returned a non-2xx status code` ao validar/publicar ou ao usar diagnóstico Meta. |
+| **Causas comuns** | (1) Função não deployada no projeto F3F. (2) `META_APP_SECRET` / `META_APP_ID` ausentes. (3) Redirect OAuth divergente entre Meta App, `META_OAUTH_REDIRECT_URI` e `VITE_ADS_META_OAUTH_REDIRECT_URI` / `getAdsMetaOAuthRedirectUri()`. (4) HTTP 500 por exceção na função — ver **Logs** no Dashboard Supabase. |
+| **Solução** | Conferir Network (`functions/v1/...`) para status; alinhar secrets e URIs; aplicar migrations `meta_connections` / `publish_jobs` / `message_templates`. Ver [PROJECT_INTEGRATIONS.md](./PROJECT_INTEGRATIONS.md) (Módulo Meta Ads). |
+
+---
+
 ## 2026-03-13 – Erro genérico ao criar/editar plano ou serviço (falha de RLS) (RESOLVIDO)
 
 | Campo | Conteúdo |

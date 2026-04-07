@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider } from './contexts/AuthContext'
@@ -28,6 +29,10 @@ import AtendimentoNovo from './pages/atendimento/AtendimentoNovo'
 import AtendimentoEdit from './pages/atendimento/AtendimentoEdit'
 import Equipe from './pages/configuracoes/Equipe'
 import Layout from './components/layout/Layout'
+const AdsLayout = lazy(() => import('./pages/ads/AdsLayout'))
+const AdsHomePage = lazy(() => import('./pages/ads/AdsHomePage'))
+const AdsSettingsPage = lazy(() => import('./pages/ads/AdsSettingsPage'))
+const AdsMetaCallbackPage = lazy(() => import('./pages/ads/AdsMetaCallbackPage'))
 
 function App() {
   return (
@@ -90,6 +95,41 @@ function App() {
             <Route path="atendimento/novo" element={<AtendimentoNovo />} />
             <Route path="atendimento/:id/editar" element={<AtendimentoEdit />} />
             <Route path="configuracoes/equipe" element={<Equipe />} />
+            <Route
+              path="ads"
+              element={
+                <ModuleGuard modulo="ads" acao="visualizar">
+                  <Suspense fallback={null}>
+                    <AdsLayout />
+                  </Suspense>
+                </ModuleGuard>
+              }
+            >
+              <Route
+                index
+                element={
+                  <Suspense fallback={null}>
+                    <AdsHomePage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="configuracoes"
+                element={
+                  <Suspense fallback={null}>
+                    <AdsSettingsPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="auth/meta/callback"
+                element={
+                  <Suspense fallback={null}>
+                    <AdsMetaCallbackPage />
+                  </Suspense>
+                }
+              />
+            </Route>
           </Route>
           </Routes>
         </ModalProvider>
