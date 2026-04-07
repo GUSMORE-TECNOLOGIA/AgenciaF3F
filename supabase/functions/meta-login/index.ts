@@ -6,8 +6,13 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const appId = Deno.env.get("META_APP_ID");
-  const redirectUri =
+  const requestUrl = new URL(req.url);
+  const queryRedirectUri = requestUrl.searchParams.get("redirect_uri")?.trim();
+  const fallbackRedirectUri =
     Deno.env.get("META_OAUTH_REDIRECT_URI") ?? "https://agenciaf3f.app/ads/auth/meta/callback";
+  const redirectUri = queryRedirectUri && /^https?:\/\/.+/i.test(queryRedirectUri)
+    ? queryRedirectUri
+    : fallbackRedirectUri;
   const scopes =
     "ads_management,ads_read,business_management,pages_show_list,pages_read_engagement,instagram_basic";
   const state = crypto.randomUUID();

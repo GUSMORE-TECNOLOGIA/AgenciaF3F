@@ -39,7 +39,15 @@ export default function AdsMetaCallbackPage() {
         }
 
         for (let attempt = 0; attempt < 3; attempt += 1) {
-          const status = await fetchMetaStatus()
+          let status
+          try {
+            status = await fetchMetaStatus()
+          } catch (err) {
+            // #region agent log
+            fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-initial',hypothesisId:'H3',location:'AdsMetaCallbackPage.tsx:fetchMetaStatus:retryError',message:'status retry failed',data:{attempt,errorMessage:err instanceof Error ? err.message : 'unknown_error'},timestamp:Date.now()})}).catch(()=>{});
+            // #endregion
+            throw err
+          }
           // #region agent log
           fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-initial',hypothesisId:'H3',location:'AdsMetaCallbackPage.tsx:fetchMetaStatus:retry',message:'status after oauth',data:{attempt,connected:Boolean(status.connected),hasAccessToken:Boolean(status.access_token),reason:status.reason ?? null},timestamp:Date.now()})}).catch(()=>{});
           // #endregion

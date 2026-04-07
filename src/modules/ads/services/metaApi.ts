@@ -18,6 +18,12 @@ export type { LocationResult } from '@/modules/ads/types/meta-api'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 
+function debugMetaLog(hypothesisId: string, location: string, message: string, data: Record<string, unknown>) {
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-edge-non2xx',hypothesisId,location,message,data,timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
+}
+
 function extractFunctionErrorMessage(error: unknown) {
   if (!error) return 'Erro desconhecido'
   if (typeof error === 'object' && error !== null) {
@@ -29,8 +35,48 @@ function extractFunctionErrorMessage(error: unknown) {
   return 'Erro desconhecido'
 }
 
+function extractFunctionErrorDebugData(error: unknown) {
+  if (!error || typeof error !== 'object') {
+    return { errorType: typeof error }
+  }
+
+  const err = error as {
+    name?: string
+    message?: string
+    code?: string
+    context?: {
+      status?: number
+      statusText?: string
+      error?: string
+      message?: string
+      code?: string
+      details?: string
+    }
+  }
+
+  return {
+    errorName: err.name ?? null,
+    errorCode: err.code ?? null,
+    errorMessage: err.message ?? null,
+    contextStatus: err.context?.status ?? null,
+    contextStatusText: err.context?.statusText ?? null,
+    contextCode: err.context?.code ?? null,
+    contextMessage: err.context?.message ?? null,
+    contextError: err.context?.error ?? null,
+    contextDetails: err.context?.details ?? null,
+    keys: Object.keys(err),
+  }
+}
+
 export function getMetaLoginUrl() {
-  return `${SUPABASE_URL}/functions/v1/meta-login`
+  const redirectUri = getAdsMetaOAuthRedirectUri()
+  const url = new URL(`${SUPABASE_URL}/functions/v1/meta-login`)
+  url.searchParams.set('redirect_uri', redirectUri)
+  debugMetaLog('H6', 'metaApi.ts:getMetaLoginUrl', 'meta-login URL built with redirect override', {
+    redirectUri,
+    loginHost: url.host,
+  })
+  return url.toString()
 }
 
 export async function exchangeCodeForToken(
@@ -41,8 +87,16 @@ export async function exchangeCodeForToken(
     body: { code, redirect_uri: redirectUri ?? getAdsMetaOAuthRedirectUri() },
   })
   if (error) {
+    debugMetaLog('H1', 'metaApi.ts:exchangeCodeForToken:error', 'oauth callback invoke failed', {
+      hasContext: typeof (error as { context?: unknown }).context !== 'undefined',
+      message: extractFunctionErrorMessage(error),
+    })
     throw new Error(extractFunctionErrorMessage(error))
   }
+  debugMetaLog('H1', 'metaApi.ts:exchangeCodeForToken:success', 'oauth callback invoke succeeded', {
+    savedToDb: Boolean((data as MetaOAuthCallbackResponse | undefined)?.saved_to_db),
+    hasAccessToken: Boolean((data as MetaOAuthCallbackResponse | undefined)?.access_token),
+  })
   return data as MetaOAuthCallbackResponse
 }
 
@@ -51,7 +105,32 @@ export async function fetchMetaStatus(options?: { forceVerify?: boolean }): Prom
   const { data, error } = await supabase.functions.invoke('meta-status', {
     body: payload,
   })
-  if (error) throw new Error(extractFunctionErrorMessage(error))
+  if (error) {
+    const details = extractFunctionErrorDebugData(error)
+    debugMetaLog('H2', 'metaApi.ts:fetchMetaStatus:error', 'meta-status invoke failed', {
+      forceVerify: Boolean(options?.forceVerify),
+      message: extractFunctionErrorMessage(error),
+      ...details,
+    })
+
+    if (details.contextStatus === 401) {
+      debugMetaLog('H2', 'metaApi.ts:fetchMetaStatus:handled401', 'meta-status 401 mapped to disconnected state', {
+        forceVerify: Boolean(options?.forceVerify),
+      })
+      return {
+        connected: false,
+        reason: 'no_auth',
+        error: 'Sessão não autorizada para consultar status Meta.',
+      }
+    }
+
+    throw new Error(extractFunctionErrorMessage(error))
+  }
+  debugMetaLog('H3', 'metaApi.ts:fetchMetaStatus:success', 'meta-status invoke succeeded', {
+    connected: Boolean((data as MetaStatusResponse | undefined)?.connected),
+    reason: (data as MetaStatusResponse | undefined)?.reason ?? null,
+    hasAccessToken: Boolean((data as MetaStatusResponse | undefined)?.access_token),
+  })
   return data as MetaStatusResponse
 }
 
@@ -65,7 +144,16 @@ export async function fetchAdAccounts(accessToken: string): Promise<AdAccount[]>
   const { data, error } = await supabase.functions.invoke('meta-ad-accounts', {
     body: { access_token: accessToken },
   })
-  if (error) throw new Error(error.message)
+  if (error) {
+    debugMetaLog('H4', 'metaApi.ts:fetchAdAccounts:error', 'meta-ad-accounts invoke failed', {
+      message: extractFunctionErrorMessage(error),
+      hasAccessToken: Boolean(accessToken),
+    })
+    throw new Error(error.message)
+  }
+  debugMetaLog('H4', 'metaApi.ts:fetchAdAccounts:success', 'meta-ad-accounts invoke succeeded', {
+    accountsCount: Array.isArray(data?.accounts) ? data.accounts.length : 0,
+  })
   return (data?.accounts as AdAccount[]) || []
 }
 
@@ -140,6 +228,10 @@ export async function publishAd(params: Record<string, unknown>): Promise<Publis
   })
   if (error && data) return data as PublishResponse
   if (error) {
+    debugMetaLog('H5', 'metaApi.ts:publishAd:error', 'meta-publish invoke failed', {
+      message: extractFunctionErrorMessage(error),
+      payloadKeys: Object.keys(params).slice(0, 10),
+    })
     try {
       const parsed = typeof error === 'string' ? JSON.parse(error) : error
       if (parsed && typeof parsed === 'object' && ('error_message' in parsed || 'step' in parsed)) {
@@ -150,6 +242,9 @@ export async function publishAd(params: Record<string, unknown>): Promise<Publis
     }
     throw new Error(error.message || 'Erro ao publicar')
   }
+  debugMetaLog('H5', 'metaApi.ts:publishAd:success', 'meta-publish invoke succeeded', {
+    ok: Boolean((data as PublishResponse | undefined)?.ok ?? true),
+  })
   return data as PublishResponse
 }
 
