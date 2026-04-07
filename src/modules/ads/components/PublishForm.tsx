@@ -171,9 +171,6 @@ export default function PublishForm() {
 
   useEffect(() => {
     const justConnected = Boolean(sessionStorage.getItem("meta_oauth_success"));
-    // #region agent log
-    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-initial',hypothesisId:'H2',location:'PublishForm.tsx:useEffect:locationKey',message:'location-based status refresh trigger',data:{locationKey:location.key,justConnected},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     if (justConnected) {
       sessionStorage.removeItem("meta_oauth_success");
     }
@@ -183,9 +180,6 @@ export default function PublishForm() {
   const checkMetaStatus = async (options?: { ignoreCache?: boolean; forceVerify?: boolean }) => {
     setMetaLoading(true);
     try {
-      // #region agent log
-      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-initial',hypothesisId:'H4',location:'PublishForm.tsx:checkMetaStatus:start',message:'checkMetaStatus started',data:{ignoreCache:Boolean(options?.ignoreCache),forceVerify:Boolean(options?.forceVerify),hasCache:Boolean(sessionStorage.getItem("meta_status_cache"))},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       // Check sessionStorage cache first to avoid hitting API on every page load
       const cached = sessionStorage.getItem("meta_status_cache");
       if (!options?.ignoreCache && cached) {
@@ -197,9 +191,6 @@ export default function PublishForm() {
             setAccessToken(parsed.access_token);
             setMetaName(parsed.meta_name || "");
             addLog(`✅ Meta conectado (cache) como ${parsed.meta_name || "usuário"}`);
-            // #region agent log
-            fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-initial',hypothesisId:'H4',location:'PublishForm.tsx:checkMetaStatus:cacheHit',message:'meta status resolved from cache',data:{cacheAgeMs:cacheAge,connected:Boolean(parsed.connected),hasAccessToken:Boolean(parsed.access_token)},timestamp:Date.now()})}).catch(()=>{});
-            // #endregion
             setMetaLoading(false);
             return;
           }
@@ -208,9 +199,6 @@ export default function PublishForm() {
 
       addLog("🔍 Verificando conexão Meta...");
       const status = await fetchMetaStatus({ forceVerify: options?.forceVerify });
-      // #region agent log
-      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-initial',hypothesisId:'H3',location:'PublishForm.tsx:checkMetaStatus:statusResponse',message:'meta-status response in publish form',data:{connected:Boolean(status.connected),hasAccessToken:Boolean(status.access_token),reason:status.reason ?? null,error:status.error ?? null},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       if (status.connected && status.access_token) {
         setAccessToken(status.access_token);
         setMetaName(status.meta_name || "");
@@ -230,9 +218,6 @@ export default function PublishForm() {
     } catch (err) {
       setAccessToken(null);
       addLog(`❌ Erro ao verificar Meta: ${err instanceof Error ? err.message : "desconhecido"}`);
-      // #region agent log
-      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-initial',hypothesisId:'H5',location:'PublishForm.tsx:checkMetaStatus:catch',message:'checkMetaStatus threw',data:{errorMessage:err instanceof Error ? err.message : 'unknown_error'},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
     } finally {
       setMetaLoading(false);
     }

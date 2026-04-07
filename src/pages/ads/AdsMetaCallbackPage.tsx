@@ -12,9 +12,6 @@ export default function AdsMetaCallbackPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const code = params.get('code')
-    // #region agent log
-    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-initial',hypothesisId:'H2',location:'AdsMetaCallbackPage.tsx:useEffect:start',message:'callback page started',data:{hasCode:Boolean(code),path:window.location.pathname,search:window.location.search.includes('code=')?'has_code_param':'no_code_param'},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     if (!code) {
       setError('Código de autorização não encontrado.')
       return
@@ -25,9 +22,6 @@ export default function AdsMetaCallbackPage() {
     const redirectUri = getAdsMetaOAuthRedirectUri()
     exchangeCodeForToken(code, redirectUri)
       .then(async (data: { access_token?: string; saved_to_db?: boolean }) => {
-        // #region agent log
-        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-initial',hypothesisId:'H1',location:'AdsMetaCallbackPage.tsx:exchangeCodeForToken:then',message:'oauth exchange response',data:{hasAccessToken:Boolean(data.access_token),savedToDb:data.saved_to_db ?? null},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
         if (!data.access_token) {
           setError('Token não retornado pelo servidor.')
           return
@@ -39,18 +33,7 @@ export default function AdsMetaCallbackPage() {
         }
 
         for (let attempt = 0; attempt < 3; attempt += 1) {
-          let status
-          try {
-            status = await fetchMetaStatus()
-          } catch (err) {
-            // #region agent log
-            fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-initial',hypothesisId:'H3',location:'AdsMetaCallbackPage.tsx:fetchMetaStatus:retryError',message:'status retry failed',data:{attempt,errorMessage:err instanceof Error ? err.message : 'unknown_error'},timestamp:Date.now()})}).catch(()=>{});
-            // #endregion
-            throw err
-          }
-          // #region agent log
-          fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-initial',hypothesisId:'H3',location:'AdsMetaCallbackPage.tsx:fetchMetaStatus:retry',message:'status after oauth',data:{attempt,connected:Boolean(status.connected),hasAccessToken:Boolean(status.access_token),reason:status.reason ?? null},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
+          const status = await fetchMetaStatus()
           if (status.connected && status.access_token) {
             sessionStorage.setItem('meta_status_cache', JSON.stringify({ ...status, _cachedAt: Date.now() }))
             sessionStorage.setItem('meta_oauth_success', String(Date.now()))
@@ -62,12 +45,7 @@ export default function AdsMetaCallbackPage() {
 
         setError('Conexão Meta concluída, mas o status não sincronizou. Recarregue a página /ads e tente novamente.')
       })
-      .catch((err: Error) => {
-        // #region agent log
-        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-initial',hypothesisId:'H5',location:'AdsMetaCallbackPage.tsx:exchangeCodeForToken:catch',message:'oauth callback failed',data:{errorMessage:err.message},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
-        setError(err.message)
-      })
+      .catch((err: Error) => setError(err.message))
   }, [navigate])
 
   if (error) {
