@@ -6,7 +6,7 @@ project_id = "rhnkffeyspymjpellmnd"
 verify_jwt = false
 
 [functions.meta-oauth-callback]
-verify_jwt = true
+verify_jwt = false
 
 # Demais funções: cliente envia Authorization (sessão) quando aplicável; body pode incluir access_token Meta.
 [functions.meta-ad-accounts]

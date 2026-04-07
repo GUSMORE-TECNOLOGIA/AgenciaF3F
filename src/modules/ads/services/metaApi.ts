@@ -28,7 +28,13 @@ export async function exchangeCodeForToken(
   const { data, error } = await supabase.functions.invoke('meta-oauth-callback', {
     body: { code, redirect_uri: redirectUri ?? getAdsMetaOAuthRedirectUri() },
   })
-  if (error) throw new Error(error.message)
+  if (error) {
+    const message =
+      typeof (error as { context?: { error?: string } }).context?.error === 'string'
+        ? (error as { context: { error: string } }).context.error
+        : error.message
+    throw new Error(message)
+  }
   return data as MetaOAuthCallbackResponse
 }
 
