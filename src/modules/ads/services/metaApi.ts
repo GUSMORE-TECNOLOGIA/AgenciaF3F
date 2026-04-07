@@ -1,5 +1,6 @@
 import { supabase } from '@/services/supabase'
 import { getAdsMetaOAuthRedirectUri } from '@/modules/ads/config'
+import { deleteCurrentUserMetaConnection } from '@/modules/ads/repositories/metaConnectionRepository'
 import type {
   AdAccount,
   Audience,
@@ -17,6 +18,17 @@ export type { LocationResult } from '@/modules/ads/types/meta-api'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 
+function extractFunctionErrorMessage(error: unknown) {
+  if (!error) return 'Erro desconhecido'
+  if (typeof error === 'object' && error !== null) {
+    const err = error as { message?: string; context?: { error?: string; message?: string; code?: string } }
+    if (typeof err.context?.message === 'string') return err.context.message
+    if (typeof err.context?.error === 'string') return err.context.error
+    if (typeof err.message === 'string') return err.message
+  }
+  return 'Erro desconhecido'
+}
+
 export function getMetaLoginUrl() {
   return `${SUPABASE_URL}/functions/v1/meta-login`
 }
@@ -29,29 +41,24 @@ export async function exchangeCodeForToken(
     body: { code, redirect_uri: redirectUri ?? getAdsMetaOAuthRedirectUri() },
   })
   if (error) {
-    const message =
-      typeof (error as { context?: { error?: string } }).context?.error === 'string'
-        ? (error as { context: { error: string } }).context.error
-        : error.message
-    throw new Error(message)
+    throw new Error(extractFunctionErrorMessage(error))
   }
   return data as MetaOAuthCallbackResponse
 }
 
-export async function fetchMetaStatus(): Promise<MetaStatusResponse> {
-  const { data, error } = await supabase.functions.invoke('meta-status')
-  if (error) throw new Error(error.message)
+export async function fetchMetaStatus(options?: { forceVerify?: boolean }): Promise<MetaStatusResponse> {
+  const payload = options?.forceVerify ? { force_verify: true } : undefined
+  const { data, error } = await supabase.functions.invoke('meta-status', {
+    body: payload,
+  })
+  if (error) throw new Error(extractFunctionErrorMessage(error))
   return data as MetaStatusResponse
 }
 
 export async function disconnectMeta() {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) throw new Error('Não autenticado')
-  const { error } = await supabase.from('meta_connections').delete().eq('user_id', user.id)
-  if (error) throw new Error(error.message)
+  await deleteCurrentUserMetaConnection()
   sessionStorage.removeItem('meta_status_cache')
+  sessionStorage.removeItem('meta_oauth_success')
 }
 
 export async function fetchAdAccounts(accessToken: string): Promise<AdAccount[]> {

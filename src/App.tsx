@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Loader2 } from 'lucide-react'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { ModalProvider } from './contexts/ModalContext'
@@ -33,6 +34,14 @@ const AdsLayout = lazy(() => import('./pages/ads/AdsLayout'))
 const AdsHomePage = lazy(() => import('./pages/ads/AdsHomePage'))
 const AdsSettingsPage = lazy(() => import('./pages/ads/AdsSettingsPage'))
 const AdsMetaCallbackPage = lazy(() => import('./pages/ads/AdsMetaCallbackPage'))
+
+function AdsRouteFallback() {
+  return (
+    <div className="flex min-h-[30vh] items-center justify-center">
+      <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+    </div>
+  )
+}
 
 function App() {
   return (
@@ -99,7 +108,7 @@ function App() {
               path="ads"
               element={
                 <ModuleGuard modulo="ads" acao="visualizar">
-                  <Suspense fallback={null}>
+                  <Suspense fallback={<AdsRouteFallback />}>
                     <AdsLayout />
                   </Suspense>
                 </ModuleGuard>
@@ -108,7 +117,7 @@ function App() {
               <Route
                 index
                 element={
-                  <Suspense fallback={null}>
+                  <Suspense fallback={<AdsRouteFallback />}>
                     <AdsHomePage />
                   </Suspense>
                 }
@@ -116,7 +125,7 @@ function App() {
               <Route
                 path="configuracoes"
                 element={
-                  <Suspense fallback={null}>
+                  <Suspense fallback={<AdsRouteFallback />}>
                     <AdsSettingsPage />
                   </Suspense>
                 }
@@ -124,7 +133,7 @@ function App() {
               <Route
                 path="auth/meta/callback"
                 element={
-                  <Suspense fallback={null}>
+                  <Suspense fallback={<AdsRouteFallback />}>
                     <AdsMetaCallbackPage />
                   </Suspense>
                 }

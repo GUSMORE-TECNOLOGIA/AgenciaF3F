@@ -1,21 +1,19 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { buildCorsHeaders, jsonResponse } from "../_shared/http.ts";
 
 Deno.serve(async (req) => {
+  const corsHeaders = buildCorsHeaders(req.headers.get("origin"));
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
       console.log("[meta-status] No auth header");
-      return new Response(JSON.stringify({ connected: false, reason: "no_auth" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse(
+        { connected: false, reason: "no_auth", code: "UNAUTHORIZED", message: "Authorization header ausente." },
+        { status: 401, headers: corsHeaders },
+      );
     }
 
     const supabase = createClient(
@@ -27,9 +25,10 @@ Deno.serve(async (req) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       console.log("[meta-status] No user from auth header");
-      return new Response(JSON.stringify({ connected: false, reason: "no_user" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse(
+        { connected: false, reason: "no_user", code: "UNAUTHORIZED", message: "Usuário não encontrado na sessão." },
+        { status: 401, headers: corsHeaders },
+      );
     }
 
     const { data: conn } = await supabase
@@ -40,9 +39,10 @@ Deno.serve(async (req) => {
 
     if (!conn) {
       console.log("[meta-status] No meta_connection found for user:", user.id);
-      return new Response(JSON.stringify({ connected: false, reason: "no_connection" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse(
+        { connected: false, reason: "no_connection", code: "META_NOT_CONNECTED", message: "Usuário sem conexão Meta ativa." },
+        { headers: corsHeaders },
+      );
     }
 
     // Check if expired
@@ -52,9 +52,10 @@ Deno.serve(async (req) => {
 
     if (isExpired) {
       console.log("[meta-status] Token expired at:", conn.expires_at);
-      return new Response(JSON.stringify({ connected: false, reason: "expired" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse(
+        { connected: false, reason: "expired", code: "META_TOKEN_EXPIRED", message: "Token Meta expirado." },
+        { headers: corsHeaders },
+      );
     }
 
     // Check if token expires within 7 days (warn but still connected)
@@ -80,28 +81,38 @@ Deno.serve(async (req) => {
 
       if (meData.error) {
         console.log("[meta-status] Meta API error:", meData.error);
-        return new Response(JSON.stringify({ connected: false, reason: "invalid_token", error: meData.error.message }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return jsonResponse(
+          {
+            connected: false,
+            reason: "invalid_token",
+            code: "META_TOKEN_INVALID",
+            message: meData.error.message,
+            error: meData.error.message,
+          },
+          { headers: corsHeaders },
+        );
       }
       metaName = meData.name;
     }
 
     console.log("[meta-status] Token valid. Expires:", conn.expires_at, "expiresSoon:", expiresSoon);
 
-    return new Response(JSON.stringify({
-      connected: true,
-      access_token: conn.access_token,
-      meta_name: metaName,
-      expires_at: conn.expires_at,
-      expires_soon: expiresSoon || false,
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse(
+      {
+        connected: true,
+        access_token: conn.access_token,
+        meta_name: metaName,
+        expires_at: conn.expires_at,
+        expires_soon: expiresSoon || false,
+      },
+      { headers: corsHeaders },
+    );
   } catch (e) {
-    console.error("[meta-status] Error:", e.message);
-    return new Response(JSON.stringify({ error: e.message, connected: false }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    const message = e instanceof Error ? e.message : "Erro interno";
+    console.error("[meta-status] Error:", message);
+    return jsonResponse(
+      { connected: false, code: "META_STATUS_INTERNAL_ERROR", message, error: message },
+      { status: 500, headers: corsHeaders },
+    );
   }
 });

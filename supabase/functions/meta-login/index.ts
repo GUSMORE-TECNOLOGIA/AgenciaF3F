@@ -1,11 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { buildCorsHeaders, jsonResponse } from "../_shared/http.ts";
 
 Deno.serve(async (req) => {
+  const corsHeaders = buildCorsHeaders(req.headers.get("origin"));
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const appId = Deno.env.get("META_APP_ID");
@@ -16,10 +13,10 @@ Deno.serve(async (req) => {
   const state = crypto.randomUUID();
 
   if (!appId) {
-    return new Response(JSON.stringify({ error: "META_APP_ID not configured" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse(
+      { code: "META_CONFIG_MISSING", error: "META_APP_ID not configured" },
+      { status: 500, headers: corsHeaders },
+    );
   }
 
   const url = `https://www.facebook.com/v22.0/dialog/oauth?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scopes}&response_type=code&state=${state}`;

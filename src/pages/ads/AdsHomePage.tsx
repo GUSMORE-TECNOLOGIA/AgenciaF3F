@@ -1,8 +1,10 @@
+import { lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
-import { Settings2 } from 'lucide-react'
+import { Loader2, Settings2 } from 'lucide-react'
 
-import PublishForm from '@/modules/ads/components/PublishForm'
 import { Button } from '@/components/ui/button'
+
+const PublishForm = lazy(() => import('@/modules/ads/components/PublishForm'))
 
 export default function AdsHomePage() {
   return (
@@ -24,7 +26,15 @@ export default function AdsHomePage() {
             </Link>
           </Button>
         </div>
-        <PublishForm />
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
+          }
+        >
+          <PublishForm />
+        </Suspense>
       </div>
     </div>
   )

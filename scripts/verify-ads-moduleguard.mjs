@@ -2,6 +2,8 @@ import { readFile } from "node:fs/promises";
 
 async function run() {
   const appContent = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+  const callbackContent = await readFile(new URL("../src/pages/ads/AdsMetaCallbackPage.tsx", import.meta.url), "utf8");
+  const publishFormContent = await readFile(new URL("../src/modules/ads/components/PublishForm.tsx", import.meta.url), "utf8");
 
   const checks = [
     {
@@ -15,6 +17,20 @@ async function run() {
       ok:
         appContent.includes('path="auth/meta/callback"') &&
         appContent.includes("<AdsMetaCallbackPage />"),
+    },
+    {
+      name: "oauth callback marks success for /ads refresh",
+      ok:
+        callbackContent.includes("meta_oauth_success") &&
+        callbackContent.includes("fetchMetaStatus") &&
+        callbackContent.includes("saved_to_db"),
+    },
+    {
+      name: "publish form refreshes status after oauth return",
+      ok:
+        publishFormContent.includes("useLocation") &&
+        publishFormContent.includes("meta_oauth_success") &&
+        publishFormContent.includes("checkMetaStatus({ ignoreCache: justConnected"),
     },
   ];
 

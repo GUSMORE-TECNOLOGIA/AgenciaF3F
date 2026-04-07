@@ -124,9 +124,11 @@ Configure estas variáveis no painel da Vercel:
 | **Front (Vercel)** | `VITE_ADS_META_OAUTH_REDIRECT_URI` em **Production** e **Development** com a mesma URL do redirect (evita divergência no build). Em **Preview**, deixe vazio para usar `window.location.origin + /ads/auth/meta/callback` (cada preview usa o próprio host). |
 | **Meta for Developers** | **Facebook Login → Settings → Valid OAuth Redirect URIs:** incluir exatamente `https://ads.agenciaf3f.com.br/ads/auth/meta/callback` (e URIs de preview se testar OAuth em deploy de preview). |
 | **Permissões** | Módulo `ads` em `perfil_permissoes`; ver migration `20260406120000_ads_modulo_perfil_permissoes.sql` |
+| **Política de acesso (atual)** | Ads liberado somente para perfil `admin`; migrations: `20260407143000_ads_only_admin_access.sql` e `20260407153000_ads_admin_access_policy_definitiva.sql` |
+| **CORS (Edge Meta)** | Allowlist via secret `ALLOWED_ORIGINS` (CSV). Fallback inclui localhost, `https://www.agenciaf3f.app` e `https://ads.agenciaf3f.com.br`. |
 | **Mapa de migração** | [.context/docs/migracao/mapa-traducao-adify-ads.md](./migracao/mapa-traducao-adify-ads.md) |
 
-**Segurança (próximo hardening):** hoje `verify_jwt = false` nas `meta-*` (compatível com o legado). Recomenda-se evoluir para JWT obrigatório onde a função usa o usuário autenticado.
+**Segurança (hardening aplicado):** `verify_jwt = true` nas funções `meta-*` de operação (status, publish, diagnósticos, contas, audiências). `meta-login` e `meta-oauth-callback` permanecem com `verify_jwt = false` por dependência do fluxo OAuth browser-first; manter mitigação por CORS allowlist e validação de redirect URI.
 
 ### RPCs relevantes
 
@@ -206,4 +208,4 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 
 ---
 
-*Última atualização: 20/01/2026 10:27:05*
+*Última atualização: 07/04/2026 17:40:00*

@@ -16,6 +16,9 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 ## Migração de legado
 - [Mapa de tradução ADIFY → módulo Ads (F3F)](./migracao/mapa-traducao-adify-ads.md) — incorporação Meta Ads na rota `/ads`.
 
+## Planos ativos
+- [PLAN — Melhorias do módulo Ads](./PLAN-ads-melhorias.md) — execução das fases de estabilização, segurança, QA e documentação.
+
 ## Requisitos (processos de negócio)
 - [Fluxo Perfil → Usuário → Responsável](./requisitos/fluxo-perfil-usuario-responsavel.md) – Cadeia interconectada: criar perfil, vincular ao usuário na Equipe, usar como responsável no cliente, exibir nome correto no dashboard e filtros.
 - [Status do fluxo Perfil → Usuário → Responsável](./requisitos/status-fluxo-perfil-usuario-responsavel.md) – Conferência requisitos vs implementação; o que já está OK e o que validar.
@@ -36,6 +39,9 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 - [**Validação: Módulo Equipe, Perfis e Admin em tudo**](./validacao-modulo-equipe-perfis-admin.md) – checklist Equipe/perfis/planos/serviços; perfil Admin = admin em todo o sistema.
 - [Auditoria de segurança e performance](./auditoria-seguranca-performance.md) – relatório RLS, dados sensíveis no client, N+1 (Fase 4).
 - [ADR – Evolução de services](./adr-evolucao-services.md) – planejamento (flat vs camadas).
+- [ADR — Escopo de token Meta no módulo Ads](./ADR-ADS-TOKEN-SCOPE.md) – escopo de conexão por `user_id`.
+- [ADR — Política de acesso do módulo Ads](./ADR-ADS-POLITICA-ACESSO.md) – decisão admin-only na fase atual.
+- [ADR — Estratégia de deduplicação UI do Ads](./ADR-ADS-UI-DEDUP.md) – ondas de migração incremental para componentes compartilhados.
 - [Verificação Frontend/Componentes](./verificacao-frontend-componentes.md) – conformidade com componentes padronizados.
 - [Verificação QA – Build e testes](./verificacao-qa-build-testes.md) – build e planejamento de testes.
 - [Changelog da varredura](./changelog-varredura.md) – o que foi aplicado em cada fase; inclui [warnings de build e deps (2026-03-13)](./changelog-varredura.md#2026-03-13--warnings-de-build-e-dependências-deprecated-resolvido) (ESLint 9, flat config, chunk size).

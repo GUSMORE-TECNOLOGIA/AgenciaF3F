@@ -4,6 +4,18 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 
 ---
 
+## 2026-04-07 – Ads: card permanecia em “Meta desconectado” após OAuth (RESOLVIDO)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-04-07 |
+| **Descrição** | Após “Conectar Meta”, o callback retornava para `/ads`, mas o card de status podia seguir como “Meta desconectado”. |
+| **Causa raiz** | O front dependia de leitura única de `meta_status_cache` + `checkMetaStatus()` no mount. Em alguns retornos OAuth, o estado não era sincronizado no timing esperado, e a UI não forçava revalidação pós-callback. |
+| **Solução** | (1) `AdsMetaCallbackPage` passou a verificar `saved_to_db`, consultar `meta-status` com retry curto e gravar marcador `meta_oauth_success`. (2) `PublishForm` passou a revalidar status ao retornar para `/ads` usando `useLocation().key`, ignorando cache quando houve OAuth recente. (3) Erros de funções Meta receberam contrato mais consistente (`code`/`message`) para diagnóstico. |
+| **Referência** | `src/pages/ads/AdsMetaCallbackPage.tsx`, `src/modules/ads/components/PublishForm.tsx`, `src/modules/ads/services/metaApi.ts`, `supabase/functions/meta-status/index.ts`, `supabase/functions/meta-oauth-callback/index.ts`. |
+
+---
+
 ## 2026-04-06 – Módulo Ads: Edge Function retorna non-2xx (Supabase client)
 
 | Campo | Conteúdo |

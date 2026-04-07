@@ -1,12 +1,9 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { buildCorsHeaders, jsonResponse } from "../_shared/http.ts";
 
 Deno.serve(async (req) => {
+  const corsHeaders = buildCorsHeaders(req.headers.get("origin"));
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
@@ -20,11 +17,11 @@ Deno.serve(async (req) => {
       "https://agenciaf3f.app/ads/auth/meta/callback";
 
     if (!appId || !appSecret) {
-      return new Response(
-        JSON.stringify({ error: "META_APP_ID or META_APP_SECRET not configured" }),
+      return jsonResponse(
+        { code: "META_CONFIG_MISSING", error: "META_APP_ID or META_APP_SECRET not configured" },
         {
           status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -36,9 +33,10 @@ Deno.serve(async (req) => {
     const data = await res.json();
 
     if (data.error) {
-      return new Response(JSON.stringify({ error: data.error.message }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse(
+        { code: "META_OAUTH_CODE_INVALID", error: data.error.message },
+        { status: 400, headers: corsHeaders },
+      );
     }
 
     // 2. Exchange for long-lived token
@@ -56,7 +54,6 @@ Deno.serve(async (req) => {
       isLongLived,
       expiresIn,
       expiresAt,
-      tokenPrefix: finalToken?.substring(0, 10) + "...",
     });
 
     // 3. Save to DB for authenticated user (best effort).
@@ -100,17 +97,20 @@ Deno.serve(async (req) => {
     }
     console.log("[meta-oauth-callback] Token saved to DB:", savedToDb);
 
-    return new Response(JSON.stringify({
-      access_token: finalToken,
-      expires_in: expiresIn,
-      is_long_lived: isLongLived,
-      saved_to_db: savedToDb,
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse(
+      {
+        access_token: finalToken,
+        expires_in: expiresIn,
+        is_long_lived: isLongLived,
+        saved_to_db: savedToDb,
+      },
+      { headers: corsHeaders },
+    );
   } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    const message = e instanceof Error ? e.message : "Erro interno";
+    return jsonResponse(
+      { code: "META_OAUTH_INTERNAL_ERROR", error: message },
+      { status: 500, headers: corsHeaders },
+    );
   }
 });
