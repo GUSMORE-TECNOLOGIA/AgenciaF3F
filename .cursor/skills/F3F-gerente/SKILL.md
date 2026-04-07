@@ -7,13 +7,13 @@ description: "Orchestrator of the F3F (AgenciaF3F) skills ecosystem. Knows the s
 
 Você é a **skill orquestradora** do projeto AgenciaF3F (F3F). Sua função é fazer com que **todas as outras skills funcionem em sintonia e harmonia**, para que nada dê errado: direcionar a tarefa certa à skill certa, definir a **ordem** quando várias skills forem necessárias e evitar que uma skill invada a responsabilidade de outra.
 
-**Fonte de verdade:** mapa em [.context/docs/skills-map.md](.context/docs/skills-map.md). Skills ativas no Cursor estão em `.cursor/skills/` (F3F-gerente, F3F-supabase-data-engineer, F3F-auth-rotas, F3F-entidades-centrais, F3F-novo-modulo, F3F-github-vercel, F3F-backend, F3F-integracoes-vinculos, F3F-documentacao, F3F-organizar-repositorio, F3F-limpeza-codigo, F3F-frontend, F3F-componentes, F3F-qa-tester, F3F-security-performance, F3F-ux-designer, F3F-debugger-erros, F3F-consultoria-processos, F3F-migracao-legado). Durante a migração das pastas, algumas skills podem ainda estar em pastas `sgt-*` até serem adaptadas.
+**Fonte de verdade:** mapa em [.context/docs/skills-map.md](.context/docs/skills-map.md). Skills ativas no Cursor estão em `.cursor/skills/` (F3F-gerente, F3F-supabase-data-engineer, F3F-auth-rotas, F3F-entidades-centrais, F3F-novo-modulo, F3F-github-vercel, F3F-backend, F3F-integracoes-vinculos, F3F-documentacao, F3F-organizar-repositorio, F3F-limpeza-codigo, F3F-frontend, F3F-componentes, F3F-qa-tester, F3F-security-performance, F3F-ux-designer, F3F-debugger-erros, F3F-consultoria-processos, F3F-migracao-legado, F3F-relatorio). Durante a migração das pastas, algumas skills podem ainda estar em pastas `sgt-*` até serem adaptadas.
 
 ---
 
 ## 1. Conhecer o mapa de skills
 
-Consulte **`.context/docs/skills-map.md`** para a lista completa e a tabela "Quando usar cada skill". As 19 skills F3F são:
+Consulte **`.context/docs/skills-map.md`** para a lista completa e a tabela "Quando usar cada skill". As skills F3F estão no mapa (inclui **F3F-relatorio** para auditoria pós-feature); a tabela abaixo resume as principais:
 
 | Skill | Responsabilidade resumida |
 |-------|---------------------------|
@@ -35,6 +35,7 @@ Consulte **`.context/docs/skills-map.md`** para a lista completa e a tabela "Qua
 | **Debugger / Especialista em Erros** | RCA, troubleshooting-log, regressão (QA). Analisa e corrige erros; registra no log. |
 | **Consultoria / Analista de Processos** | Ponte negócio→sistema; requisitos, campos, fluxos. Primeira para ideia bruta; não implementa. |
 | **Migração e Tradução de Legado** | Analisa legado, gera Mapa de Tradução (De→Para F3F), orquestra migração; desduplicação. Delega às outras skills. |
+| **F3F-relatorio** | Relatório pós-feature por skills (notas, riscos, top 5, ordem Dados→Docs). Não implementa; produz parecer. |
 
 Detalhes de "quando usar" e **ordem em tarefas multi-skill** estão no [reference.md](reference.md).
 

@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Input } from "@/modules/ads/ui/input";
+import { Input } from "@/components/ui/input";
 import { Search, Check, ChevronDown } from "lucide-react";
 
 interface Option {

@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/modules/ads/ui/card";
-import { Input } from "@/modules/ads/ui/input";
-import { Label } from "@/modules/ads/ui/label";
-import { Badge } from "@/modules/ads/ui/badge";
-import { Button } from "@/modules/ads/ui/button";
-import { Separator } from "@/modules/ads/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { MapPin, X, Search, Loader2, Plus, Minus } from "lucide-react";
 import { searchLocations, type LocationResult } from "@/modules/ads/services/metaApi";
 

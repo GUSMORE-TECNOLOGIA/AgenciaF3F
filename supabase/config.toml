@@ -6,47 +6,47 @@ project_id = "rhnkffeyspymjpellmnd"
 verify_jwt = false
 
 [functions.meta-oauth-callback]
-verify_jwt = false
+verify_jwt = true
 
 # Demais funções: cliente envia Authorization (sessão) quando aplicável; body pode incluir access_token Meta.
 [functions.meta-ad-accounts]
-verify_jwt = false
+verify_jwt = true
 
 [functions.meta-audiences]
-verify_jwt = false
+verify_jwt = true
 
 [functions.meta-publish-validate]
-verify_jwt = false
+verify_jwt = true
 
 [functions.meta-publish]
-verify_jwt = false
+verify_jwt = true
 
 [functions.meta-status]
-verify_jwt = false
+verify_jwt = true
 
 [functions.meta-validate-creative]
-verify_jwt = false
+verify_jwt = true
 
 [functions.meta-whatsapp-numbers]
-verify_jwt = false
+verify_jwt = true
 
 [functions.meta-campaigns]
-verify_jwt = false
+verify_jwt = true
 
 [functions.meta-location-search]
-verify_jwt = false
+verify_jwt = true
 
 [functions.meta-campaign-diagnostic]
-verify_jwt = false
+verify_jwt = true
 
 [functions.meta-adset-diff]
-verify_jwt = false
+verify_jwt = true
 
 [functions.meta-fase1-diagnostic]
-verify_jwt = false
+verify_jwt = true
 
 [functions.meta-fase3-diagnostic]
-verify_jwt = false
+verify_jwt = true
 
 # Funções já existentes no F3F (manter padrão explícito)
 [functions.admin-update-user-password]

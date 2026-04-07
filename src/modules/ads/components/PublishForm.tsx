@@ -4,16 +4,16 @@ import {
   WhatsAppMessages,
   validateFase3Fields as validateFase3FieldsHelper,
 } from "@/modules/ads/components/Fase3Components";
-import { Button } from "@/modules/ads/ui/button";
-import { Input } from "@/modules/ads/ui/input";
-import { Label } from "@/modules/ads/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/modules/ads/ui/select";
-import { Card } from "@/modules/ads/ui/card";
-import { Separator } from "@/modules/ads/ui/separator";
-import { Checkbox } from "@/modules/ads/ui/checkbox";
-import { Badge } from "@/modules/ads/ui/badge";
+} from "@/components/ui/select";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   LogIn, Settings2, Send, CheckCircle2, Loader2, Copy, AlertTriangle, Unplug,
@@ -26,18 +26,20 @@ import {
   fetchWhatsAppNumbers, fetchIgAccountsForAdAccount, disconnectMeta,
   runCampaignDiagnostic,
 } from "@/modules/ads/services/metaApi";
+import type {
+  AdAccount,
+  Audience,
+  Campaign,
+  PublishResponse as MetaPublishResponse,
+  WhatsAppNumber,
+} from "@/modules/ads/types/meta-api";
 import { generateCampaignName, generateAdsetName } from "@/modules/ads/lib/naming";
 import SearchableSelect from "@/modules/ads/components/SearchableSelect";
 import type { LocationItem } from "@/modules/ads/components/LocationSelector";
-import { RadioGroup, RadioGroupItem } from "@/modules/ads/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/services/supabase";
 
-interface AdAccount { id: string; name: string }
-interface Audience { id: string; name: string; type: "custom" | "saved"; targeting_spec?: any }
-interface Campaign { id: string; name: string; status: string; objective: string }
-interface WhatsAppNumber { id: string; display: string; phone: string; page_id: string; page_name: string }
 interface MessageTemplate { id: string; name: string; greeting: string; ready_message: string }
-interface PublishResult { ok?: boolean; campaign_id?: string; adset_id?: string; ad_id?: string; creative_id?: string; error?: string; step?: string; error_message?: string; error_code?: number | null; error_subcode?: number | null; error_user_msg?: string; error_user_title?: string; raw_error?: any; logs?: { step: string; status: string; ts: string; detail?: string }[]; adsets_created?: number; ads_created?: number; warning?: boolean }
 interface ErrorDetails { message?: string; error_user_title?: string; error_user_msg?: string; code?: number | null; error_subcode?: number | null; error_data?: any }
 interface ValidationResult { valid: boolean; checks?: { label: string; ok: boolean; detail: string }[]; error?: string; error_details?: ErrorDetails; min_budget?: number | null }
 
@@ -111,7 +113,7 @@ export default function PublishForm() {
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [validatedPayload, setValidatedPayload] = useState<Record<string, unknown> | null>(null);
   const [minBudget, setMinBudget] = useState<number | null>(null);
-  const [publishResult, setPublishResult] = useState<PublishResult | null>(null);
+  const [publishResult, setPublishResult] = useState<MetaPublishResponse | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
   const [validatingCreative, setValidatingCreative] = useState(false);
   const [diagnosticResult, setDiagnosticResult] = useState<any>(null);
@@ -892,11 +894,11 @@ export default function PublishForm() {
         else toast.error(`Falha ao publicar (${stepLabel})`);
       }
     } catch (err: unknown) {
-      let parsed: PublishResult | null = null;
+      let parsed: MetaPublishResponse | null = null;
       if (err && typeof err === "object" && "context" in err) {
         try {
           const ctx = (err as any).context;
-          if (ctx && typeof ctx === "object") parsed = ctx as PublishResult;
+          if (ctx && typeof ctx === "object") parsed = ctx as MetaPublishResponse;
         } catch {
           /* context não é JSON */
         }

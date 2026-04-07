@@ -1,11 +1,11 @@
-import { Input } from "@/modules/ads/ui/input";
-import { Button } from "@/modules/ads/ui/button";
-import { Label } from "@/modules/ads/ui/label";
-import { Textarea } from "@/modules/ads/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/modules/ads/ui/select";
-import { Switch } from "@/modules/ads/ui/switch";
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   Loader2, Phone, Save, Copy, Pencil, Trash2,
 } from "lucide-react";

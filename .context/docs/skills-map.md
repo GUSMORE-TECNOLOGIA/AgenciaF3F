@@ -27,6 +27,7 @@ Lista das skills do projeto AgenciaF3F (F3F) e quando usar cada uma. Skills ativ
 | **F3F-debugger-erros** | RCA, troubleshooting-log, regressão (QA). Analisa e corrige erros; registra no log. |
 | **F3F-consultoria-processos** | Ponte negócio→sistema; requisitos, campos, fluxos. Primeira para ideia bruta; não implementa. |
 | **F3F-migracao-legado** | Analisa legado, gera Mapa de Tradução (De→Para F3F), orquestra migração; desduplicação. Delega às outras skills. |
+| **F3F-relatorio** | Relatório pós-feature: notas por skill, riscos, RLS/integrações, top 5 ações e ordem Dados→Docs. Não implementa código. |
 
 ---
 
@@ -52,6 +53,7 @@ Lista das skills do projeto AgenciaF3F (F3F) e quando usar cada uma. Skills ativ
 | Erro, bug, "não funciona"; causa raiz; registrar solução | **Debugger / Especialista em Erros** | QA (regressão); Supabase/Backend/Frontend (se causa for de outra skill). |
 | Ideia bruta de negócio, processo novo, dor do usuário | **Consultoria / Analista de Processos** | Entidades/Integrações/UX/Backend/Supabase/Frontend (implementar conforme requisitos). |
 | Trazer sistema legado para o F3F; migrar sistema antigo | **Migração e Tradução de Legado** | Mapa de Tradução primeiro; depois Entidades → Supabase → Auth → Backend → UX/Frontend. |
+| Auditoria / relatório de feature por skills; governança pós-merge | **F3F-relatorio** | Invocar com evidências (diff, resumo, logs); depois executar recomendações nas skills donas (Supabase, Backend, etc.). |
 
 ---
 
@@ -59,4 +61,5 @@ Lista das skills do projeto AgenciaF3F (F3F) e quando usar cada uma. Skills ativ
 
 - **AGENTS.md** (raiz): mandato, mapa do repositório, PR e commits, testes, docs.
 - **Skill gerente:** [.cursor/skills/F3F-gerente/](.cursor/skills/F3F-gerente/) — orquestração e ordem multi-skill.
+- **Relatório por skills:** [.cursor/skills/F3F-relatorio/](.cursor/skills/F3F-relatorio/) — auditoria pós-feature.
 - **Índice de documentação:** [.context/docs/README.md](./README.md). Guias operacionais em [.context/docs/guias/](./guias/).

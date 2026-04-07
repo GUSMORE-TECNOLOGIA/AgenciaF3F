@@ -11,6 +11,13 @@ Deno.serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Sessão inválida. Faça login e tente novamente." }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { code, redirect_uri } = await req.json();
     const appId = Deno.env.get("META_APP_ID");
     const appSecret = Deno.env.get("META_APP_SECRET");
@@ -59,46 +66,45 @@ Deno.serve(async (req) => {
       tokenPrefix: finalToken?.substring(0, 10) + "...",
     });
 
-    // 3. Save to DB if user is authenticated
+    // 3. Save to DB for authenticated user
     let savedToDb = false;
-    if (authHeader) {
-      const supabase = createClient(
-        Deno.env.get("SUPABASE_URL")!,
-        Deno.env.get("SUPABASE_ANON_KEY")!,
-        { global: { headers: { Authorization: authHeader } } }
-      );
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        console.log("[meta-oauth-callback] Saving token for user:", user.id);
-        // Upsert meta connection
-        const { data: existing } = await supabase
-          .from("meta_connections")
-          .select("id")
-          .eq("user_id", user.id)
-          .maybeSingle();
-
-        if (existing) {
-          const { error: updateErr } = await supabase
-            .from("meta_connections")
-            .update({ access_token: finalToken, expires_at: expiresAt })
-            .eq("id", existing.id);
-          savedToDb = !updateErr;
-          if (updateErr) console.error("[meta-oauth-callback] Update error:", updateErr);
-        } else {
-          const { error: insertErr } = await supabase
-            .from("meta_connections")
-            .insert({ user_id: user.id, access_token: finalToken, expires_at: expiresAt });
-          savedToDb = !insertErr;
-          if (insertErr) console.error("[meta-oauth-callback] Insert error:", insertErr);
-        }
-        console.log("[meta-oauth-callback] Token saved to DB:", savedToDb);
-      } else {
-        console.warn("[meta-oauth-callback] No user found from auth header");
-      }
-    } else {
-      console.warn("[meta-oauth-callback] No auth header - token NOT saved to DB");
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Usuário não autenticado." }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
+
+    console.log("[meta-oauth-callback] Saving token for user:", user.id);
+    // Upsert meta connection
+    const { data: existing } = await supabase
+      .from("meta_connections")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (existing) {
+      const { error: updateErr } = await supabase
+        .from("meta_connections")
+        .update({ access_token: finalToken, expires_at: expiresAt })
+        .eq("id", existing.id);
+      savedToDb = !updateErr;
+      if (updateErr) console.error("[meta-oauth-callback] Update error:", updateErr);
+    } else {
+      const { error: insertErr } = await supabase
+        .from("meta_connections")
+        .insert({ user_id: user.id, access_token: finalToken, expires_at: expiresAt });
+      savedToDb = !insertErr;
+      if (insertErr) console.error("[meta-oauth-callback] Insert error:", insertErr);
+    }
+    console.log("[meta-oauth-callback] Token saved to DB:", savedToDb);
 
     return new Response(JSON.stringify({
       access_token: finalToken,

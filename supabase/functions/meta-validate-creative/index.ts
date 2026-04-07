@@ -43,6 +43,13 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ ok: false, error: "Sessão inválida", timings }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { access_token, ad_account_id, creative_link, creative_type, ig_account_id } = await req.json();
 
     if (!access_token || !creative_link) {

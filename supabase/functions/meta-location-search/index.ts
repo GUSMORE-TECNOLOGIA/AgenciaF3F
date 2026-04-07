@@ -9,6 +9,13 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Sessão inválida", locations: [] }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { access_token, query, type } = await req.json();
     if (!access_token || !query) {
       return new Response(JSON.stringify({ error: "access_token and query required", locations: [] }), {

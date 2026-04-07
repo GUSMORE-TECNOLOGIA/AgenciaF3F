@@ -143,6 +143,14 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ ok: false, error: "Sessão inválida" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { access_token, good_ad_id, bad_ad_id, ad_account_id } = await req.json();
 
     if (!access_token || !good_ad_id || !bad_ad_id) {

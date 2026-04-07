@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Settings2 } from 'lucide-react'
 
 import PublishForm from '@/modules/ads/components/PublishForm'
-import { Button } from '@/modules/ads/ui/button'
+import { Button } from '@/components/ui/button'
 
 export default function AdsHomePage() {
   return (

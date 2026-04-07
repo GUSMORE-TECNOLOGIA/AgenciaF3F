@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider } from './contexts/AuthContext'
@@ -28,10 +29,10 @@ import AtendimentoNovo from './pages/atendimento/AtendimentoNovo'
 import AtendimentoEdit from './pages/atendimento/AtendimentoEdit'
 import Equipe from './pages/configuracoes/Equipe'
 import Layout from './components/layout/Layout'
-import AdsLayout from './pages/ads/AdsLayout'
-import AdsHomePage from './pages/ads/AdsHomePage'
-import AdsSettingsPage from './pages/ads/AdsSettingsPage'
-import AdsMetaCallbackPage from './pages/ads/AdsMetaCallbackPage'
+const AdsLayout = lazy(() => import('./pages/ads/AdsLayout'))
+const AdsHomePage = lazy(() => import('./pages/ads/AdsHomePage'))
+const AdsSettingsPage = lazy(() => import('./pages/ads/AdsSettingsPage'))
+const AdsMetaCallbackPage = lazy(() => import('./pages/ads/AdsMetaCallbackPage'))
 
 function App() {
   return (
@@ -98,13 +99,36 @@ function App() {
               path="ads"
               element={
                 <ModuleGuard modulo="ads" acao="visualizar">
-                  <AdsLayout />
+                  <Suspense fallback={null}>
+                    <AdsLayout />
+                  </Suspense>
                 </ModuleGuard>
               }
             >
-              <Route index element={<AdsHomePage />} />
-              <Route path="configuracoes" element={<AdsSettingsPage />} />
-              <Route path="auth/meta/callback" element={<AdsMetaCallbackPage />} />
+              <Route
+                index
+                element={
+                  <Suspense fallback={null}>
+                    <AdsHomePage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="configuracoes"
+                element={
+                  <Suspense fallback={null}>
+                    <AdsSettingsPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="auth/meta/callback"
+                element={
+                  <Suspense fallback={null}>
+                    <AdsMetaCallbackPage />
+                  </Suspense>
+                }
+              />
             </Route>
           </Route>
           </Routes>

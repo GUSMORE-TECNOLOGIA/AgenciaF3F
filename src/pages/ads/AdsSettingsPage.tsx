@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react'
 import { CheckCircle2, Loader2, XCircle } from 'lucide-react'
 
 import { fetchMetaStatus } from '@/modules/ads/services/metaApi'
-import { Button } from '@/modules/ads/ui/button'
-import { Card } from '@/modules/ads/ui/card'
-import { Label } from '@/modules/ads/ui/label'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
 
 export default function AdsSettingsPage() {
   const [metaStatus, setMetaStatus] = useState<{

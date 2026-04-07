@@ -120,9 +120,9 @@ Configure estas variáveis no painel da Vercel:
 |------|---------|
 | **Front** | `src/modules/ads/`, rotas `/ads`, `/ads/configuracoes`, `/ads/auth/meta/callback` |
 | **Edge Functions** | `supabase/functions/meta-*` (OAuth, publish, validação, diagnósticos). Ver `supabase/config.toml`. |
-| **Secrets (Supabase)** | `META_APP_SECRET` (obrigatório), `META_APP_ID` (obrigatório), `META_OAUTH_REDIRECT_URI` (ex.: `https://www.agenciaf3f.app/ads/auth/meta/callback`) |
-| **Front (Vercel)** | `VITE_ADS_META_OAUTH_REDIRECT_URI` opcional; se vazio, usa `origin + /ads/auth/meta/callback` |
-| **Meta for Developers** | Valid OAuth Redirect URIs deve incluir a mesma URL de `META_OAUTH_REDIRECT_URI` |
+| **Secrets (Supabase)** | `META_APP_SECRET`, `META_APP_ID`, `META_OAUTH_REDIRECT_URI` — configurar em **Project Settings → Edge Functions → Secrets** ou `supabase secrets set`. Produção atual (domínio Ads): `https://ads.agenciaf3f.com.br/ads/auth/meta/callback` (deve ser **idêntica** à URL do app e ao app Meta). |
+| **Front (Vercel)** | `VITE_ADS_META_OAUTH_REDIRECT_URI` em **Production** e **Development** com a mesma URL do redirect (evita divergência no build). Em **Preview**, deixe vazio para usar `window.location.origin + /ads/auth/meta/callback` (cada preview usa o próprio host). |
+| **Meta for Developers** | **Facebook Login → Settings → Valid OAuth Redirect URIs:** incluir exatamente `https://ads.agenciaf3f.com.br/ads/auth/meta/callback` (e URIs de preview se testar OAuth em deploy de preview). |
 | **Permissões** | Módulo `ads` em `perfil_permissoes`; ver migration `20260406120000_ads_modulo_perfil_permissoes.sql` |
 | **Mapa de migração** | [.context/docs/migracao/mapa-traducao-adify-ads.md](./migracao/mapa-traducao-adify-ads.md) |
 

@@ -9,6 +9,13 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Sessão inválida" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { access_token, ad_account_id } = await req.json();
 
     const audiences: { id: string; name: string; type: "custom" | "saved"; targeting_spec?: any }[] = [];
