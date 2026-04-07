@@ -4,9 +4,9 @@
  */
 export function getAdsMetaOAuthRedirectUri(): string {
   const env = import.meta.env.VITE_ADS_META_OAUTH_REDIRECT_URI as string | undefined
-  if (env && env.trim().length > 0) return env.trim()
   if (typeof window !== 'undefined' && window.location?.origin) {
     return `${window.location.origin}/ads/auth/meta/callback`
   }
+  if (env && env.trim().length > 0) return env.trim()
   return 'https://agenciaf3f.app/ads/auth/meta/callback'
 }
