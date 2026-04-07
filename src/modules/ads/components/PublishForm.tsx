@@ -606,6 +606,7 @@ export default function PublishForm() {
     : `1 Campanha → ${creatives.length} Conjunto(s) → 1 Anúncio/conjunto`;
 
   const budgetLabel = distributionStructure === "CBO" ? "Orçamento da campanha (R$/dia)" : "Orçamento por conjunto (R$/dia)";
+  const hasSummaryCard = Boolean(computedCampaignName || computedAdsetName || creatives.some(c => c.name) || isFase3);
 
   const fase3Validate = (): { valid: boolean; errors: string[] } => {
     if (!isFase3) return { valid: true, errors: [] };
@@ -1045,7 +1046,7 @@ export default function PublishForm() {
       </Card>
 
       {accessToken && (
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div className={`grid gap-6 ${hasSummaryCard ? "xl:grid-cols-[minmax(0,1fr)_360px]" : ""}`}>
           <div className="space-y-6">
             <PublishFlowStepper
               steps={flow.steps}
@@ -1639,12 +1640,13 @@ export default function PublishForm() {
               canGoNext={flow.canGoNext}
               onBack={flow.goBack}
               onNext={flow.goNext}
+              isReviewStep={flow.activeStep === "review"}
             />
           </div>
 
-          <aside className="hidden xl:block">
+          {hasSummaryCard && <aside className="hidden xl:block">
             <div className="sticky top-24 space-y-4">
-              {(computedCampaignName || computedAdsetName || creatives.some(c => c.name) || isFase3) && (
+              {hasSummaryCard && (
                 <Card className="glass-card p-5 glow-primary space-y-3">
                   <Label className="font-display text-sm text-muted-foreground mb-1 block">Resumo</Label>
 
@@ -1672,17 +1674,8 @@ export default function PublishForm() {
                   </p>
                 </Card>
               )}
-
-              <Card className="glass-card p-5 space-y-2">
-                <p className="text-sm font-semibold text-muted-foreground">Critérios por etapa</p>
-                <p className="text-xs text-muted-foreground">1. Setup: conexão + conta.</p>
-                <p className="text-xs text-muted-foreground">2. Campanha: estrutura + criativos.</p>
-                <p className="text-xs text-muted-foreground">3. Público: público + orçamento.</p>
-                <p className="text-xs text-muted-foreground">4. WhatsApp: obrigatório na FASE 3.</p>
-                <p className="text-xs text-muted-foreground">5. Revisão: validar e publicar.</p>
-              </Card>
             </div>
-          </aside>
+          </aside>}
         </div>
       )}
     </div>

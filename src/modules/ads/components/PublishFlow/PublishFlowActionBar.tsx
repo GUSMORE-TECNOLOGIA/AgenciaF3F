@@ -7,9 +7,10 @@ interface PublishFlowActionBarProps {
   canGoNext: boolean
   onBack: () => void
   onNext: () => void
+  isReviewStep?: boolean
 }
 
-export function PublishFlowActionBar({ canGoBack, canGoNext, onBack, onNext }: PublishFlowActionBarProps) {
+export function PublishFlowActionBar({ canGoBack, canGoNext, onBack, onNext, isReviewStep }: PublishFlowActionBarProps) {
   return (
     <div className="sticky bottom-0 z-20 pt-2">
       <div className="glass-card border border-border/50 rounded-2xl p-4 flex items-center justify-between gap-3 backdrop-blur supports-[backdrop-filter]:bg-background/70">
@@ -22,6 +23,11 @@ export function PublishFlowActionBar({ canGoBack, canGoNext, onBack, onNext }: P
           <ArrowRight className="w-4 h-4" />
         </Button>
       </div>
+      {!isReviewStep && (
+        <p className="text-[11px] text-muted-foreground mt-2 px-1">
+          Dica: avance livremente e finalize com <strong>Validar</strong> na etapa Revisao.
+        </p>
+      )}
     </div>
   )
 }

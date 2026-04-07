@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 export type AdsFlowStepId = 'setup' | 'campaign' | 'audience' | 'fase3' | 'review'
 
@@ -28,10 +28,10 @@ export function useAdsPublishFlow(args: UseAdsPublishFlowArgs) {
       { id: 'setup', label: 'Setup', description: 'Conexao, conta e preset' },
       { id: 'campaign', label: 'Campanha', description: 'Estrutura, nomes e criativos' },
       { id: 'audience', label: 'Publico', description: 'Segmentacao, orcamento e agenda' },
-      { id: 'fase3', label: 'WhatsApp', description: 'Campos extras da FASE 3' },
+      ...(args.isFase3 ? [{ id: 'fase3', label: 'WhatsApp', description: 'Campos extras da FASE 3' } as AdsFlowStep] : []),
       { id: 'review', label: 'Revisao', description: 'Validar e publicar' },
     ],
-    [],
+    [args.isFase3],
   )
 
   const enabledByStep = useMemo<Record<AdsFlowStepId, boolean>>(
@@ -53,15 +53,20 @@ export function useAdsPublishFlow(args: UseAdsPublishFlowArgs) {
 
   const stepIndex = steps.findIndex((s) => s.id === activeStep)
 
+  useEffect(() => {
+    if (!steps.some((step) => step.id === activeStep)) {
+      setActiveStep('review')
+    }
+  }, [steps, activeStep])
+
   function goToStep(stepId: AdsFlowStepId) {
-    if (!enabledByStep[stepId]) return
+    if (!steps.some((step) => step.id === stepId)) return
     setActiveStep(stepId)
   }
 
   function goNext() {
     const next = steps[stepIndex + 1]
     if (!next) return
-    if (!enabledByStep[next.id]) return
     setActiveStep(next.id)
   }
 
@@ -78,7 +83,7 @@ export function useAdsPublishFlow(args: UseAdsPublishFlowArgs) {
     audienceTab,
     enabledByStep,
     canGoBack: stepIndex > 0,
-    canGoNext: stepIndex < steps.length - 1 && enabledByStep[steps[stepIndex + 1].id],
+    canGoNext: stepIndex < steps.length - 1,
     goToStep,
     goNext,
     goBack,

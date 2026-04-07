@@ -16,20 +16,19 @@ export function PublishFlowStepper({ steps, activeStep, enabledByStep, onStepCli
   return (
     <div className="glass-card rounded-2xl p-5 space-y-4">
       <p className="text-sm font-display font-semibold text-muted-foreground">Fluxo de publicacao</p>
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-2">
         {steps.map((step, index) => {
           const isActive = step.id === activeStep
           const isCompleted = index < activeIndex
-          const isEnabled = enabledByStep[step.id]
+          const isReady = enabledByStep[step.id]
 
           return (
             <Button
               key={step.id}
               type="button"
               variant={isActive ? 'default' : 'outline'}
-              className="h-auto min-h-16 justify-start py-3 px-4"
+              className="h-auto min-h-14 justify-start py-2.5 px-3"
               onClick={() => onStepClick(step.id)}
-              disabled={!isEnabled}
             >
               <div className="flex items-start gap-2 text-left">
                 <div className="mt-0.5">
@@ -40,14 +39,20 @@ export function PublishFlowStepper({ steps, activeStep, enabledByStep, onStepCli
                   )}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold">{step.label}</p>
-                  <p className="text-xs opacity-80">{step.description}</p>
+                  <p className="text-sm font-semibold leading-tight">{step.label}</p>
+                  <p className="text-[11px] opacity-80 leading-tight">{step.description}</p>
+                  {!isReady && (
+                    <p className="text-[10px] opacity-70 mt-0.5">Pendente</p>
+                  )}
                 </div>
               </div>
             </Button>
           )
         })}
       </div>
+      <p className="text-xs text-muted-foreground">
+        Navegacao livre entre etapas. A validacao final acontece na etapa de revisao.
+      </p>
     </div>
   )
 }
