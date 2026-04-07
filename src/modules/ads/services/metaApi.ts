@@ -24,6 +24,25 @@ function debugMetaLog(hypothesisId: string, location: string, message: string, d
   // #endregion
 }
 
+async function getAuthInvokeOptions(hypothesisId: string, location: string) {
+  const { data } = await supabase.auth.getSession()
+  const accessToken = data.session?.access_token ?? null
+  debugMetaLog(hypothesisId, location, 'resolved session for edge invoke', {
+    hasSession: Boolean(data.session),
+    hasAccessToken: Boolean(accessToken),
+  })
+
+  if (!accessToken) {
+    return {}
+  }
+
+  return {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }
+}
+
 function extractFunctionErrorMessage(error: unknown) {
   if (!error) return 'Erro desconhecido'
   if (typeof error === 'object' && error !== null) {
@@ -83,7 +102,9 @@ export async function exchangeCodeForToken(
   code: string,
   redirectUri?: string,
 ): Promise<MetaOAuthCallbackResponse> {
+  const authOptions = await getAuthInvokeOptions('H7', 'metaApi.ts:exchangeCodeForToken:getSession')
   const { data, error } = await supabase.functions.invoke('meta-oauth-callback', {
+    ...authOptions,
     body: { code, redirect_uri: redirectUri ?? getAdsMetaOAuthRedirectUri() },
   })
   if (error) {
@@ -102,7 +123,9 @@ export async function exchangeCodeForToken(
 
 export async function fetchMetaStatus(options?: { forceVerify?: boolean }): Promise<MetaStatusResponse> {
   const payload = options?.forceVerify ? { force_verify: true } : undefined
+  const authOptions = await getAuthInvokeOptions('H7', 'metaApi.ts:fetchMetaStatus:getSession')
   const { data, error } = await supabase.functions.invoke('meta-status', {
+    ...authOptions,
     body: payload,
   })
   if (error) {
