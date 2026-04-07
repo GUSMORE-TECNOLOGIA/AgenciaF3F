@@ -1,6 +1,7 @@
 import { supabase } from '@/services/supabase'
 import { getAdsMetaOAuthRedirectUri } from '@/modules/ads/config'
 import { deleteCurrentUserMetaConnection } from '@/modules/ads/repositories/metaConnectionRepository'
+import { fetchCurrentUserMetaConnection } from '@/modules/ads/repositories/metaConnectionRepository'
 import type {
   AdAccount,
   Audience,
@@ -67,6 +68,51 @@ async function diagnoseMetaStatus401() {
     connError: connError?.message ?? null,
     connErrorCode: connError?.code ?? null,
   })
+}
+
+async function fallbackMetaStatusFromDb(options?: { forceVerify?: boolean }): Promise<MetaStatusResponse> {
+  const connection = await fetchCurrentUserMetaConnection()
+
+  if (!connection?.access_token) {
+    debugMetaLog('H10', 'metaApi.ts:fallbackMetaStatusFromDb:noConnection', 'db fallback found no connection', {
+      forceVerify: Boolean(options?.forceVerify),
+    })
+    return {
+      connected: false,
+      reason: 'no_connection',
+      error: 'Sem conexão Meta persistida para o usuário.',
+    }
+  }
+
+  const expiresAt = connection.expires_at
+  const expiresDate = expiresAt ? new Date(expiresAt) : null
+  const isExpired = Boolean(expiresDate && expiresDate.getTime() < Date.now())
+  if (isExpired) {
+    debugMetaLog('H10', 'metaApi.ts:fallbackMetaStatusFromDb:expired', 'db fallback found expired token', {
+      forceVerify: Boolean(options?.forceVerify),
+      hasExpiresAt: Boolean(expiresAt),
+    })
+    return {
+      connected: false,
+      reason: 'expired',
+      error: 'Token Meta expirado.',
+      expires_at: expiresAt ?? undefined,
+    }
+  }
+
+  const sevenDaysMs = 7 * 24 * 60 * 60 * 1000
+  const expiresSoon = Boolean(expiresDate && (expiresDate.getTime() - Date.now()) < sevenDaysMs)
+  debugMetaLog('H10', 'metaApi.ts:fallbackMetaStatusFromDb:connected', 'db fallback resolved connected status', {
+    forceVerify: Boolean(options?.forceVerify),
+    hasExpiresAt: Boolean(expiresAt),
+    expiresSoon,
+  })
+  return {
+    connected: true,
+    access_token: connection.access_token,
+    expires_at: expiresAt ?? undefined,
+    expires_soon: expiresSoon,
+  }
 }
 
 function extractFunctionErrorMessage(error: unknown) {
@@ -167,11 +213,7 @@ export async function fetchMetaStatus(options?: { forceVerify?: boolean }): Prom
         forceVerify: Boolean(options?.forceVerify),
       })
       await diagnoseMetaStatus401()
-      return {
-        connected: false,
-        reason: 'no_auth',
-        error: 'Sessão não autorizada para consultar status Meta.',
-      }
+      return await fallbackMetaStatusFromDb(options)
     }
 
     throw new Error(extractFunctionErrorMessage(error))
