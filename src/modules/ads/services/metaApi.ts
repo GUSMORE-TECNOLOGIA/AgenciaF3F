@@ -43,6 +43,32 @@ async function getAuthInvokeOptions(hypothesisId: string, location: string) {
   }
 }
 
+async function diagnoseMetaStatus401() {
+  const { data: userData, error: userError } = await supabase.auth.getUser()
+  const userId = userData.user?.id ?? null
+  debugMetaLog('H8', 'metaApi.ts:diagnoseMetaStatus401:getUser', 'post-401 user probe', {
+    hasUser: Boolean(userData.user),
+    userIdSuffix: userId ? userId.slice(-8) : null,
+    userError: userError?.message ?? null,
+  })
+
+  if (!userId) return
+
+  const { data: conn, error: connError } = await supabase
+    .from('meta_connections')
+    .select('id, user_id, expires_at')
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  debugMetaLog('H9', 'metaApi.ts:diagnoseMetaStatus401:metaConnections', 'post-401 connection probe', {
+    hasConnectionRow: Boolean(conn),
+    connectionUserSuffix: conn?.user_id ? String(conn.user_id).slice(-8) : null,
+    hasExpiresAt: Boolean(conn?.expires_at),
+    connError: connError?.message ?? null,
+    connErrorCode: connError?.code ?? null,
+  })
+}
+
 function extractFunctionErrorMessage(error: unknown) {
   if (!error) return 'Erro desconhecido'
   if (typeof error === 'object' && error !== null) {
@@ -140,6 +166,7 @@ export async function fetchMetaStatus(options?: { forceVerify?: boolean }): Prom
       debugMetaLog('H2', 'metaApi.ts:fetchMetaStatus:handled401', 'meta-status 401 mapped to disconnected state', {
         forceVerify: Boolean(options?.forceVerify),
       })
+      await diagnoseMetaStatus401()
       return {
         connected: false,
         reason: 'no_auth',
