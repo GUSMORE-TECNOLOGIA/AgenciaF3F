@@ -1045,7 +1045,7 @@ export default function PublishForm() {
       </Card>
 
       {accessToken && (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className="space-y-6">
             <PublishFlowStepper
               steps={flow.steps}
@@ -1642,44 +1642,44 @@ export default function PublishForm() {
             />
           </div>
 
-          <aside className="hidden lg:block">
-            <div className="sticky top-24 space-y-3">
+          <aside className="hidden xl:block">
+            <div className="sticky top-24 space-y-4">
               {(computedCampaignName || computedAdsetName || creatives.some(c => c.name) || isFase3) && (
-                <Card className="glass-card p-4 glow-primary space-y-2">
-                  <Label className="font-display text-xs text-muted-foreground mb-1 block">Resumo</Label>
+                <Card className="glass-card p-5 glow-primary space-y-3">
+                  <Label className="font-display text-sm text-muted-foreground mb-1 block">Resumo</Label>
 
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="outline" className="text-[10px]">{selectedPreset.label}</Badge>
-                    <Badge variant="outline" className="text-[10px]">{distributionStructure}</Badge>
+                    <Badge variant="outline" className="text-xs">{selectedPreset.label}</Badge>
+                    <Badge variant="outline" className="text-xs">{distributionStructure}</Badge>
                   </div>
 
                   {campaignStructure === "new" && computedCampaignName && (
-                    <p className="text-xs font-mono text-primary break-all"><strong>Campanha:</strong> {computedCampaignName}</p>
+                    <p className="text-sm font-mono text-primary break-all"><strong>Campanha:</strong> {computedCampaignName}</p>
                   )}
                   {campaignStructure === "existing" && selectedCampaign && (
-                    <p className="text-xs font-mono text-muted-foreground break-all"><strong>Campanha:</strong> {campaigns.find(c => c.id === selectedCampaign)?.name || selectedCampaign}</p>
+                    <p className="text-sm font-mono text-muted-foreground break-all"><strong>Campanha:</strong> {campaigns.find(c => c.id === selectedCampaign)?.name || selectedCampaign}</p>
                   )}
-                  {computedAdsetName && <p className="text-xs font-mono text-primary break-all"><strong>Conjunto:</strong> {computedAdsetName}</p>}
-                  {selectedAudienceName && <p className="text-[10px] text-muted-foreground"><strong>Público:</strong> {selectedAudienceName}</p>}
-                  {!!budget && <p className="text-[10px] text-muted-foreground"><strong>Orçamento:</strong> R$ {budget}</p>}
-                  {isFase3 && selectedWhatsapp && <p className="text-[10px] text-muted-foreground"><strong>WhatsApp:</strong> {selectedWhatsapp.display}</p>}
+                  {computedAdsetName && <p className="text-sm font-mono text-primary break-all"><strong>Conjunto:</strong> {computedAdsetName}</p>}
+                  {selectedAudienceName && <p className="text-xs text-muted-foreground"><strong>Público:</strong> {selectedAudienceName}</p>}
+                  {!!budget && <p className="text-xs text-muted-foreground"><strong>Orçamento:</strong> R$ {budget}</p>}
+                  {isFase3 && selectedWhatsapp && <p className="text-xs text-muted-foreground"><strong>WhatsApp:</strong> {selectedWhatsapp.display}</p>}
                   {scheduleEnabled && scheduleDate && scheduleTime && (
-                    <p className="text-[10px] text-muted-foreground"><strong>Início:</strong> {scheduleDate} às {scheduleTime}</p>
+                    <p className="text-xs text-muted-foreground"><strong>Início:</strong> {scheduleDate} às {scheduleTime}</p>
                   )}
                   <Separator className="opacity-20" />
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     {validationResult?.valid ? "Validação aprovada." : "Valide antes de publicar."}
                   </p>
                 </Card>
               )}
 
-              <Card className="glass-card p-4 space-y-2">
-                <p className="text-xs font-semibold text-muted-foreground">Critérios por etapa</p>
-                <p className="text-[10px] text-muted-foreground">1. Setup: conexão + conta.</p>
-                <p className="text-[10px] text-muted-foreground">2. Campanha: estrutura + criativos.</p>
-                <p className="text-[10px] text-muted-foreground">3. Público: público + orçamento.</p>
-                <p className="text-[10px] text-muted-foreground">4. WhatsApp: obrigatório na FASE 3.</p>
-                <p className="text-[10px] text-muted-foreground">5. Revisão: validar e publicar.</p>
+              <Card className="glass-card p-5 space-y-2">
+                <p className="text-sm font-semibold text-muted-foreground">Critérios por etapa</p>
+                <p className="text-xs text-muted-foreground">1. Setup: conexão + conta.</p>
+                <p className="text-xs text-muted-foreground">2. Campanha: estrutura + criativos.</p>
+                <p className="text-xs text-muted-foreground">3. Público: público + orçamento.</p>
+                <p className="text-xs text-muted-foreground">4. WhatsApp: obrigatório na FASE 3.</p>
+                <p className="text-xs text-muted-foreground">5. Revisão: validar e publicar.</p>
               </Card>
             </div>
           </aside>

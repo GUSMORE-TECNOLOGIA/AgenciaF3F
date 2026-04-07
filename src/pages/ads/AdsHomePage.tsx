@@ -9,17 +9,17 @@ const PublishForm = lazy(() => import('@/modules/ads/components/PublishForm'))
 export default function AdsHomePage() {
   return (
     <div className="bg-background text-foreground">
-      <div className="mx-auto max-w-2xl px-4 py-6">
-        <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-6">
+        <div className="mb-8 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="font-display text-2xl font-bold">
+            <h1 className="font-display text-2xl font-bold tracking-tight lg:text-3xl">
               Publicar <span className="text-gradient">Anúncio</span>
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground lg:text-base">
               Meta Ads (Fase 1 e Fase 3) integrado ao login da agência
             </p>
           </div>
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="outline" size="sm" className="h-9 px-4" asChild>
             <Link to="/ads/configuracoes" className="gap-2">
               <Settings2 className="h-4 w-4" />
               Configurações

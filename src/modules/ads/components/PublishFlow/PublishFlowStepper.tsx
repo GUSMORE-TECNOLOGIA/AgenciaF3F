@@ -14,9 +14,9 @@ export function PublishFlowStepper({ steps, activeStep, enabledByStep, onStepCli
   const activeIndex = steps.findIndex((step) => step.id === activeStep)
 
   return (
-    <div className="glass-card rounded-xl p-4 space-y-3">
-      <p className="text-xs font-display font-semibold text-muted-foreground">Fluxo de publicacao</p>
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+    <div className="glass-card rounded-2xl p-5 space-y-4">
+      <p className="text-sm font-display font-semibold text-muted-foreground">Fluxo de publicacao</p>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
         {steps.map((step, index) => {
           const isActive = step.id === activeStep
           const isCompleted = index < activeIndex
@@ -27,7 +27,7 @@ export function PublishFlowStepper({ steps, activeStep, enabledByStep, onStepCli
               key={step.id}
               type="button"
               variant={isActive ? 'default' : 'outline'}
-              className="h-auto justify-start py-2 px-3"
+              className="h-auto min-h-16 justify-start py-3 px-4"
               onClick={() => onStepClick(step.id)}
               disabled={!isEnabled}
             >
@@ -36,12 +36,12 @@ export function PublishFlowStepper({ steps, activeStep, enabledByStep, onStepCli
                   {isCompleted ? (
                     <CheckCircle2 className="w-4 h-4 text-success" />
                   ) : (
-                    <span className="text-xs font-semibold">{index + 1}</span>
+                    <span className="text-sm font-semibold">{index + 1}</span>
                   )}
                 </div>
                 <div>
-                  <p className="text-xs font-semibold">{step.label}</p>
-                  <p className="text-[10px] opacity-80">{step.description}</p>
+                  <p className="text-sm font-semibold">{step.label}</p>
+                  <p className="text-xs opacity-80">{step.description}</p>
                 </div>
               </div>
             </Button>

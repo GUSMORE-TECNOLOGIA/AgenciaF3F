@@ -8,14 +8,14 @@ interface PublishFlowTabsProps<T extends string> {
 
 export function PublishFlowTabs<T extends string>({ tabs, activeTab, onTabChange }: PublishFlowTabsProps<T>) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="glass-card rounded-xl p-2 inline-flex flex-wrap gap-2">
       {tabs.map((tab) => (
         <Button
           key={tab.id}
           type="button"
           size="sm"
           variant={tab.id === activeTab ? 'default' : 'outline'}
-          className="text-xs"
+          className="min-w-28 text-sm"
           onClick={() => onTabChange(tab.id)}
         >
           {tab.label}
