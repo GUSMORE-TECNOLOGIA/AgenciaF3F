@@ -39,6 +39,10 @@ import type { LocationItem } from "@/modules/ads/components/LocationSelector";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/services/supabase";
 import { useLocation } from "react-router-dom";
+import { useAdsPublishFlow } from "@/modules/ads/hooks/useAdsPublishFlow";
+import { PublishFlowStepper } from "@/modules/ads/components/PublishFlow/PublishFlowStepper";
+import { PublishFlowTabs } from "@/modules/ads/components/PublishFlow/PublishFlowTabs";
+import { PublishFlowActionBar } from "@/modules/ads/components/PublishFlow/PublishFlowActionBar";
 
 interface MessageTemplate { id: string; name: string; greeting: string; ready_message: string }
 interface ErrorDetails { message?: string; error_user_title?: string; error_user_msg?: string; code?: number | null; error_subcode?: number | null; error_data?: any }
@@ -630,6 +634,22 @@ export default function PublishForm() {
     return !!(identityPageId && identityIgActorId && !isNaN(Number(identityIgActorId)));
   };
 
+  const hasCampaignContext =
+    (campaignStructure === "existing" && !!selectedCampaign) ||
+    (campaignStructure === "new" && !!campaignNameInput.trim() && creativesValid());
+
+  const hasFase3RequiredFields = !isFase3 || (!!selectedWhatsappId && (!!selectedTemplateId || (!!greetingText.trim() && !!readyMessage.trim())));
+
+  const flow = useAdsPublishFlow({
+    isFase3,
+    hasAccessToken: !!accessToken,
+    hasSelectedAccount: !!selectedAccount,
+    hasSelectedCampaignContext: hasCampaignContext,
+    hasAudience: !!selectedAudience,
+    hasBudget: Number(budget) > 0,
+    hasFase3RequiredFields,
+  });
+
   const handleValidate = async () => {
     const t0 = performance.now();
     addLog("⏱️ [validate] Início da validação completa");
@@ -1025,603 +1045,645 @@ export default function PublishForm() {
       </Card>
 
       {accessToken && (
-        <>
-          {/* Ad Account */}
-          <Card className="glass-card p-6 space-y-4">
-            <Label className="font-display font-semibold text-sm">Conta de Anúncios ({adAccounts.length})</Label>
-            <SearchableSelect
-              options={adAccounts}
-              value={selectedAccount}
-              onValueChange={setSelectedAccount}
-              placeholder="Selecione a conta"
-              searchPlaceholder="Pesquisar por nome ou ID..."
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="space-y-6">
+            <PublishFlowStepper
+              steps={flow.steps}
+              activeStep={flow.activeStep}
+              enabledByStep={flow.enabledByStep}
+              onStepClick={flow.goToStep}
             />
-          </Card>
 
-          {/* Identity */}
-          {selectedAccount && (
-            <Card className="glass-card p-6 space-y-3">
-              <Label className="font-display font-semibold text-sm">Identidade da Conta</Label>
-              {identityLoading ? (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Loader2 className="w-4 h-4 animate-spin" /> Carregando identidade...
-                </div>
-              ) : identityLoaded ? (
-                identityError && !identityIgActorId ? (
-                  <div className="bg-destructive/10 border border-destructive/30 rounded-md p-3">
-                    <p className="text-xs text-destructive font-medium">
-                      Conta sem Instagram Business válido para FASE 1.
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-1">{identityError}</p>
-                  </div>
-                ) : (
-                  <div className="bg-muted/50 rounded-md p-3 space-y-1">
-                    {identityPageName && (
-                      <p className="text-xs"><strong>Página:</strong> {identityPageName}</p>
-                    )}
-                    {identityIgUsername && (
-                      <p className="text-xs"><strong>Instagram:</strong> @{identityIgUsername}</p>
-                    )}
-                    {identityIgActorId && (
-                      <p className="text-xs font-mono text-muted-foreground"><strong>IG Actor ID:</strong> {identityIgActorId}</p>
-                    )}
-                    {!identityIgActorId && (
-                      <p className="text-xs text-warning">⚠️ Sem Instagram Business vinculado (FASE 1 bloqueada)</p>
-                    )}
-                  </div>
-                )
-              ) : null}
-            </Card>
-          )}
-
-          <Card className="glass-card p-6 space-y-4">
-            <Label className="font-display font-semibold text-sm">Preset da Campanha</Label>
-            <Select value={preset} onValueChange={(v) => setPreset(v as PresetId)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o preset" />
-              </SelectTrigger>
-              <SelectContent>
-                {PRESETS.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              Objetivo: {selectedPreset.objective} | Otimização: {selectedPreset.optimization_goal} | Destino: {selectedPreset.destination_type}
-            </p>
-          </Card>
-
-          {/* Distribution Structure (ABO / CBO) */}
-          <Card className="glass-card p-6 space-y-4">
-            <div className="flex items-center gap-2">
-              <Layers className="w-4 h-4 text-primary" />
-              <Label className="font-display font-semibold text-sm">Estrutura de Distribuição</Label>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant={distributionStructure === "ABO" ? "default" : "outline"}
-                size="sm"
-                className="flex-1"
-                onClick={() => setDistributionStructure("ABO")}
-              >
-                ABO
-              </Button>
-              <Button
-                variant={distributionStructure === "CBO" ? "default" : "outline"}
-                size="sm"
-                className="flex-1"
-                onClick={() => setDistributionStructure("CBO")}
-              >
-                CBO
-              </Button>
-            </div>
-            <div className="bg-muted/50 rounded-md p-3 space-y-1">
-              <p className="text-xs font-medium text-foreground">
-                {distributionStructure === "ABO" ? "Ad Set Budget Optimization" : "Campaign Budget Optimization"}
-              </p>
-              <p className="text-[10px] text-muted-foreground">
-                {distributionStructure === "ABO"
-                  ? "Orçamento no nível do conjunto. Cada criativo gera 1 conjunto com 1 anúncio."
-                  : "Orçamento no nível da campanha. Todos os criativos ficam em 1 conjunto como anúncios separados."}
-              </p>
-              <Badge variant="outline" className="text-[10px] mt-1">{structureDescription}</Badge>
-            </div>
-          </Card>
-
-          {/* Campaign Structure */}
-          <Card className="glass-card p-6 space-y-4">
-            <Label className="font-display font-semibold text-sm">Campanha</Label>
-            <RadioGroup value={campaignStructure} onValueChange={(v) => {
-              setCampaignStructure(v as CampaignStructure);
-              if (v === "existing" && campaigns.length === 0) loadCampaigns();
-            }}>
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="new" id="camp-new" />
-                <Label htmlFor="camp-new" className="flex items-center gap-2 text-sm cursor-pointer">
-                  <Plus className="w-4 h-4" /> Criar nova campanha
-                </Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="existing" id="camp-existing" />
-                <Label htmlFor="camp-existing" className="flex items-center gap-2 text-sm cursor-pointer">
-                  <FolderOpen className="w-4 h-4" /> Usar campanha existente
-                </Label>
-              </div>
-            </RadioGroup>
-
-            {campaignStructure === "existing" && (
-              <div className="space-y-3 pt-2">
-                {loadingCampaigns ? (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Carregando campanhas...
-                  </div>
-                ) : campaigns.length > 0 ? (
+            {flow.activeStep === "setup" && (
+              <>
+                <Card className="glass-card p-6 space-y-4">
+                  <Label className="font-display font-semibold text-sm">Conta de Anúncios ({adAccounts.length})</Label>
                   <SearchableSelect
-                    options={campaigns.map(c => ({ id: c.id, name: `${c.name} (${c.status})` }))}
-                    value={selectedCampaign}
-                    onValueChange={setSelectedCampaign}
-                    placeholder="Selecione a campanha"
-                    searchPlaceholder="Pesquisar campanha..."
+                    options={adAccounts}
+                    value={selectedAccount}
+                    onValueChange={setSelectedAccount}
+                    placeholder="Selecione a conta"
+                    searchPlaceholder="Pesquisar por nome ou ID..."
                   />
-                ) : (
-                  <p className="text-sm text-muted-foreground">Nenhuma campanha encontrada</p>
+                </Card>
+
+                {selectedAccount && (
+                  <Card className="glass-card p-6 space-y-3">
+                    <Label className="font-display font-semibold text-sm">Identidade da Conta</Label>
+                    {identityLoading ? (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Loader2 className="w-4 h-4 animate-spin" /> Carregando identidade...
+                      </div>
+                    ) : identityLoaded ? (
+                      identityError && !identityIgActorId ? (
+                        <div className="bg-destructive/10 border border-destructive/30 rounded-md p-3">
+                          <p className="text-xs text-destructive font-medium">
+                            Conta sem Instagram Business válido para FASE 1.
+                          </p>
+                          <p className="text-[10px] text-muted-foreground mt-1">{identityError}</p>
+                        </div>
+                      ) : (
+                        <div className="bg-muted/50 rounded-md p-3 space-y-1">
+                          {identityPageName && (
+                            <p className="text-xs"><strong>Página:</strong> {identityPageName}</p>
+                          )}
+                          {identityIgUsername && (
+                            <p className="text-xs"><strong>Instagram:</strong> @{identityIgUsername}</p>
+                          )}
+                          {identityIgActorId && (
+                            <p className="text-xs font-mono text-muted-foreground"><strong>IG Actor ID:</strong> {identityIgActorId}</p>
+                          )}
+                          {!identityIgActorId && (
+                            <p className="text-xs text-warning">⚠️ Sem Instagram Business vinculado (FASE 1 bloqueada)</p>
+                          )}
+                        </div>
+                      )
+                    ) : null}
+                  </Card>
                 )}
-              </div>
-            )}
-          </Card>
 
-          {/* Names */}
-          <Card className="glass-card p-6 space-y-4">
-            <Label className="font-display font-semibold text-sm">Nomes</Label>
-            {campaignStructure === "new" && (
-              <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">Nome da Campanha</Label>
-                <Input
-                  placeholder='Ex: "Campanha Tráfego - Joelho"'
-                  value={campaignNameInput}
-                  onChange={(e) => setCampaignNameInput(e.target.value)}
+                <Card className="glass-card p-6 space-y-4">
+                  <Label className="font-display font-semibold text-sm">Preset da Campanha</Label>
+                  <Select value={preset} onValueChange={(v) => setPreset(v as PresetId)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o preset" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PRESETS.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Objetivo: {selectedPreset.objective} | Otimização: {selectedPreset.optimization_goal} | Destino: {selectedPreset.destination_type}
+                  </p>
+                </Card>
+              </>
+            )}
+
+            {flow.activeStep === "campaign" && (
+              <>
+                <PublishFlowTabs
+                  tabs={[
+                    { id: "campaign", label: "Estrutura" },
+                    { id: "naming", label: "Nomes" },
+                    { id: "creatives", label: "Criativos" },
+                  ]}
+                  activeTab={flow.campaignTab}
+                  onTabChange={flow.setCampaignTab}
                 />
-              </div>
+
+                {flow.campaignTab === "campaign" && (
+                  <>
+                    <Card className="glass-card p-6 space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-primary" />
+                        <Label className="font-display font-semibold text-sm">Estrutura de Distribuição</Label>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant={distributionStructure === "ABO" ? "default" : "outline"}
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => setDistributionStructure("ABO")}
+                        >
+                          ABO
+                        </Button>
+                        <Button
+                          variant={distributionStructure === "CBO" ? "default" : "outline"}
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => setDistributionStructure("CBO")}
+                        >
+                          CBO
+                        </Button>
+                      </div>
+                      <div className="bg-muted/50 rounded-md p-3 space-y-1">
+                        <p className="text-xs font-medium text-foreground">
+                          {distributionStructure === "ABO" ? "Ad Set Budget Optimization" : "Campaign Budget Optimization"}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {distributionStructure === "ABO"
+                            ? "Orçamento no nível do conjunto. Cada criativo gera 1 conjunto com 1 anúncio."
+                            : "Orçamento no nível da campanha. Todos os criativos ficam em 1 conjunto como anúncios separados."}
+                        </p>
+                        <Badge variant="outline" className="text-[10px] mt-1">{structureDescription}</Badge>
+                      </div>
+                    </Card>
+
+                    <Card className="glass-card p-6 space-y-4">
+                      <Label className="font-display font-semibold text-sm">Campanha</Label>
+                      <RadioGroup value={campaignStructure} onValueChange={(v) => {
+                        setCampaignStructure(v as CampaignStructure);
+                        if (v === "existing" && campaigns.length === 0) loadCampaigns();
+                      }}>
+                        <div className="flex items-center gap-2">
+                          <RadioGroupItem value="new" id="camp-new" />
+                          <Label htmlFor="camp-new" className="flex items-center gap-2 text-sm cursor-pointer">
+                            <Plus className="w-4 h-4" /> Criar nova campanha
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <RadioGroupItem value="existing" id="camp-existing" />
+                          <Label htmlFor="camp-existing" className="flex items-center gap-2 text-sm cursor-pointer">
+                            <FolderOpen className="w-4 h-4" /> Usar campanha existente
+                          </Label>
+                        </div>
+                      </RadioGroup>
+
+                      {campaignStructure === "existing" && (
+                        <div className="space-y-3 pt-2">
+                          {loadingCampaigns ? (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Loader2 className="w-4 h-4 animate-spin" /> Carregando campanhas...
+                            </div>
+                          ) : campaigns.length > 0 ? (
+                            <SearchableSelect
+                              options={campaigns.map(c => ({ id: c.id, name: `${c.name} (${c.status})` }))}
+                              value={selectedCampaign}
+                              onValueChange={setSelectedCampaign}
+                              placeholder="Selecione a campanha"
+                              searchPlaceholder="Pesquisar campanha..."
+                            />
+                          ) : (
+                            <p className="text-sm text-muted-foreground">Nenhuma campanha encontrada</p>
+                          )}
+                        </div>
+                      )}
+                    </Card>
+                  </>
+                )}
+
+                {flow.campaignTab === "naming" && (
+                  <Card className="glass-card p-6 space-y-4">
+                    <Label className="font-display font-semibold text-sm">Nomes</Label>
+                    {campaignStructure === "new" && (
+                      <div className="space-y-2">
+                        <Label className="text-xs text-muted-foreground">Nome da Campanha</Label>
+                        <Input
+                          placeholder='Ex: "Campanha Tráfego - Joelho"'
+                          value={campaignNameInput}
+                          onChange={(e) => setCampaignNameInput(e.target.value)}
+                        />
+                      </div>
+                    )}
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">
+                        {distributionStructure === "ABO" ? "Prefixo do Conjunto (AdSet)" : "Nome do Conjunto (AdSet)"}
+                      </Label>
+                      <Input
+                        placeholder={distributionStructure === "ABO" ? 'Ex: "Conjunto" (será numerado)' : 'Ex: "Conjunto 01 - Público Frio"'}
+                        value={adsetNameInput}
+                        onChange={(e) => setAdsetNameInput(e.target.value)}
+                      />
+                      {distributionStructure === "ABO" && creatives.length > 1 && (
+                        <p className="text-[10px] text-muted-foreground">
+                          Cada criativo gerará um conjunto: "{adsetNameInput || "Conjunto"} 01", "{adsetNameInput || "Conjunto"} 02", etc.
+                        </p>
+                      )}
+                    </div>
+                  </Card>
+                )}
+
+                {flow.campaignTab === "creatives" && (
+                  <Card className="glass-card p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label className="font-display font-semibold text-sm">
+                        Criativos ({creatives.length})
+                      </Label>
+                      <Button variant="outline" size="sm" className="gap-1 text-xs" onClick={addCreative}>
+                        <PlusCircle className="w-3.5 h-3.5" /> Adicionar criativo
+                      </Button>
+                    </div>
+
+                    {creatives.map((cr, idx) => (
+                      <div key={cr.id} className="border border-border/50 rounded-lg p-4 space-y-3 relative">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-medium text-muted-foreground">Criativo {idx + 1}</span>
+                          {creatives.length > 1 && (
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => removeCreative(cr.id)}>
+                              <X className="w-3.5 h-3.5 text-muted-foreground" />
+                            </Button>
+                          )}
+                        </div>
+
+                        <div className="space-y-1">
+                          <Label className="text-[10px] text-muted-foreground">Nome do Anúncio</Label>
+                          <Input
+                            placeholder='Ex: "Anúncio 01 - Dor Joelho"'
+                            value={cr.name}
+                            onChange={(e) => updateCreative(cr.id, { name: e.target.value })}
+                            className="text-sm"
+                          />
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button
+                            variant={cr.type === "instagram" ? "default" : "outline"}
+                            size="sm"
+                            className="flex-1 gap-1 text-xs"
+                            onClick={() => updateCreative(cr.id, { type: "instagram", link: "" })}
+                          >
+                            <Instagram className="w-3.5 h-3.5" /> Instagram
+                          </Button>
+                          <Button
+                            variant={cr.type === "drive" ? "default" : "outline"}
+                            size="sm"
+                            className="flex-1 gap-1 text-xs"
+                            onClick={() => updateCreative(cr.id, { type: "drive", link: "" })}
+                          >
+                            <HardDrive className="w-3.5 h-3.5" /> Drive
+                          </Button>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder={cr.type === "instagram" ? "https://instagram.com/..." : "https://drive.google.com/..."}
+                            value={cr.link}
+                            onChange={(e) => updateCreative(cr.id, { link: e.target.value })}
+                            className="flex-1 text-sm"
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleValidateCreative(cr.id)}
+                            disabled={!cr.link || validatingCreative}
+                            className="shrink-0"
+                          >
+                            {validatingCreative ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                          </Button>
+                        </div>
+
+                        {cr.validation && !cr.validation.ok && (
+                          <div className="bg-destructive/10 border border-destructive/30 rounded-md p-2">
+                            <p className="text-[10px] text-destructive font-medium">{cr.validation.error}</p>
+                          </div>
+                        )}
+                        {cr.validation?.ok && (
+                          <div className="bg-success/10 border border-success/30 rounded-md p-2">
+                            <p className="text-[10px] text-success font-medium">✅ Validado</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </Card>
+                )}
+              </>
             )}
-            <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">
-                {distributionStructure === "ABO" ? "Prefixo do Conjunto (AdSet)" : "Nome do Conjunto (AdSet)"}
-              </Label>
-              <Input
-                placeholder={distributionStructure === "ABO" ? 'Ex: "Conjunto" (será numerado)' : 'Ex: "Conjunto 01 - Público Frio"'}
-                value={adsetNameInput}
-                onChange={(e) => setAdsetNameInput(e.target.value)}
-              />
-              {distributionStructure === "ABO" && creatives.length > 1 && (
-                <p className="text-[10px] text-muted-foreground">
-                  Cada criativo gerará um conjunto: "{adsetNameInput || "Conjunto"} 01", "{adsetNameInput || "Conjunto"} 02", etc.
-                </p>
-              )}
-            </div>
-          </Card>
 
-          {/* Creatives - Multi */}
-          <Card className="glass-card p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <Label className="font-display font-semibold text-sm">
-                Criativos ({creatives.length})
-              </Label>
-              <Button variant="outline" size="sm" className="gap-1 text-xs" onClick={addCreative}>
-                <PlusCircle className="w-3.5 h-3.5" /> Adicionar criativo
-              </Button>
-            </div>
+            {flow.activeStep === "audience" && (
+              <>
+                <PublishFlowTabs
+                  tabs={[
+                    { id: "audience", label: "Publico" },
+                    { id: "budget", label: "Orcamento" },
+                    { id: "schedule", label: "Agendamento" },
+                  ]}
+                  activeTab={flow.audienceTab}
+                  onTabChange={flow.setAudienceTab}
+                />
 
-            {creatives.map((cr, idx) => (
-              <div key={cr.id} className="border border-border/50 rounded-lg p-4 space-y-3 relative">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground">Criativo {idx + 1}</span>
-                  {creatives.length > 1 && (
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => removeCreative(cr.id)}>
-                      <X className="w-3.5 h-3.5 text-muted-foreground" />
+                {flow.audienceTab === "audience" && (
+                  <Card className="glass-card p-6 space-y-4">
+                    <Label className="font-display font-semibold text-sm">
+                      Público {audiences.length > 0 && `(${audiences.length})`}
+                    </Label>
+                    {loadingAudiences ? (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Loader2 className="w-4 h-4 animate-spin" /> Carregando públicos...
+                      </div>
+                    ) : audiences.length > 0 ? (
+                      <SearchableSelect
+                        options={audiences}
+                        value={selectedAudience}
+                        onValueChange={setSelectedAudience}
+                        placeholder="Selecione o público"
+                        searchPlaceholder="Pesquisar público por nome..."
+                      />
+                    ) : selectedAccount ? (
+                      <div className="flex items-center gap-2 text-sm text-warning">
+                        <AlertTriangle className="w-4 h-4" /> Nenhum público encontrado
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">Selecione uma conta primeiro</p>
+                    )}
+                  </Card>
+                )}
+
+                {flow.audienceTab === "budget" && (
+                  <Card className="glass-card p-6 space-y-4">
+                    <Label className="font-display font-semibold text-sm">{budgetLabel}</Label>
+                    <Input
+                      type="number"
+                      placeholder="50"
+                      min="1"
+                      value={budget}
+                      onChange={(e) => setBudget(e.target.value)}
+                    />
+                    {minBudget && (
+                      <p className="text-xs font-medium text-warning">
+                        Mínimo permitido pelo Meta: R$ {minBudget}
+                      </p>
+                    )}
+                    {distributionStructure === "ABO" && creatives.length > 1 && (
+                      <p className="text-[10px] text-muted-foreground">
+                        Cada conjunto terá R$ {budget || "0"}/dia × {creatives.length} conjuntos = R$ {(Number(budget || 0) * creatives.length).toFixed(2)}/dia total
+                      </p>
+                    )}
+                  </Card>
+                )}
+
+                {flow.audienceTab === "schedule" && (
+                  <Card className="glass-card p-6 space-y-4">
+                    <div className="flex items-center gap-3">
+                      <Checkbox id="schedule-toggle" checked={scheduleEnabled} onCheckedChange={(c) => setScheduleEnabled(!!c)} />
+                      <Label htmlFor="schedule-toggle" className="font-display font-semibold text-sm flex items-center gap-2 cursor-pointer">
+                        <Calendar className="w-4 h-4" /> Agendar início da campanha
+                      </Label>
+                    </div>
+                    {scheduleEnabled && (
+                      <div className="space-y-4 pt-2">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Data de início</Label>
+                            <Input type="date" value={scheduleDate} onChange={(e) => setScheduleDate(e.target.value)} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="w-3 h-3" /> Hora</Label>
+                            <Input type="time" value={scheduleTime} onChange={(e) => setScheduleTime(e.target.value)} />
+                          </div>
+                        </div>
+                        <Separator className="opacity-30" />
+                        <p className="text-[10px] text-muted-foreground">Data de término (opcional)</p>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Data de término</Label>
+                            <Input type="date" value={scheduleEndDate} onChange={(e) => setScheduleEndDate(e.target.value)} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Hora de término</Label>
+                            <Input type="time" value={scheduleEndTime} onChange={(e) => setScheduleEndTime(e.target.value)} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </Card>
+                )}
+              </>
+            )}
+
+            {flow.activeStep === "fase3" && (
+              <>
+                {isFase3 ? (
+                  <Card className="glass-card p-6 space-y-5 border-accent/30">
+                    <div className="flex items-center gap-2">
+                      <MessageCircle className="w-5 h-5 text-accent" />
+                      <Label className="font-display font-semibold text-sm">Configurações FASE 3 — WhatsApp</Label>
+                    </div>
+
+                    <WhatsAppNumberSelector
+                      numbers={whatsappNumbers}
+                      loading={loadingWhatsappNumbers}
+                      selectedId={selectedWhatsappId}
+                      onSelect={setSelectedWhatsappId}
+                    />
+
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">CTA — Call to Action</Label>
+                      <div className="bg-muted/50 border border-border rounded-md px-3 py-2">
+                        <p className="text-sm font-medium">Enviar mensagem pelo WhatsApp</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">Definido automaticamente pelo preset FASE 3</p>
+                      </div>
+                    </div>
+
+                    <WhatsAppMessages
+                      greetingText={greetingText}
+                      readyMessage={readyMessage}
+                      useCustomMessage={useCustomMessage}
+                      selectedTemplateId={selectedTemplateId}
+                      messageTemplates={messageTemplates}
+                      templateName={templateName}
+                      savingTemplate={savingTemplate}
+                      onGreetingChange={setGreetingText}
+                      onReadyMessageChange={setReadyMessage}
+                      onUseCustomMessageChange={setUseCustomMessage}
+                      onSelectTemplate={handleSelectTemplate}
+                      onTemplateName={setTemplateName}
+                      onSaveTemplate={handleSaveTemplate}
+                      onDeleteTemplate={handleDeleteTemplate}
+                      onEditTemplate={(tpl) => {
+                        setGreetingText(tpl.greeting);
+                        setReadyMessage(tpl.ready_message);
+                        setTemplateName(tpl.name);
+                        setUseCustomMessage(true);
+                      }}
+                      onDuplicateTemplate={(tpl) => {
+                        setGreetingText(tpl.greeting);
+                        setReadyMessage(tpl.ready_message);
+                        setTemplateName(`${tpl.name} (cópia)`);
+                        setUseCustomMessage(true);
+                      }}
+                    />
+                  </Card>
+                ) : (
+                  <Card className="glass-card p-6">
+                    <p className="text-sm text-muted-foreground">
+                      O preset atual não exige configurações extras de WhatsApp. Avance para revisão.
+                    </p>
+                  </Card>
+                )}
+              </>
+            )}
+
+            {flow.activeStep === "review" && (
+              <>
+                <Card className="glass-card p-4 border-primary/20">
+                  <p className="text-sm text-muted-foreground">
+                    Revise o resumo sticky, rode a validação e publique quando todos os checks estiverem verdes.
+                  </p>
+                </Card>
+
+                <Separator className="opacity-30" />
+
+                {validationResult && (
+                  <Card className={`glass-card p-4 space-y-3 ${validationResult.valid ? "border-success/30" : "border-destructive/30"}`}>
+                    <p className="font-display font-semibold text-sm">
+                      {validationResult.valid ? "✅ Validação OK" : "❌ Validação falhou"}
+                    </p>
+                    {validationResult.checks?.map((c, i) => (
+                      <div key={i} className="flex items-center justify-between text-xs">
+                        <span>{c.label}</span>
+                        <span className={c.ok ? "text-success" : "text-destructive"}>{c.detail}</span>
+                      </div>
+                    ))}
+                    {validationResult.min_budget && (
+                      <div className="bg-warning/10 border border-warning/30 rounded-md p-3 mt-2">
+                        <p className="text-sm text-warning font-medium">Orçamento mínimo: R$ {validationResult.min_budget}</p>
+                      </div>
+                    )}
+                    {validationResult.error && (
+                      <div className="bg-destructive/10 border border-destructive/30 rounded-md p-3 mt-2 space-y-1">
+                        <p className="text-xs text-destructive font-medium">{validationResult.error}</p>
+                        {validationResult.error_details?.error_user_title && <p className="text-xs text-destructive">{validationResult.error_details.error_user_title}</p>}
+                        {validationResult.error_details?.error_user_msg && <p className="text-xs text-muted-foreground">{validationResult.error_details.error_user_msg}</p>}
+                      </div>
+                    )}
+                  </Card>
+                )}
+
+                <div className="flex gap-3">
+                  <Button variant="outline" onClick={handleValidate} disabled={loading || validatingCreative} className="flex-1 gap-2">
+                    {(loading || validatingCreative) ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                    Validar
+                  </Button>
+                  <Button onClick={handlePublish} disabled={loading || !validatedPayload || !validationResult?.valid || (!!minBudget && Number(budget) < minBudget)} className="flex-1 gap-2 glow-primary">
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    Publicar
+                  </Button>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={handleDiagnostic}
+                    disabled={diagnosticLoading || !selectedAccount}
+                    className="flex-1 gap-2 border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+                  >
+                    {diagnosticLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Settings2 className="w-4 h-4" />}
+                    🔬 Diagnóstico Completo
+                  </Button>
+                  {diagnosticResult && (
+                    <Button variant="ghost" size="sm" onClick={copyDiagnostic} className="gap-1 text-xs">
+                      <Copy className="w-3.5 h-3.5" /> Copiar JSON
                     </Button>
                   )}
                 </div>
 
-                {/* Name */}
-                <div className="space-y-1">
-                  <Label className="text-[10px] text-muted-foreground">Nome do Anúncio</Label>
-                  <Input
-                    placeholder='Ex: "Anúncio 01 - Dor Joelho"'
-                    value={cr.name}
-                    onChange={(e) => updateCreative(cr.id, { name: e.target.value })}
-                    className="text-sm"
-                  />
-                </div>
-
-                {/* Type toggle */}
-                <div className="flex gap-2">
-                  <Button
-                    variant={cr.type === "instagram" ? "default" : "outline"}
-                    size="sm"
-                    className="flex-1 gap-1 text-xs"
-                    onClick={() => updateCreative(cr.id, { type: "instagram", link: "" })}
-                  >
-                    <Instagram className="w-3.5 h-3.5" /> Instagram
-                  </Button>
-                  <Button
-                    variant={cr.type === "drive" ? "default" : "outline"}
-                    size="sm"
-                    className="flex-1 gap-1 text-xs"
-                    onClick={() => updateCreative(cr.id, { type: "drive", link: "" })}
-                  >
-                    <HardDrive className="w-3.5 h-3.5" /> Drive
-                  </Button>
-                </div>
-
-                {/* Link + validate */}
-                <div className="flex gap-2">
-                  <Input
-                    placeholder={cr.type === "instagram" ? "https://instagram.com/..." : "https://drive.google.com/..."}
-                    value={cr.link}
-                    onChange={(e) => updateCreative(cr.id, { link: e.target.value })}
-                    className="flex-1 text-sm"
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleValidateCreative(cr.id)}
-                    disabled={!cr.link || validatingCreative}
-                    className="shrink-0"
-                  >
-                    {validatingCreative ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                  </Button>
-                </div>
-
-                {/* Validation feedback */}
-                {cr.validation && !cr.validation.ok && (
-                  <div className="bg-destructive/10 border border-destructive/30 rounded-md p-2">
-                    <p className="text-[10px] text-destructive font-medium">{cr.validation.error}</p>
-                  </div>
+                {diagnosticOpen && diagnosticResult && (
+                  <Card className="glass-card p-4 border-amber-500/30 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-display font-semibold text-amber-400">
+                        🔬 Diagnóstico: {diagnosticResult.total_campaigns} campanha(s) — Payload Bruto
+                      </p>
+                      <Button variant="ghost" size="sm" onClick={() => setDiagnosticOpen(false)} className="h-6 w-6 p-0">
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Capturado em: {diagnosticResult.fetched_at}</p>
+                    {diagnosticResult.logs && diagnosticResult.logs.length > 0 && (
+                      <details className="text-xs">
+                        <summary className="cursor-pointer text-muted-foreground">Logs do diagnóstico ({diagnosticResult.logs.length})</summary>
+                        <pre className="mt-2 max-h-[200px] overflow-auto rounded bg-background/50 p-2 font-mono whitespace-pre-wrap break-all text-foreground/70">
+                          {diagnosticResult.logs.join("\n")}
+                        </pre>
+                      </details>
+                    )}
+                    <div className="max-h-[500px] overflow-auto rounded bg-background/50 p-3">
+                      <pre className="text-xs font-mono whitespace-pre-wrap break-all text-foreground/80">
+                        {JSON.stringify(diagnosticResult.diagnostic, null, 2)}
+                      </pre>
+                    </div>
+                  </Card>
                 )}
-                {cr.validation?.ok && (
-                  <div className="bg-success/10 border border-success/30 rounded-md p-2">
-                    <p className="text-[10px] text-success font-medium">✅ Validado</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </Card>
 
-          {/* Audience */}
-          <Card className="glass-card p-6 space-y-4">
-            <Label className="font-display font-semibold text-sm">
-              Público {audiences.length > 0 && `(${audiences.length})`}
-            </Label>
-            {loadingAudiences ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="w-4 h-4 animate-spin" /> Carregando públicos...
-              </div>
-            ) : audiences.length > 0 ? (
-              <SearchableSelect
-                options={audiences}
-                value={selectedAudience}
-                onValueChange={setSelectedAudience}
-                placeholder="Selecione o público"
-                searchPlaceholder="Pesquisar público por nome..."
-              />
-            ) : selectedAccount ? (
-              <div className="flex items-center gap-2 text-sm text-warning">
-                <AlertTriangle className="w-4 h-4" /> Nenhum público encontrado
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Selecione uma conta primeiro</p>
+                {publishResult && publishResult.ok && (
+                  <Card className="glass-card p-4 border-success/30 glow-primary space-y-2">
+                    <p className="text-sm font-display font-semibold text-success">✅ Publicado com sucesso!</p>
+                    <div className="space-y-1 text-xs font-mono">
+                      <p>Campaign ID: {publishResult.campaign_id}</p>
+                      {publishResult.adsets_created && <p>AdSets criados: {publishResult.adsets_created}</p>}
+                      {publishResult.ads_created && <p>Ads criados: {publishResult.ads_created}</p>}
+                    </div>
+                  </Card>
+                )}
+
+                {publishResult && !publishResult.ok && (
+                  <Card className="glass-card p-4 border-destructive/30 space-y-3">
+                    <p className="text-sm font-display font-semibold text-destructive">
+                      ❌ Falha na etapa: <span className="font-mono">{publishResult.step || "desconhecido"}</span>
+                    </p>
+                    <div className="bg-destructive/10 border border-destructive/30 rounded-md p-3 space-y-1">
+                      <p className="text-xs text-destructive font-medium">{publishResult.error_message || publishResult.error}</p>
+                      {publishResult.error_user_title && <p className="text-xs text-destructive">{publishResult.error_user_title}</p>}
+                      {publishResult.error_user_msg && <p className="text-xs text-muted-foreground">{publishResult.error_user_msg}</p>}
+                    </div>
+                    {(publishResult.campaign_id || publishResult.adset_id) && (
+                      <div className="space-y-1 text-xs font-mono text-muted-foreground">
+                        {publishResult.campaign_id && <p>Campaign: {publishResult.campaign_id}</p>}
+                        {publishResult.adset_id && <p>AdSet: {publishResult.adset_id}</p>}
+                      </div>
+                    )}
+                  </Card>
+                )}
+
+                <Card className="glass-card p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="font-display font-semibold text-xs text-muted-foreground">LOGS</Label>
+                    <Button variant="ghost" size="sm" onClick={copyReport} className="h-7 text-xs gap-1">
+                      <Copy className="w-3 h-3" /> Copiar
+                    </Button>
+                  </div>
+                  <div className="max-h-40 overflow-y-auto space-y-1">
+                    {logs.length === 0 ? (
+                      <p className="text-xs text-muted-foreground">Nenhum log ainda...</p>
+                    ) : logs.map((log, i) => (
+                      <p key={i} className="text-xs font-mono text-muted-foreground">{log}</p>
+                    ))}
+                  </div>
+                </Card>
+              </>
             )}
-          </Card>
 
-
-          {/* Budget */}
-          <Card className="glass-card p-6 space-y-4">
-            <Label className="font-display font-semibold text-sm">{budgetLabel}</Label>
-            <Input
-              type="number"
-              placeholder="50"
-              min="1"
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
+            <PublishFlowActionBar
+              canGoBack={flow.canGoBack}
+              canGoNext={flow.canGoNext}
+              onBack={flow.goBack}
+              onNext={flow.goNext}
             />
-            {minBudget && (
-              <p className="text-xs font-medium text-warning">
-                Mínimo permitido pelo Meta: R$ {minBudget}
-              </p>
-            )}
-            {distributionStructure === "ABO" && creatives.length > 1 && (
-              <p className="text-[10px] text-muted-foreground">
-                Cada conjunto terá R$ {budget || "0"}/dia × {creatives.length} conjuntos = R$ {(Number(budget || 0) * creatives.length).toFixed(2)}/dia total
-              </p>
-            )}
-          </Card>
+          </div>
 
-          {/* ============ FASE 3 EXTRA FIELDS ============ */}
-          {isFase3 && (
-            <Card className="glass-card p-6 space-y-5 border-accent/30">
-              <div className="flex items-center gap-2">
-                <MessageCircle className="w-5 h-5 text-accent" />
-                <Label className="font-display font-semibold text-sm">Configurações FASE 3 — WhatsApp</Label>
-              </div>
+          <aside className="hidden lg:block">
+            <div className="sticky top-24 space-y-3">
+              {(computedCampaignName || computedAdsetName || creatives.some(c => c.name) || isFase3) && (
+                <Card className="glass-card p-4 glow-primary space-y-2">
+                  <Label className="font-display text-xs text-muted-foreground mb-1 block">Resumo</Label>
 
-              <WhatsAppNumberSelector
-                numbers={whatsappNumbers}
-                loading={loadingWhatsappNumbers}
-                selectedId={selectedWhatsappId}
-                onSelect={setSelectedWhatsappId}
-              />
-
-              {/* CTA — fixo pelo preset */}
-              <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">CTA — Call to Action</Label>
-                <div className="bg-muted/50 border border-border rounded-md px-3 py-2">
-                  <p className="text-sm font-medium">Enviar mensagem pelo WhatsApp</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">Definido automaticamente pelo preset FASE 3</p>
-                </div>
-              </div>
-
-              <WhatsAppMessages
-                greetingText={greetingText}
-                readyMessage={readyMessage}
-                useCustomMessage={useCustomMessage}
-                selectedTemplateId={selectedTemplateId}
-                messageTemplates={messageTemplates}
-                templateName={templateName}
-                savingTemplate={savingTemplate}
-                onGreetingChange={setGreetingText}
-                onReadyMessageChange={setReadyMessage}
-                onUseCustomMessageChange={setUseCustomMessage}
-                onSelectTemplate={handleSelectTemplate}
-                onTemplateName={setTemplateName}
-                onSaveTemplate={handleSaveTemplate}
-                onDeleteTemplate={handleDeleteTemplate}
-                onEditTemplate={(tpl) => {
-                  setGreetingText(tpl.greeting);
-                  setReadyMessage(tpl.ready_message);
-                  setTemplateName(tpl.name);
-                  setUseCustomMessage(true);
-                }}
-                onDuplicateTemplate={(tpl) => {
-                  setGreetingText(tpl.greeting);
-                  setReadyMessage(tpl.ready_message);
-                  setTemplateName(`${tpl.name} (cópia)`);
-                  setUseCustomMessage(true);
-                }}
-              />
-            </Card>
-          )}
-
-          {/* ============ SCHEDULING ============ */}
-          <Card className="glass-card p-6 space-y-4">
-            <div className="flex items-center gap-3">
-              <Checkbox id="schedule-toggle" checked={scheduleEnabled} onCheckedChange={(c) => setScheduleEnabled(!!c)} />
-              <Label htmlFor="schedule-toggle" className="font-display font-semibold text-sm flex items-center gap-2 cursor-pointer">
-                <Calendar className="w-4 h-4" /> Agendar início da campanha
-              </Label>
-            </div>
-            {scheduleEnabled && (
-              <div className="space-y-4 pt-2">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">Data de início</Label>
-                    <Input type="date" value={scheduleDate} onChange={(e) => setScheduleDate(e.target.value)} />
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant="outline" className="text-[10px]">{selectedPreset.label}</Badge>
+                    <Badge variant="outline" className="text-[10px]">{distributionStructure}</Badge>
                   </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="w-3 h-3" /> Hora</Label>
-                    <Input type="time" value={scheduleTime} onChange={(e) => setScheduleTime(e.target.value)} />
-                  </div>
-                </div>
-                <Separator className="opacity-30" />
-                <p className="text-[10px] text-muted-foreground">Data de término (opcional)</p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">Data de término</Label>
-                    <Input type="date" value={scheduleEndDate} onChange={(e) => setScheduleEndDate(e.target.value)} />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">Hora de término</Label>
-                    <Input type="time" value={scheduleEndTime} onChange={(e) => setScheduleEndTime(e.target.value)} />
-                  </div>
-                </div>
-              </div>
-            )}
-          </Card>
 
-          {/* Summary */}
-          {(computedCampaignName || computedAdsetName || creatives.some(c => c.name) || isFase3) && (
-            <Card className="glass-card p-4 glow-primary space-y-2">
-              <Label className="font-display text-xs text-muted-foreground mb-1 block">Resumo</Label>
-
-              {/* Structure */}
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-[10px]">{selectedPreset.label}</Badge>
-                <Badge variant="outline" className="text-[10px]">{distributionStructure}</Badge>
-                <Badge variant="secondary" className="text-[10px]">{structureDescription}</Badge>
-              </div>
-
-              {campaignStructure === "new" && computedCampaignName && (
-                <p className="text-xs font-mono text-primary break-all"><strong>Campanha:</strong> {computedCampaignName}</p>
-              )}
-              {campaignStructure === "existing" && selectedCampaign && (
-                <p className="text-xs font-mono text-muted-foreground break-all"><strong>Campanha:</strong> {campaigns.find(c => c.id === selectedCampaign)?.name || selectedCampaign}</p>
-              )}
-
-              {/* ABO: show numbered adsets */}
-              {distributionStructure === "ABO" && creatives.length > 1 ? (
-                creatives.map((cr, idx) => (
-                  <div key={cr.id} className="text-[10px] text-muted-foreground pl-2 border-l border-border/50">
-                    <p><strong>Conjunto {idx + 1}:</strong> [{selectedAudienceName}] - {adsetNameInput || "Conjunto"} {String(idx + 1).padStart(2, "0")}</p>
-                    <p className="pl-2"><strong>Anúncio:</strong> {cr.name || `Criativo ${idx + 1}`}</p>
-                  </div>
-                ))
-              ) : (
-                <>
-                  {computedAdsetName && <p className="text-xs font-mono text-primary break-all"><strong>Conjunto:</strong> {computedAdsetName}</p>}
-                  {creatives.map((cr, idx) => (
-                    <p key={cr.id} className="text-xs font-mono text-primary break-all"><strong>Anúncio {creatives.length > 1 ? idx + 1 : ""}:</strong> {cr.name || `Criativo ${idx + 1}`}</p>
-                  ))}
-                </>
-              )}
-
-              <Separator className="opacity-20" />
-
-              {/* FASE 3 summary */}
-              {isFase3 && (
-                <>
-                  {selectedWhatsapp && <p className="text-[10px] text-muted-foreground"><strong>WhatsApp:</strong> {selectedWhatsapp.display}</p>}
-                  {includedLocations.length > 0 && <p className="text-[10px] text-muted-foreground"><strong>Incluir:</strong> {includedLocations.map(l => l.display || l.name).join(", ")}</p>}
-                  {excludedLocations.length > 0 && <p className="text-[10px] text-muted-foreground"><strong>Excluir:</strong> {excludedLocations.map(l => l.display || l.name).join(", ")}</p>}
-                  {isFase3 && <p className="text-[10px] text-muted-foreground"><strong>CTA:</strong> WHATSAPP_MESSAGE (automático)</p>}
-                  {(greetingText || readyMessage) && (
-                    <p className="text-[10px] text-muted-foreground"><strong>Mensagem:</strong> {greetingText ? `"${greetingText}" + ` : ""}{readyMessage ? `"${readyMessage}"` : "modelo selecionado"}</p>
+                  {campaignStructure === "new" && computedCampaignName && (
+                    <p className="text-xs font-mono text-primary break-all"><strong>Campanha:</strong> {computedCampaignName}</p>
                   )}
-                </>
+                  {campaignStructure === "existing" && selectedCampaign && (
+                    <p className="text-xs font-mono text-muted-foreground break-all"><strong>Campanha:</strong> {campaigns.find(c => c.id === selectedCampaign)?.name || selectedCampaign}</p>
+                  )}
+                  {computedAdsetName && <p className="text-xs font-mono text-primary break-all"><strong>Conjunto:</strong> {computedAdsetName}</p>}
+                  {selectedAudienceName && <p className="text-[10px] text-muted-foreground"><strong>Público:</strong> {selectedAudienceName}</p>}
+                  {!!budget && <p className="text-[10px] text-muted-foreground"><strong>Orçamento:</strong> R$ {budget}</p>}
+                  {isFase3 && selectedWhatsapp && <p className="text-[10px] text-muted-foreground"><strong>WhatsApp:</strong> {selectedWhatsapp.display}</p>}
+                  {scheduleEnabled && scheduleDate && scheduleTime && (
+                    <p className="text-[10px] text-muted-foreground"><strong>Início:</strong> {scheduleDate} às {scheduleTime}</p>
+                  )}
+                  <Separator className="opacity-20" />
+                  <p className="text-[10px] text-muted-foreground">
+                    {validationResult?.valid ? "Validação aprovada." : "Valide antes de publicar."}
+                  </p>
+                </Card>
               )}
 
-              {scheduleEnabled && scheduleDate && scheduleTime && (
-                <p className="text-[10px] text-muted-foreground"><strong>Início agendado:</strong> {scheduleDate} às {scheduleTime}</p>
-              )}
-
-              <p className="text-[10px] font-mono text-muted-foreground break-all"><strong>UTM:</strong> {UTM_TEMPLATE}</p>
-            </Card>
-          )}
-
-          <Separator className="opacity-30" />
-
-          {/* Validation Result */}
-          {validationResult && (
-            <Card className={`glass-card p-4 space-y-3 ${validationResult.valid ? "border-success/30" : "border-destructive/30"}`}>
-              <p className="font-display font-semibold text-sm">
-                {validationResult.valid ? "✅ Validação OK" : "❌ Validação falhou"}
-              </p>
-              {validationResult.checks?.map((c, i) => (
-                <div key={i} className="flex items-center justify-between text-xs">
-                  <span>{c.label}</span>
-                  <span className={c.ok ? "text-success" : "text-destructive"}>{c.detail}</span>
-                </div>
-              ))}
-              {validationResult.min_budget && (
-                <div className="bg-warning/10 border border-warning/30 rounded-md p-3 mt-2">
-                  <p className="text-sm text-warning font-medium">Orçamento mínimo: R$ {validationResult.min_budget}</p>
-                </div>
-              )}
-              {validationResult.error && (
-                <div className="bg-destructive/10 border border-destructive/30 rounded-md p-3 mt-2 space-y-1">
-                  <p className="text-xs text-destructive font-medium">{validationResult.error}</p>
-                  {validationResult.error_details?.error_user_title && <p className="text-xs text-destructive">{validationResult.error_details.error_user_title}</p>}
-                  {validationResult.error_details?.error_user_msg && <p className="text-xs text-muted-foreground">{validationResult.error_details.error_user_msg}</p>}
-                </div>
-              )}
-            </Card>
-          )}
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={handleValidate} disabled={loading || validatingCreative} className="flex-1 gap-2">
-              {(loading || validatingCreative) ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-              Validar
-            </Button>
-            <Button onClick={handlePublish} disabled={loading || !validatedPayload || !validationResult?.valid || (!!minBudget && Number(budget) < minBudget)} className="flex-1 gap-2 glow-primary">
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-              Publicar
-            </Button>
-          </div>
-
-          {/* Diagnostic Button */}
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={handleDiagnostic}
-              disabled={diagnosticLoading || !selectedAccount}
-              className="flex-1 gap-2 border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
-            >
-              {diagnosticLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Settings2 className="w-4 h-4" />}
-              🔬 Diagnóstico Completo
-            </Button>
-            {diagnosticResult && (
-              <Button variant="ghost" size="sm" onClick={copyDiagnostic} className="gap-1 text-xs">
-                <Copy className="w-3.5 h-3.5" /> Copiar JSON
-              </Button>
-            )}
-          </div>
-
-          {/* Diagnostic Result */}
-          {diagnosticOpen && diagnosticResult && (
-            <Card className="glass-card p-4 border-amber-500/30 space-y-3">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-display font-semibold text-amber-400">
-                  🔬 Diagnóstico: {diagnosticResult.total_campaigns} campanha(s) — Payload Bruto
-                </p>
-                <Button variant="ghost" size="sm" onClick={() => setDiagnosticOpen(false)} className="h-6 w-6 p-0">
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">Capturado em: {diagnosticResult.fetched_at}</p>
-              {diagnosticResult.logs && diagnosticResult.logs.length > 0 && (
-                <details className="text-xs">
-                  <summary className="cursor-pointer text-muted-foreground">Logs do diagnóstico ({diagnosticResult.logs.length})</summary>
-                  <pre className="mt-2 max-h-[200px] overflow-auto rounded bg-background/50 p-2 font-mono whitespace-pre-wrap break-all text-foreground/70">
-                    {diagnosticResult.logs.join("\n")}
-                  </pre>
-                </details>
-              )}
-              <div className="max-h-[500px] overflow-auto rounded bg-background/50 p-3">
-                <pre className="text-xs font-mono whitespace-pre-wrap break-all text-foreground/80">
-                  {JSON.stringify(diagnosticResult.diagnostic, null, 2)}
-                </pre>
-              </div>
-            </Card>
-          )}
-
-
-
-          {publishResult && publishResult.ok && (
-            <Card className="glass-card p-4 border-success/30 glow-primary space-y-2">
-              <p className="text-sm font-display font-semibold text-success">✅ Publicado com sucesso!</p>
-              <div className="space-y-1 text-xs font-mono">
-                <p>Campaign ID: {publishResult.campaign_id}</p>
-                {publishResult.adsets_created && <p>AdSets criados: {publishResult.adsets_created}</p>}
-                {publishResult.ads_created && <p>Ads criados: {publishResult.ads_created}</p>}
-              </div>
-            </Card>
-          )}
-
-          {publishResult && !publishResult.ok && (
-            <Card className="glass-card p-4 border-destructive/30 space-y-3">
-              <p className="text-sm font-display font-semibold text-destructive">
-                ❌ Falha na etapa: <span className="font-mono">{publishResult.step || "desconhecido"}</span>
-              </p>
-              <div className="bg-destructive/10 border border-destructive/30 rounded-md p-3 space-y-1">
-                <p className="text-xs text-destructive font-medium">{publishResult.error_message || publishResult.error}</p>
-                {publishResult.error_user_title && <p className="text-xs text-destructive">{publishResult.error_user_title}</p>}
-                {publishResult.error_user_msg && <p className="text-xs text-muted-foreground">{publishResult.error_user_msg}</p>}
-              </div>
-              {(publishResult.campaign_id || publishResult.adset_id) && (
-                <div className="space-y-1 text-xs font-mono text-muted-foreground">
-                  {publishResult.campaign_id && <p>Campaign: {publishResult.campaign_id}</p>}
-                  {publishResult.adset_id && <p>AdSet: {publishResult.adset_id}</p>}
-                </div>
-              )}
-            </Card>
-          )}
-
-          {/* Logs */}
-          <Card className="glass-card p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <Label className="font-display font-semibold text-xs text-muted-foreground">LOGS</Label>
-              <Button variant="ghost" size="sm" onClick={copyReport} className="h-7 text-xs gap-1">
-                <Copy className="w-3 h-3" /> Copiar
-              </Button>
+              <Card className="glass-card p-4 space-y-2">
+                <p className="text-xs font-semibold text-muted-foreground">Critérios por etapa</p>
+                <p className="text-[10px] text-muted-foreground">1. Setup: conexão + conta.</p>
+                <p className="text-[10px] text-muted-foreground">2. Campanha: estrutura + criativos.</p>
+                <p className="text-[10px] text-muted-foreground">3. Público: público + orçamento.</p>
+                <p className="text-[10px] text-muted-foreground">4. WhatsApp: obrigatório na FASE 3.</p>
+                <p className="text-[10px] text-muted-foreground">5. Revisão: validar e publicar.</p>
+              </Card>
             </div>
-            <div className="max-h-40 overflow-y-auto space-y-1">
-              {logs.length === 0 ? (
-                <p className="text-xs text-muted-foreground">Nenhum log ainda...</p>
-              ) : logs.map((log, i) => (
-                <p key={i} className="text-xs font-mono text-muted-foreground">{log}</p>
-              ))}
-            </div>
-          </Card>
-        </>
+          </aside>
+        </div>
       )}
     </div>
   );

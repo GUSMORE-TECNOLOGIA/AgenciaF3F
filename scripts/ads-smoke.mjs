@@ -33,6 +33,33 @@ async function run() {
     detail: `status=${hardenedResponse.status}`,
   });
 
+  const statusResponse = await fetch(`${SUPABASE_FUNCTIONS_BASE}/meta-status`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({ force_verify: true }),
+  });
+
+  let statusPayload = {};
+  try {
+    statusPayload = await statusResponse.json();
+  } catch {
+    statusPayload = {};
+  }
+
+  checks.push({
+    name: "meta-status returns setup-oriented unauthorized contract",
+    ok:
+      statusResponse.status === 401 &&
+      typeof statusPayload === "object" &&
+      statusPayload !== null &&
+      (statusPayload.code === "UNAUTHORIZED" || statusPayload.code === 401) &&
+      (statusPayload.step === "setup" || statusPayload.step === undefined),
+    detail: `status=${statusResponse.status} code=${statusPayload.code ?? "n/a"} step=${statusPayload.step ?? "n/a"}`,
+  });
+
   const failed = checks.filter((c) => !c.ok);
   for (const check of checks) {
     console.log(`${check.ok ? "OK" : "FAIL"} - ${check.name} (${check.detail})`);

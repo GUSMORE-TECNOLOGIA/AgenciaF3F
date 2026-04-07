@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
 
     if (!appId || !appSecret) {
       return jsonResponse(
-        { code: "META_CONFIG_MISSING", error: "META_APP_ID or META_APP_SECRET not configured" },
+        { step: "setup", code: "META_CONFIG_MISSING", error: "META_APP_ID or META_APP_SECRET not configured" },
         {
           status: 500,
           headers: corsHeaders,
@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
 
     if (data.error) {
       return jsonResponse(
-        { code: "META_OAUTH_CODE_INVALID", error: data.error.message },
+        { step: "setup", code: "META_OAUTH_CODE_INVALID", error: data.error.message },
         { status: 400, headers: corsHeaders },
       );
     }
@@ -103,13 +103,14 @@ Deno.serve(async (req) => {
         expires_in: expiresIn,
         is_long_lived: isLongLived,
         saved_to_db: savedToDb,
+        step: "setup",
       },
       { headers: corsHeaders },
     );
   } catch (e) {
     const message = e instanceof Error ? e.message : "Erro interno";
     return jsonResponse(
-      { code: "META_OAUTH_INTERNAL_ERROR", error: message },
+      { step: "setup", code: "META_OAUTH_INTERNAL_ERROR", error: message },
       { status: 500, headers: corsHeaders },
     );
   }

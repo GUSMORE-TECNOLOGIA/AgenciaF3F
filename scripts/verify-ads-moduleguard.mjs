@@ -32,6 +32,22 @@ async function run() {
         publishFormContent.includes("meta_oauth_success") &&
         publishFormContent.includes("checkMetaStatus({ ignoreCache: justConnected"),
     },
+    {
+      name: "publish form uses hybrid flow stepper and tabs",
+      ok:
+        publishFormContent.includes("useAdsPublishFlow") &&
+        publishFormContent.includes("PublishFlowStepper") &&
+        publishFormContent.includes("PublishFlowTabs") &&
+        publishFormContent.includes("PublishFlowActionBar"),
+    },
+    {
+      name: "publish flow has step-specific sections",
+      ok:
+        publishFormContent.includes('flow.activeStep === "setup"') &&
+        publishFormContent.includes('flow.activeStep === "campaign"') &&
+        publishFormContent.includes('flow.activeStep === "audience"') &&
+        publishFormContent.includes('flow.activeStep === "review"'),
+    },
   ];
 
   const failed = checks.filter((c) => !c.ok);

@@ -4,6 +4,19 @@ Registro de erros analisados, causa raiz e solução. Consultar antes de RCA em 
 
 ---
 
+## 2026-04-07 – Ads: migração para fluxo híbrido (stepper + abas) sem regressão OAuth (RESOLVIDO)
+
+| Campo | Conteúdo |
+|-------|----------|
+| **Data** | 2026-04-07 |
+| **Descrição** | Evolução do módulo Ads de formulário monolítico para fluxo em etapas, preservando callback OAuth e status de conexão Meta entre hosts. |
+| **Risco principal** | Quebra de validação/publicação ao separar UI por etapa e abas, com regressão em estado compartilhado e mensagens de erro genéricas. |
+| **Solução** | `PublishForm` adotou orquestração de fluxo (`useAdsPublishFlow`) com stepper, abas internas e action bar fixa; `metaApi` passou a propagar erros orientados por etapa; Edge Functions de status/callback passaram a incluir `step=setup` no contrato. |
+| **Validação** | `npm run lint`, `npm run build`, `npm run verify:ads-guard`; smoke `ads-smoke` atualizado para validar contrato `UNAUTHORIZED + step=setup` em `meta-status`. |
+| **Referência** | `src/modules/ads/components/PublishForm.tsx`, `src/modules/ads/hooks/useAdsPublishFlow.ts`, `src/modules/ads/services/metaApi.ts`, `supabase/functions/meta-status/index.ts`, `supabase/functions/meta-oauth-callback/index.ts`, `scripts/verify-ads-moduleguard.mjs`, `scripts/ads-smoke.mjs`. |
+
+---
+
 ## 2026-04-07 – Ads: card permanecia em “Meta desconectado” após OAuth (RESOLVIDO)
 
 | Campo | Conteúdo |

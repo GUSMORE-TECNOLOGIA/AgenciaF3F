@@ -27,3 +27,20 @@ Aplicar melhorias de confiabilidade, segurança e manutenção no módulo Meta A
 - Erros das funções Meta possuem código e mensagem consistentes.
 - Build e lint executados sem falhas.
 - Documentação de acesso Ads e deduplicação UI registrada em ADR.
+
+## Evolução 2026-04-07 — UX híbrido (stepper + abas)
+
+### Blueprint aplicado
+- Etapa 1 (**Setup**): conexão Meta, conta de anúncios, identidade e preset.
+- Etapa 2 (**Campanha**): estrutura (ABO/CBO), campanha nova/existente, nomes e criativos (com abas internas).
+- Etapa 3 (**Público**): seleção de público, orçamento e agendamento (com abas internas).
+- Etapa 4 (**WhatsApp**): configurações FASE 3 (quando exigidas pelo preset).
+- Etapa 5 (**Revisão**): validação, publicação, diagnóstico e logs.
+
+### Contratos e integração
+- `metaApi` passou a padronizar erros por etapa (`Etapa Setup`, `Etapa Campanha`, `Etapa Público`, `Etapa WhatsApp`, `Etapa Revisão/Publicação`).
+- Edge Functions `meta-status` e `meta-oauth-callback` incluem `step: "setup"` nas respostas de erro/sucesso para rastreabilidade de fluxo.
+
+### QA/Smoke adicionados
+- `scripts/verify-ads-moduleguard.mjs` agora valida presença do fluxo híbrido (`useAdsPublishFlow`, stepper, abas e action bar).
+- `scripts/ads-smoke.mjs` valida contrato de erro não autenticado do `meta-status` com `code=UNAUTHORIZED` e `step=setup`.

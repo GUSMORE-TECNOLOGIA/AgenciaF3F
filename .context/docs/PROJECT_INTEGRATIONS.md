@@ -126,6 +126,8 @@ Configure estas variáveis no painel da Vercel:
 | **Permissões** | Módulo `ads` em `perfil_permissoes`; ver migration `20260406120000_ads_modulo_perfil_permissoes.sql` |
 | **Política de acesso (atual)** | Ads liberado somente para perfil `admin`; migrations: `20260407143000_ads_only_admin_access.sql` e `20260407153000_ads_admin_access_policy_definitiva.sql` |
 | **CORS (Edge Meta)** | Allowlist via secret `ALLOWED_ORIGINS` (CSV). Fallback inclui localhost, `https://www.agenciaf3f.app` e `https://ads.agenciaf3f.com.br`. |
+| **Fluxo UX Ads (2026-04-07)** | UI híbrida com stepper principal + abas internas por etapa (`setup`, `campaign`, `audience`, `fase3`, `review`). |
+| **Contrato de erro por etapa** | `metaApi` e funções OAuth/status retornam mensagens orientadas por etapa; payloads críticos incluem `step` para observabilidade (`setup` no OAuth/status). |
 | **Mapa de migração** | [.context/docs/migracao/mapa-traducao-adify-ads.md](./migracao/mapa-traducao-adify-ads.md) |
 
 **Segurança (hardening aplicado):** `verify_jwt = true` nas funções `meta-*` de operação (status, publish, diagnósticos, contas, audiências). `meta-login` e `meta-oauth-callback` permanecem com `verify_jwt = false` por dependência do fluxo OAuth browser-first; manter mitigação por CORS allowlist e validação de redirect URI.
@@ -208,4 +210,4 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 
 ---
 
-*Última atualização: 07/04/2026 17:40:00*
+*Última atualização: 07/04/2026 20:25:00*

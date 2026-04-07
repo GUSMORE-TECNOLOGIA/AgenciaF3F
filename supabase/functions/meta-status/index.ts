@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
     if (!authHeader) {
       console.log("[meta-status] No auth header");
       return jsonResponse(
-        { connected: false, reason: "no_auth", code: "UNAUTHORIZED", message: "Authorization header ausente." },
+        { connected: false, reason: "no_auth", step: "setup", code: "UNAUTHORIZED", message: "Authorization header ausente." },
         { status: 401, headers: corsHeaders },
       );
     }
@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
     if (!user) {
       console.log("[meta-status] No user from auth header");
       return jsonResponse(
-        { connected: false, reason: "no_user", code: "UNAUTHORIZED", message: "Usuário não encontrado na sessão." },
+        { connected: false, reason: "no_user", step: "setup", code: "UNAUTHORIZED", message: "Usuário não encontrado na sessão." },
         { status: 401, headers: corsHeaders },
       );
     }
@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     if (!conn) {
       console.log("[meta-status] No meta_connection found for user:", user.id);
       return jsonResponse(
-        { connected: false, reason: "no_connection", code: "META_NOT_CONNECTED", message: "Usuário sem conexão Meta ativa." },
+        { connected: false, reason: "no_connection", step: "setup", code: "META_NOT_CONNECTED", message: "Usuário sem conexão Meta ativa." },
         { headers: corsHeaders },
       );
     }
@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
     if (isExpired) {
       console.log("[meta-status] Token expired at:", conn.expires_at);
       return jsonResponse(
-        { connected: false, reason: "expired", code: "META_TOKEN_EXPIRED", message: "Token Meta expirado." },
+        { connected: false, reason: "expired", step: "setup", code: "META_TOKEN_EXPIRED", message: "Token Meta expirado." },
         { headers: corsHeaders },
       );
     }
@@ -85,6 +85,7 @@ Deno.serve(async (req) => {
           {
             connected: false,
             reason: "invalid_token",
+            step: "setup",
             code: "META_TOKEN_INVALID",
             message: meData.error.message,
             error: meData.error.message,
@@ -111,7 +112,7 @@ Deno.serve(async (req) => {
     const message = e instanceof Error ? e.message : "Erro interno";
     console.error("[meta-status] Error:", message);
     return jsonResponse(
-      { connected: false, code: "META_STATUS_INTERNAL_ERROR", message, error: message },
+      { connected: false, step: "setup", code: "META_STATUS_INTERNAL_ERROR", message, error: message },
       { status: 500, headers: corsHeaders },
     );
   }

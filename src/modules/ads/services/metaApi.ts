@@ -18,6 +18,7 @@ import type {
 export type { LocationResult } from '@/modules/ads/types/meta-api'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+type FlowStep = 'setup' | 'campaign' | 'audience' | 'fase3' | 'review'
 
 async function getAuthInvokeOptions() {
   const { data } = await supabase.auth.getSession()
@@ -123,6 +124,23 @@ function extractFunctionErrorDebugData(error: unknown) {
   }
 }
 
+function formatStepError(step: FlowStep, message: string) {
+  const labelByStep: Record<FlowStep, string> = {
+    setup: 'Setup',
+    campaign: 'Campanha',
+    audience: 'Publico',
+    fase3: 'WhatsApp',
+    review: 'Revisao/Publicacao',
+  }
+
+  return `Etapa ${labelByStep[step]}: ${message}`
+}
+
+function buildStepError(step: FlowStep, error: unknown, fallbackMessage: string) {
+  const message = extractFunctionErrorMessage(error) || fallbackMessage
+  return new Error(formatStepError(step, message))
+}
+
 export function getMetaLoginUrl() {
   const redirectUri = getAdsMetaOAuthRedirectUri()
   const url = new URL(`${SUPABASE_URL}/functions/v1/meta-login`)
@@ -140,7 +158,7 @@ export async function exchangeCodeForToken(
     body: { code, redirect_uri: redirectUri ?? getAdsMetaOAuthRedirectUri() },
   })
   if (error) {
-    throw new Error(extractFunctionErrorMessage(error))
+    throw buildStepError('setup', error, 'Falha ao concluir callback OAuth da Meta.')
   }
   return data as MetaOAuthCallbackResponse
 }
@@ -160,7 +178,7 @@ export async function fetchMetaStatus(options?: { forceVerify?: boolean }): Prom
       return await fallbackMetaStatusFromDb()
     }
 
-    throw new Error(extractFunctionErrorMessage(error))
+    throw buildStepError('setup', error, 'Falha ao consultar status da conexao Meta.')
   }
   return data as MetaStatusResponse
 }
@@ -175,7 +193,7 @@ export async function fetchAdAccounts(accessToken: string): Promise<AdAccount[]>
   const { data, error } = await supabase.functions.invoke('meta-ad-accounts', {
     body: { access_token: accessToken },
   })
-  if (error) throw new Error(error.message)
+  if (error) throw buildStepError('setup', error, 'Nao foi possivel carregar contas de anuncios.')
   return (data?.accounts as AdAccount[]) || []
 }
 
@@ -186,7 +204,7 @@ export async function fetchIgAccountsForAdAccount(
   const { data, error } = await supabase.functions.invoke('meta-ad-accounts', {
     body: { access_token: accessToken, action: 'get_ig_accounts', ad_account_id: adAccountId },
   })
-  if (error) throw new Error(error.message)
+  if (error) throw buildStepError('setup', error, 'Nao foi possivel carregar identidade da conta.')
   return (data?.ig_accounts as IgAccountMapping[]) || []
 }
 
@@ -194,7 +212,7 @@ export async function fetchAudiences(accessToken: string, adAccountId: string): 
   const { data, error } = await supabase.functions.invoke('meta-audiences', {
     body: { access_token: accessToken, ad_account_id: adAccountId },
   })
-  if (error) throw new Error(error.message)
+  if (error) throw buildStepError('audience', error, 'Nao foi possivel carregar publicos.')
   return (data?.audiences as Audience[]) || []
 }
 
@@ -203,7 +221,7 @@ export async function validatePublish(params: Record<string, unknown>): Promise<
     body: params,
   })
   if (error && data) return data
-  if (error) throw new Error(error.message)
+  if (error) throw buildStepError('review', error, 'Falha na validacao do payload.')
   return data as ValidationResponse
 }
 
@@ -212,7 +230,7 @@ export async function validateCreative(params: Record<string, unknown>): Promise
     body: params,
   })
   if (error && data) return data
-  if (error) throw new Error(error.message)
+  if (error) throw buildStepError('campaign', error, 'Falha na validacao do criativo.')
   return data as ValidationResponse
 }
 
@@ -220,7 +238,7 @@ export async function fetchCampaigns(accessToken: string, adAccountId: string): 
   const { data, error } = await supabase.functions.invoke('meta-campaigns', {
     body: { access_token: accessToken, ad_account_id: adAccountId },
   })
-  if (error) throw new Error(error.message)
+  if (error) throw buildStepError('campaign', error, 'Nao foi possivel carregar campanhas.')
   return (data?.campaigns as Campaign[]) || []
 }
 
@@ -232,7 +250,7 @@ export async function fetchWhatsAppNumbers(
   const { data, error } = await supabase.functions.invoke('meta-whatsapp-numbers', {
     body: { access_token: accessToken, ad_account_id: adAccountId, page_id: pageId },
   })
-  if (error) throw new Error(error.message)
+  if (error) throw buildStepError('fase3', error, 'Nao foi possivel carregar numeros de WhatsApp.')
   return (data?.numbers as WhatsAppNumber[]) || []
 }
 
@@ -240,7 +258,7 @@ export async function searchLocations(accessToken: string, query: string): Promi
   const { data, error } = await supabase.functions.invoke('meta-location-search', {
     body: { access_token: accessToken, query },
   })
-  if (error) throw new Error(error.message)
+  if (error) throw buildStepError('fase3', error, 'Nao foi possivel buscar localizacoes.')
   return data?.locations || []
 }
 
@@ -258,7 +276,12 @@ export async function publishAd(params: Record<string, unknown>): Promise<Publis
     } catch {
       /* ignore */
     }
-    throw new Error(error.message || 'Erro ao publicar')
+    return {
+      ok: false,
+      step: 'review',
+      error_message: formatStepError('review', error.message || 'Erro ao publicar'),
+      error_user_msg: extractFunctionErrorMessage(error),
+    }
   }
   return data as PublishResponse
 }
@@ -270,7 +293,7 @@ export async function runFase3Diagnostic(
     body: params,
   })
   if (error && data) return data
-  if (error) throw new Error(error.message || 'Erro no diagnóstico')
+  if (error) throw buildStepError('fase3', error, 'Erro no diagnostico FASE 3.')
   return data as DiagnosticResponse
 }
 
@@ -282,7 +305,7 @@ export async function runCampaignDiagnostic(
     body: { access_token: accessToken, ad_account_id: adAccountId },
   })
   if (error && data) return data
-  if (error) throw new Error(error.message || 'Erro no diagnóstico de campanhas')
+  if (error) throw buildStepError('campaign', error, 'Erro no diagnostico de campanhas.')
   return data as DiagnosticResponse
 }
 
@@ -296,7 +319,7 @@ export async function runFase1Diagnostic(params: {
     body: params,
   })
   if (error && data) return data
-  if (error) throw new Error(error.message || 'Erro no diagnóstico FASE 1')
+  if (error) throw buildStepError('campaign', error, 'Erro no diagnostico FASE 1.')
   return data as DiagnosticResponse
 }
 
@@ -309,6 +332,6 @@ export async function runAdsetDiff(params: {
     body: params,
   })
   if (error && data) return data
-  if (error) throw new Error(error.message || 'Erro no diff de adset')
+  if (error) throw buildStepError('campaign', error, 'Erro no diagnostico de diff de adset.')
   return data as DiagnosticResponse
 }

@@ -18,6 +18,7 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 
 ## Planos ativos
 - [PLAN — Melhorias do módulo Ads](./PLAN-ads-melhorias.md) — execução das fases de estabilização, segurança, QA e documentação.
+- [ADR — UX híbrido do módulo Ads](./ADR-ADS-UX-HIBRIDO.md) — decisão de experiência em etapas (stepper principal + abas internas).
 
 ## Requisitos (processos de negócio)
 - [Fluxo Perfil → Usuário → Responsável](./requisitos/fluxo-perfil-usuario-responsavel.md) – Cadeia interconectada: criar perfil, vincular ao usuário na Equipe, usar como responsável no cliente, exibir nome correto no dashboard e filtros.
@@ -41,6 +42,7 @@ Guias de setup, deploy, migrações e checklists estão em [guias/](./guias/):
 - [ADR – Evolução de services](./adr-evolucao-services.md) – planejamento (flat vs camadas).
 - [ADR — Escopo de token Meta no módulo Ads](./ADR-ADS-TOKEN-SCOPE.md) – escopo de conexão por `user_id`.
 - [ADR — Política de acesso do módulo Ads](./ADR-ADS-POLITICA-ACESSO.md) – decisão admin-only na fase atual.
+- [ADR — UX híbrido do módulo Ads](./ADR-ADS-UX-HIBRIDO.md) – stepper + abas internas + resumo sticky.
 - [ADR — Estratégia de deduplicação UI do Ads](./ADR-ADS-UI-DEDUP.md) – ondas de migração incremental para componentes compartilhados.
 - [Verificação Frontend/Componentes](./verificacao-frontend-componentes.md) – conformidade com componentes padronizados.
 - [Verificação QA – Build e testes](./verificacao-qa-build-testes.md) – build e planejamento de testes.
