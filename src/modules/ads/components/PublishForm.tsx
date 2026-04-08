@@ -937,6 +937,9 @@ export default function PublishForm() {
       if (result.logs) {
         for (const l of result.logs) addLog(`  [${l.step}] ${l.status}${l.detail ? ` — ${l.detail}` : ""}`);
       }
+      // #region agent log
+      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-publish-ui',hypothesisId:'H38',location:'PublishForm.tsx:handlePublish:result',message:'publish result received in UI',data:{ok:Boolean(result.ok),step:result.step ?? null,errorMessage:result.error_message ?? result.error ?? null,adsetsCreated:result.adsets_created ?? null,creativesCreated:result.creatives_created ?? null,adsCreated:result.ads_created ?? null,logsTail:Array.isArray(result.logs)?result.logs.slice(-6):[]},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       if (result.ok) {
         addLog(`✅ Publicado! Campaign: ${result.campaign_id}`);
         toast.success("Anúncio(s) publicado(s) com sucesso!");
