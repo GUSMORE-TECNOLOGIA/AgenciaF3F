@@ -240,6 +240,63 @@ async function fetchWhatsAppNumbersFromMetaDirect(
     }
   }
 
+  if (numbers.length === 0) {
+    try {
+      const businessesRes = await fetch(
+        `https://graph.facebook.com/v22.0/me/businesses?fields=id,name&limit=200&access_token=${accessToken}`,
+      )
+      const businessesPayload: Record<string, unknown> = await businessesRes.json()
+      if (businessesRes.ok && !businessesPayload?.error) {
+        const businesses = Array.isArray(businessesPayload.data)
+          ? (businessesPayload.data as Array<{ id: string; name?: string }>)
+          : []
+        const seenWabas = new Set<string>()
+        let businessWabasCount = 0
+        for (const business of businesses) {
+          const endpoints = ['owned_whatsapp_business_accounts', 'client_whatsapp_business_accounts']
+          for (const edge of endpoints) {
+            const wabaRes = await fetch(
+              `https://graph.facebook.com/v22.0/${business.id}/${edge}?fields=id,name&limit=200&access_token=${accessToken}`,
+            )
+            const wabaPayload: Record<string, unknown> = await wabaRes.json()
+            if (!wabaRes.ok || wabaPayload?.error) continue
+            const wabas = Array.isArray(wabaPayload.data)
+              ? (wabaPayload.data as Array<{ id: string; name?: string }>)
+              : []
+            for (const waba of wabas) {
+              if (seenWabas.has(waba.id)) continue
+              seenWabas.add(waba.id)
+              businessWabasCount += 1
+              const phonesRes = await fetch(
+                `https://graph.facebook.com/v22.0/${waba.id}/phone_numbers?fields=id,display_phone_number,verified_name&limit=200&access_token=${accessToken}`,
+              )
+              const phonesPayload: Record<string, unknown> = await phonesRes.json()
+              if (!phonesRes.ok || phonesPayload?.error) continue
+              const phones = Array.isArray(phonesPayload.data)
+                ? (phonesPayload.data as Array<{ id: string; display_phone_number?: string; verified_name?: string }>)
+                : []
+              for (const phone of phones) {
+                const phoneText = phone.display_phone_number || ''
+                numbers.push({
+                  id: phone.id,
+                  display: phone.verified_name ? `${phone.verified_name} (${phoneText})` : phoneText || phone.id,
+                  phone: phoneText,
+                  page_id: '',
+                  page_name: business.name || 'Business Manager',
+                })
+              }
+            }
+          }
+        }
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H43',location:'metaApi.ts:fetchWhatsAppNumbersFromMetaDirect:businessFallback',message:'business-level waba fallback executed',data:{businessesCount:businesses.length,businessWabasCount,numbersCount:numbers.length},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+      }
+    } catch {
+      // no-op: business-level fallback is best-effort only
+    }
+  }
+
   // #region agent log
   fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H40',location:'metaApi.ts:fetchWhatsAppNumbersFromMetaDirect:result',message:'direct whatsapp numbers result',data:{numbersCount:numbers.length,hasPageFilter:Boolean(pageId),filteredPagesCount:filteredPages.length},timestamp:Date.now()})}).catch(()=>{});
   // #endregion
