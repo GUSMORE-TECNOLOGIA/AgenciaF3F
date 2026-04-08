@@ -48,6 +48,65 @@ async function fetchAdAccountsFromMetaDirect(accessToken: string): Promise<AdAcc
   return allAccounts
 }
 
+async function fetchIgAccountsForAdAccountDirect(
+  accessToken: string,
+  adAccountId: string,
+): Promise<IgAccountMapping[]> {
+  const igResponse = await fetch(
+    `https://graph.facebook.com/v22.0/${adAccountId}/instagram_accounts?fields=id,username&limit=25&access_token=${accessToken}`,
+  )
+  const igPayload: Record<string, unknown> = await igResponse.json()
+  if (!igResponse.ok || igPayload?.error) {
+    const errorMessage =
+      typeof igPayload?.error === 'object' &&
+      igPayload.error !== null &&
+      'message' in igPayload.error &&
+      typeof (igPayload.error as { message?: unknown }).message === 'string'
+        ? (igPayload.error as { message: string }).message
+        : `Meta Graph error (${igResponse.status})`
+    throw new Error(errorMessage)
+  }
+
+  const igAccounts = Array.isArray(igPayload.data)
+    ? (igPayload.data as Array<{ id: string; username?: string | null }>)
+    : []
+
+  const pagesResponse = await fetch(
+    `https://graph.facebook.com/v22.0/me/accounts?fields=id,name,instagram_business_account{id},whatsapp_business_account{id,name}&limit=200&access_token=${accessToken}`,
+  )
+  const pagesPayload: Record<string, unknown> = await pagesResponse.json()
+  if (!pagesResponse.ok || pagesPayload?.error) {
+    const errorMessage =
+      typeof pagesPayload?.error === 'object' &&
+      pagesPayload.error !== null &&
+      'message' in pagesPayload.error &&
+      typeof (pagesPayload.error as { message?: unknown }).message === 'string'
+        ? (pagesPayload.error as { message: string }).message
+        : `Meta Graph error (${pagesResponse.status})`
+    throw new Error(errorMessage)
+  }
+
+  const pages = Array.isArray(pagesPayload.data)
+    ? (pagesPayload.data as Array<{
+        id: string
+        name?: string
+        instagram_business_account?: { id?: string }
+      }>)
+    : []
+
+  return igAccounts.map((ig) => {
+    const matchedPage = pages.find((page) => page.instagram_business_account?.id === ig.id)
+    return {
+      ig_account_id: ig.id,
+      ig_username: ig.username ?? null,
+      page_id: matchedPage?.id ?? null,
+      page_name: matchedPage?.name ?? null,
+      waba_phone_id: null,
+      waba_phone: null,
+    }
+  })
+}
+
 async function getAuthInvokeOptions() {
   const { data } = await supabase.auth.getSession()
   let accessToken = data.session?.access_token ?? null
@@ -281,6 +340,19 @@ export async function fetchIgAccountsForAdAccount(
     // #region agent log
     fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-identity-ig',hypothesisId:'H2',location:'metaApi.ts:fetchIgAccountsForAdAccount:error',message:'get_ig_accounts failed',data:{contextStatus:details.contextStatus,contextCode:details.contextCode,contextMessage:details.contextMessage,errorMessage:details.errorMessage},timestamp:Date.now()})}).catch(()=>{});
     // #endregion
+    if (details.contextStatus === 401) {
+      try {
+        const fallback = await fetchIgAccountsForAdAccountDirect(accessToken, adAccountId)
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-identity-ig',hypothesisId:'H3',location:'metaApi.ts:fetchIgAccountsForAdAccount:fallbackDirect:success',message:'fallback direct graph for get_ig_accounts succeeded',data:{igAccountsCount:fallback.length,adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        return fallback
+      } catch (fallbackError) {
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-identity-ig',hypothesisId:'H3',location:'metaApi.ts:fetchIgAccountsForAdAccount:fallbackDirect:error',message:'fallback direct graph for get_ig_accounts failed',data:{errorMessage:fallbackError instanceof Error ? fallbackError.message : 'unknown_error',adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+      }
+    }
     throw buildStepError('setup', error, 'Nao foi possivel carregar identidade da conta.')
   }
   // #region agent log
