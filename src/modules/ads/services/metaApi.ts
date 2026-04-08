@@ -18,42 +18,7 @@ import type {
 export type { LocationResult } from '@/modules/ads/types/meta-api'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 type FlowStep = 'setup' | 'campaign' | 'audience' | 'fase3' | 'review'
-
-function readJwtExpMillis(jwt: string | null | undefined): number | null {
-  if (!jwt) return null
-  try {
-    const parts = jwt.split('.')
-    if (parts.length < 2) return null
-    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
-    return typeof payload.exp === 'number' ? payload.exp * 1000 : null
-  } catch {
-    return null
-  }
-}
-
-function readJwtIssuer(jwt: string | null | undefined): string | null {
-  if (!jwt) return null
-  try {
-    const parts = jwt.split('.')
-    if (parts.length < 2) return null
-    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
-    return typeof payload.iss === 'string' ? payload.iss : null
-  } catch {
-    return null
-  }
-}
-
-function extractSupabaseRef(url: string | null | undefined): string | null {
-  if (!url) return null
-  try {
-    const host = new URL(url).hostname
-    return host.split('.')[0] || null
-  } catch {
-    return null
-  }
-}
 
 async function fetchAdAccountsFromMetaDirect(accessToken: string): Promise<AdAccount[]> {
   const allAccounts: AdAccount[] = []
@@ -86,16 +51,10 @@ async function fetchAdAccountsFromMetaDirect(accessToken: string): Promise<AdAcc
 async function getAuthInvokeOptions() {
   const { data } = await supabase.auth.getSession()
   let accessToken = data.session?.access_token ?? null
-  // #region agent log
-  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-auth',hypothesisId:'H1',location:'metaApi.ts:getAuthInvokeOptions:getSession',message:'session snapshot before refresh',data:{hasSessionToken:Boolean(accessToken)},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
 
   if (!accessToken) {
     const { data: refreshed } = await supabase.auth.refreshSession()
     accessToken = refreshed.session?.access_token ?? null
-    // #region agent log
-    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-auth',hypothesisId:'H1',location:'metaApi.ts:getAuthInvokeOptions:refreshSession',message:'session snapshot after refresh attempt',data:{hasRefreshedToken:Boolean(accessToken)},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
   }
 
   if (!accessToken) {
@@ -287,65 +246,21 @@ export async function disconnectMeta() {
 
 export async function fetchAdAccounts(accessToken: string): Promise<AdAccount[]> {
   const authOptions = await getRequiredAuthInvokeOptions('setup')
-  const rawAuthHeader = authOptions.headers?.Authorization ?? null
-  const sessionJwt = rawAuthHeader?.startsWith('Bearer ') ? rawAuthHeader.slice(7) : null
-  const jwtExpMs = readJwtExpMillis(sessionJwt)
-  const jwtIssuer = readJwtIssuer(sessionJwt)
-  const jwtIssuerRef = extractSupabaseRef(jwtIssuer)
-  const configRef = extractSupabaseRef(SUPABASE_URL)
-  const userProbe = await supabase.auth.getUser()
-  // #region agent log
-  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H2',location:'metaApi.ts:fetchAdAccounts:invoke',message:'invoking meta-ad-accounts',data:{hasMetaAccessToken:Boolean(accessToken),hasAuthHeader:Boolean(authOptions.headers?.Authorization),jwtExpiresInMs:jwtExpMs?jwtExpMs-Date.now():null,jwtIssuerRef,configRef,userProbeHasUser:Boolean(userProbe.data.user),userProbeError:userProbe.error?.message??null},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
   const firstTry = await supabase.functions.invoke('meta-ad-accounts', {
     ...authOptions,
     body: { access_token: accessToken },
   })
   if (firstTry.error) {
     const details = extractFunctionErrorDebugData(firstTry.error)
-    // #region agent log
-    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H3',location:'metaApi.ts:fetchAdAccounts:error',message:'meta-ad-accounts failed',data:{contextStatus:details.contextStatus,contextCode:details.contextCode,contextMessage:details.contextMessage,errorMessage:details.errorMessage},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     if (details.contextStatus === 401) {
-      const probeHeaders: Record<string, string> = {
-        'Content-Type': 'application/json',
-        apikey: SUPABASE_ANON_KEY,
-      }
-      if (rawAuthHeader) probeHeaders.Authorization = rawAuthHeader
-      let probeStatus: number | null = null
-      let probeBody = ''
       try {
-        const probeRes = await fetch(`${SUPABASE_URL}/functions/v1/meta-ad-accounts`, {
-          method: 'POST',
-          headers: probeHeaders,
-          body: JSON.stringify({ access_token: accessToken }),
-        })
-        probeStatus = probeRes.status
-        probeBody = await probeRes.text()
-      } catch (probeError) {
-        probeBody = probeError instanceof Error ? probeError.message : 'probe_failed'
-      }
-      // #region agent log
-      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H8',location:'metaApi.ts:fetchAdAccounts:directProbe401',message:'direct fetch probe after invoke 401',data:{probeStatus,probeBodyPreview:probeBody.slice(0,240),hasAuthorizationOnProbe:Boolean(rawAuthHeader)},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
-
-      try {
-        const fallbackAccounts = await fetchAdAccountsFromMetaDirect(accessToken)
-        // #region agent log
-        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H11',location:'metaApi.ts:fetchAdAccounts:fallbackMetaDirect:success',message:'fallback via Meta Graph succeeded after edge 401',data:{fallbackAccountsCount:fallbackAccounts.length},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
-        return fallbackAccounts
-      } catch (fallbackError) {
-        // #region agent log
-        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H11',location:'metaApi.ts:fetchAdAccounts:fallbackMetaDirect:error',message:'fallback via Meta Graph failed',data:{fallbackErrorMessage:fallbackError instanceof Error ? fallbackError.message : 'unknown_error'},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
+        return await fetchAdAccountsFromMetaDirect(accessToken)
+      } catch {
+        // keep original edge error context if fallback also fails
       }
     }
     throw buildStepError('setup', firstTry.error, 'Nao foi possivel carregar contas de anuncios.')
   }
-  // #region agent log
-  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H4',location:'metaApi.ts:fetchAdAccounts:success',message:'meta-ad-accounts succeeded',data:{accountsCount:Array.isArray(firstTry.data?.accounts)?firstTry.data.accounts.length:0},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
   return (firstTry.data?.accounts as AdAccount[]) || []
 }
 
