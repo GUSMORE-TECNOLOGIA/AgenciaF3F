@@ -190,6 +190,29 @@ async function fetchWhatsAppNumbersFromMetaDirect(
   // #region agent log
   fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H39',location:'metaApi.ts:fetchWhatsAppNumbersFromMetaDirect:pages',message:'direct pages loaded for whatsapp discovery',data:{pagesCount:pages.length,pagesWithWabaCount:pagesWithWaba.length,hasPageFilter:Boolean(pageId),pageIdSuffix:pageId ? pageId.slice(-8) : null},timestamp:Date.now()})}).catch(()=>{});
   // #endregion
+  if (pagesWithWaba.length === 0) {
+    try {
+      const permissionsRes = await fetch(
+        `https://graph.facebook.com/v22.0/me/permissions?access_token=${accessToken}`,
+      )
+      const permissionsPayload: Record<string, unknown> = await permissionsRes.json()
+      const permissionsList = Array.isArray(permissionsPayload.data)
+        ? (permissionsPayload.data as Array<{ permission?: string; status?: string }>)
+        : []
+      const interested = ['whatsapp_business_management', 'whatsapp_business_messaging', 'business_management', 'pages_show_list']
+      const summary = Object.fromEntries(
+        interested.map((perm) => {
+          const found = permissionsList.find((item) => item.permission === perm)
+          return [perm, found?.status ?? 'missing']
+        }),
+      )
+      // #region agent log
+      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H42',location:'metaApi.ts:fetchWhatsAppNumbersFromMetaDirect:permissions',message:'permissions snapshot when no WABA pages are visible',data:{permissions:summary,permissionsCount:permissionsList.length},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+    } catch {
+      // no-op: permission diagnostics is best-effort only
+    }
+  }
   const filteredPages = pageId ? pages.filter((page) => page.id === pageId) : pages
   const numbers: WhatsAppNumber[] = []
 
