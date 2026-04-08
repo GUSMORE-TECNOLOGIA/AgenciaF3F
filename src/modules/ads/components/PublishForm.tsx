@@ -363,7 +363,13 @@ export default function PublishForm() {
 
       if (!foundIgActorId) {
         setIdentityError("Nenhuma conta Instagram autorizada encontrada para esta conta de anúncios.");
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-account-context',hypothesisId:'H9',location:'PublishForm.tsx:loadAccountContext:noIdentity',message:'identity pipeline completed without ig actor',data:{selectedAccountSuffix:selectedAccount.slice(-8),hasPage:Boolean(foundPageId)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
       }
+      // #region agent log
+      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-account-context',hypothesisId:'H10',location:'PublishForm.tsx:loadAccountContext:complete',message:'identity pipeline completed',data:{selectedAccountSuffix:selectedAccount.slice(-8),hasPage:Boolean(foundPageId),hasIgActor:Boolean(foundIgActorId),hasWhatsapp:Boolean(foundWhatsappId)},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       addLog(`✅ [pipeline] identidade final: page=${foundPageId}, ig_actor=${foundIgActorId}, ig_user=@${foundIgUsername || "N/A"}, whatsapp_id=${foundWhatsappId || "N/A"}, whatsapp_phone=${foundWhatsappPhone || "N/A"}`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Erro";

@@ -70,6 +70,9 @@ async function fetchIgAccountsForAdAccountDirect(
   const igAccounts = Array.isArray(igPayload.data)
     ? (igPayload.data as Array<{ id: string; username?: string | null }>)
     : []
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-identity-ig',hypothesisId:'H6',location:'metaApi.ts:fetchIgAccountsForAdAccountDirect:igAccounts',message:'direct instagram_accounts response parsed',data:{igAccountsCount:igAccounts.length,adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
 
   const pagesResponse = await fetch(
     `https://graph.facebook.com/v22.0/me/accounts?fields=id,name,instagram_business_account{id},whatsapp_business_account{id,name}&limit=200&access_token=${accessToken}`,
@@ -93,8 +96,12 @@ async function fetchIgAccountsForAdAccountDirect(
         instagram_business_account?: { id?: string }
       }>)
     : []
+  const pagesWithInstagram = pages.filter((page) => Boolean(page.instagram_business_account?.id))
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-identity-ig',hypothesisId:'H7',location:'metaApi.ts:fetchIgAccountsForAdAccountDirect:pages',message:'direct me/accounts response parsed',data:{pagesCount:pages.length,pagesWithInstagramCount:pagesWithInstagram.length,adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
 
-  return igAccounts.map((ig) => {
+  const mappedIgAccounts = igAccounts.map((ig) => {
     const matchedPage = pages.find((page) => page.instagram_business_account?.id === ig.id)
     return {
       ig_account_id: ig.id,
@@ -105,6 +112,10 @@ async function fetchIgAccountsForAdAccountDirect(
       waba_phone: null,
     }
   })
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-identity-ig',hypothesisId:'H8',location:'metaApi.ts:fetchIgAccountsForAdAccountDirect:mapped',message:'direct ig accounts mapped with pages',data:{mappedCount:mappedIgAccounts.length,mappedWithPageCount:mappedIgAccounts.filter((item)=>Boolean(item.page_id)).length,adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
+  return mappedIgAccounts
 }
 
 async function getAuthInvokeOptions() {
