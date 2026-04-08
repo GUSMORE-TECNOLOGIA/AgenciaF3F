@@ -215,6 +215,40 @@ async function fetchWhatsAppNumbersFromMetaDirect(
   return numbers
 }
 
+async function fetchCampaignDiagnosticFromMetaDirect(
+  accessToken: string,
+  adAccountId: string,
+): Promise<DiagnosticResponse> {
+  const allCampaigns: Array<Record<string, unknown>> = []
+  let url: string | null =
+    `https://graph.facebook.com/v22.0/${adAccountId}/campaigns` +
+    `?fields=id,name,status,objective,buying_type,daily_budget,lifetime_budget,created_time,start_time,stop_time` +
+    `&limit=100&access_token=${accessToken}`
+
+  while (url) {
+    const response = await fetch(url)
+    const payload: Record<string, unknown> = await response.json()
+    if (!response.ok || payload?.error) {
+      throw new Error(getMetaGraphErrorMessage(payload, response.status))
+    }
+    const pageData = Array.isArray(payload.data) ? (payload.data as Array<Record<string, unknown>>) : []
+    allCampaigns.push(...pageData)
+    const paging = payload.paging as { next?: unknown } | undefined
+    url = typeof paging?.next === 'string' ? paging.next : null
+  }
+
+  return {
+    ok: true,
+    source: 'direct_graph_fallback',
+    total_campaigns: allCampaigns.length,
+    fetched_at: new Date().toISOString(),
+    diagnostic: {
+      campaigns: allCampaigns,
+    },
+    logs: ['fallback direto: campanhas carregadas via Graph API'],
+  }
+}
+
 async function getAuthInvokeOptions() {
   const { data } = await supabase.auth.getSession()
   let accessToken = data.session?.access_token ?? null
@@ -647,12 +681,37 @@ export async function runCampaignDiagnostic(
   adAccountId: string,
 ): Promise<DiagnosticResponse> {
   const authOptions = await getRequiredAuthInvokeOptions('campaign')
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-campaign-diagnostic',hypothesisId:'H23',location:'metaApi.ts:runCampaignDiagnostic:invoke',message:'invoking meta-campaign-diagnostic',data:{hasMetaAccessToken:Boolean(accessToken),hasAuthHeader:Boolean(authOptions.headers?.Authorization),adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const { data, error } = await supabase.functions.invoke('meta-campaign-diagnostic', {
     ...authOptions,
     body: { access_token: accessToken, ad_account_id: adAccountId },
   })
   if (error && data) return data
-  if (error) throw buildStepError('campaign', error, 'Erro no diagnostico de campanhas.')
+  if (error) {
+    const details = extractFunctionErrorDebugData(error)
+    // #region agent log
+    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-campaign-diagnostic',hypothesisId:'H24',location:'metaApi.ts:runCampaignDiagnostic:error',message:'meta-campaign-diagnostic failed',data:{contextStatus:details.contextStatus,contextCode:details.contextCode,contextMessage:details.contextMessage,errorMessage:details.errorMessage,adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    if (details.contextStatus === 401) {
+      try {
+        const fallback = await fetchCampaignDiagnosticFromMetaDirect(accessToken, adAccountId)
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-campaign-diagnostic',hypothesisId:'H25',location:'metaApi.ts:runCampaignDiagnostic:fallbackDirect:success',message:'fallback direct graph for campaign diagnostic succeeded',data:{totalCampaigns:typeof fallback.total_campaigns==='number'?fallback.total_campaigns:null,adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        return fallback
+      } catch (fallbackError) {
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-campaign-diagnostic',hypothesisId:'H25',location:'metaApi.ts:runCampaignDiagnostic:fallbackDirect:error',message:'fallback direct graph for campaign diagnostic failed',data:{errorMessage:fallbackError instanceof Error ? fallbackError.message : 'unknown_error',adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+      }
+    }
+    throw buildStepError('campaign', error, 'Erro no diagnostico de campanhas.')
+  }
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-campaign-diagnostic',hypothesisId:'H26',location:'metaApi.ts:runCampaignDiagnostic:success',message:'meta-campaign-diagnostic succeeded',data:{hasData:Boolean(data),adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   return data as DiagnosticResponse
 }
 
