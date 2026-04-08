@@ -426,8 +426,13 @@ export default function PublishForm() {
       const accounts = await fetchAdAccounts(accessToken);
       setAdAccounts(accounts);
       addLog(`✅ ${accounts.length} conta(s) encontrada(s)`);
+      if (accounts.length === 0) {
+        toast.warning("Nenhuma conta de anúncios retornada pela Meta para esta conexão.");
+      }
     } catch (err: unknown) {
-      addLog(`❌ Erro ao carregar contas: ${err instanceof Error ? err.message : "Erro"}`);
+      const message = err instanceof Error ? err.message : "Erro";
+      addLog(`❌ Erro ao carregar contas: ${message}`);
+      toast.error(message);
     }
   };
 

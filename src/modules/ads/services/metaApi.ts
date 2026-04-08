@@ -190,7 +190,9 @@ export async function disconnectMeta() {
 }
 
 export async function fetchAdAccounts(accessToken: string): Promise<AdAccount[]> {
+  const authOptions = await getAuthInvokeOptions()
   const { data, error } = await supabase.functions.invoke('meta-ad-accounts', {
+    ...authOptions,
     body: { access_token: accessToken },
   })
   if (error) throw buildStepError('setup', error, 'Nao foi possivel carregar contas de anuncios.')
@@ -201,7 +203,9 @@ export async function fetchIgAccountsForAdAccount(
   accessToken: string,
   adAccountId: string,
 ): Promise<IgAccountMapping[]> {
+  const authOptions = await getAuthInvokeOptions()
   const { data, error } = await supabase.functions.invoke('meta-ad-accounts', {
+    ...authOptions,
     body: { access_token: accessToken, action: 'get_ig_accounts', ad_account_id: adAccountId },
   })
   if (error) throw buildStepError('setup', error, 'Nao foi possivel carregar identidade da conta.')
@@ -209,7 +213,9 @@ export async function fetchIgAccountsForAdAccount(
 }
 
 export async function fetchAudiences(accessToken: string, adAccountId: string): Promise<Audience[]> {
+  const authOptions = await getAuthInvokeOptions()
   const { data, error } = await supabase.functions.invoke('meta-audiences', {
+    ...authOptions,
     body: { access_token: accessToken, ad_account_id: adAccountId },
   })
   if (error) throw buildStepError('audience', error, 'Nao foi possivel carregar publicos.')
@@ -217,7 +223,9 @@ export async function fetchAudiences(accessToken: string, adAccountId: string): 
 }
 
 export async function validatePublish(params: Record<string, unknown>): Promise<ValidationResponse> {
+  const authOptions = await getAuthInvokeOptions()
   const { data, error } = await supabase.functions.invoke('meta-publish-validate', {
+    ...authOptions,
     body: params,
   })
   if (error && data) return data
@@ -226,7 +234,9 @@ export async function validatePublish(params: Record<string, unknown>): Promise<
 }
 
 export async function validateCreative(params: Record<string, unknown>): Promise<ValidationResponse> {
+  const authOptions = await getAuthInvokeOptions()
   const { data, error } = await supabase.functions.invoke('meta-validate-creative', {
+    ...authOptions,
     body: params,
   })
   if (error && data) return data
@@ -235,7 +245,9 @@ export async function validateCreative(params: Record<string, unknown>): Promise
 }
 
 export async function fetchCampaigns(accessToken: string, adAccountId: string): Promise<Campaign[]> {
+  const authOptions = await getAuthInvokeOptions()
   const { data, error } = await supabase.functions.invoke('meta-campaigns', {
+    ...authOptions,
     body: { access_token: accessToken, ad_account_id: adAccountId },
   })
   if (error) throw buildStepError('campaign', error, 'Nao foi possivel carregar campanhas.')
@@ -247,7 +259,9 @@ export async function fetchWhatsAppNumbers(
   adAccountId?: string,
   pageId?: string,
 ): Promise<WhatsAppNumber[]> {
+  const authOptions = await getAuthInvokeOptions()
   const { data, error } = await supabase.functions.invoke('meta-whatsapp-numbers', {
+    ...authOptions,
     body: { access_token: accessToken, ad_account_id: adAccountId, page_id: pageId },
   })
   if (error) throw buildStepError('fase3', error, 'Nao foi possivel carregar numeros de WhatsApp.')
@@ -255,7 +269,9 @@ export async function fetchWhatsAppNumbers(
 }
 
 export async function searchLocations(accessToken: string, query: string): Promise<LocationResult[]> {
+  const authOptions = await getAuthInvokeOptions()
   const { data, error } = await supabase.functions.invoke('meta-location-search', {
+    ...authOptions,
     body: { access_token: accessToken, query },
   })
   if (error) throw buildStepError('fase3', error, 'Nao foi possivel buscar localizacoes.')
@@ -263,7 +279,9 @@ export async function searchLocations(accessToken: string, query: string): Promi
 }
 
 export async function publishAd(params: Record<string, unknown>): Promise<PublishResponse> {
+  const authOptions = await getAuthInvokeOptions()
   const { data, error } = await supabase.functions.invoke('meta-publish', {
+    ...authOptions,
     body: params,
   })
   if (error && data) return data as PublishResponse
@@ -289,7 +307,9 @@ export async function publishAd(params: Record<string, unknown>): Promise<Publis
 export async function runFase3Diagnostic(
   params: Record<string, unknown>,
 ): Promise<DiagnosticResponse> {
+  const authOptions = await getAuthInvokeOptions()
   const { data, error } = await supabase.functions.invoke('meta-fase3-diagnostic', {
+    ...authOptions,
     body: params,
   })
   if (error && data) return data
@@ -301,7 +321,9 @@ export async function runCampaignDiagnostic(
   accessToken: string,
   adAccountId: string,
 ): Promise<DiagnosticResponse> {
+  const authOptions = await getAuthInvokeOptions()
   const { data, error } = await supabase.functions.invoke('meta-campaign-diagnostic', {
+    ...authOptions,
     body: { access_token: accessToken, ad_account_id: adAccountId },
   })
   if (error && data) return data
@@ -315,7 +337,9 @@ export async function runFase1Diagnostic(params: {
   bad_ad_id: string
   ad_account_id?: string
 }): Promise<DiagnosticResponse> {
+  const authOptions = await getAuthInvokeOptions()
   const { data, error } = await supabase.functions.invoke('meta-fase1-diagnostic', {
+    ...authOptions,
     body: params,
   })
   if (error && data) return data
@@ -328,7 +352,9 @@ export async function runAdsetDiff(params: {
   ad_account_id: string
   app_adset_payload?: Record<string, unknown>
 }): Promise<DiagnosticResponse> {
+  const authOptions = await getAuthInvokeOptions()
   const { data, error } = await supabase.functions.invoke('meta-adset-diff', {
+    ...authOptions,
     body: params,
   })
   if (error && data) return data
