@@ -261,10 +261,20 @@ export default function PublishForm() {
   useEffect(() => {
     setValidatedPayload(null);
     setValidationResult(null);
+    // #region agent log
+    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-publish-gate',hypothesisId:'H31',location:'PublishForm.tsx:invalidateValidationPayload:effect',message:'validation payload invalidated by form-state change',data:{hasValidatedPayload:Boolean(validatedPayload),hasValidationResult:Boolean(validationResult),creativesCount:creatives.length,budget,selectedAccountSuffix:selectedAccount ? selectedAccount.slice(-8) : null},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
   }, [selectedAccount, selectedAudience, budget, preset, campaignStructure, distributionStructure,
       selectedCampaign, selectedWhatsappId, greetingText, readyMessage, selectedTemplateId,
       useCustomMessage, creatives, scheduleEnabled, scheduleDate, scheduleTime,
       includedLocations, excludedLocations, campaignNameInput, adsetNameInput]);
+
+  useEffect(() => {
+    const publishBlockedByBudget = !!minBudget && Number(budget) < minBudget;
+    // #region agent log
+    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-publish-gate',hypothesisId:'H32',location:'PublishForm.tsx:publishButtonGate:effect',message:'publish button gate snapshot',data:{loading,hasValidatedPayload:Boolean(validatedPayload),isValidationValid:Boolean(validationResult?.valid),minBudget,budgetNumber:Number(budget || 0),blockedByBudget:publishBlockedByBudget,isPublishEnabled:!(loading || !validatedPayload || !validationResult?.valid || publishBlockedByBudget)},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+  }, [loading, validatedPayload, validationResult, minBudget, budget]);
 
   const loadAccountContext = async () => {
     if (!accessToken || !selectedAccount) return;
@@ -849,6 +859,9 @@ export default function PublishForm() {
         utm_template: UTM_TEMPLATE,
       };
       setValidatedPayload(payload);
+      // #region agent log
+      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-publish-gate',hypothesisId:'H33',location:'PublishForm.tsx:handleValidate:setValidatedPayload',message:'validated payload stored after successful validation',data:{hasPayload:true,budget:Number(budget),creativesCount:finalCreatives.length,campaignStructure},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       addLog("✅ [validate] Payload completo construído e armazenado para publicação");
       addLog(`📋 [validate] campaign_name: ${payload.campaign_name}`);
       addLog(`📋 [validate] adset_name: ${payload.adset_name}`);
