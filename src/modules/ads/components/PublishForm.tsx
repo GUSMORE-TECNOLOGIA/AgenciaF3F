@@ -184,6 +184,21 @@ export default function PublishForm() {
   const checkMetaStatus = async (options?: { ignoreCache?: boolean; forceVerify?: boolean }) => {
     setMetaLoading(true);
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      let hasAppSession = Boolean(sessionData.session?.access_token);
+      if (!hasAppSession) {
+        const { data: refreshedSession } = await supabase.auth.refreshSession();
+        hasAppSession = Boolean(refreshedSession.session?.access_token);
+      }
+      if (!hasAppSession) {
+        setAccessToken(null);
+        setMetaName("");
+        sessionStorage.removeItem("meta_status_cache");
+        addLog("⚠️ Sessão do app expirada. Faça login novamente para sincronizar com a Meta.");
+        toast.error("Sessão expirada. Faça login novamente.");
+        return;
+      }
+
       // Check sessionStorage cache first to avoid hitting API on every page load
       const cached = sessionStorage.getItem("meta_status_cache");
       if (!options?.ignoreCache && cached) {

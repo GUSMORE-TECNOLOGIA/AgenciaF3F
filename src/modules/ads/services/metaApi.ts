@@ -22,7 +22,12 @@ type FlowStep = 'setup' | 'campaign' | 'audience' | 'fase3' | 'review'
 
 async function getAuthInvokeOptions() {
   const { data } = await supabase.auth.getSession()
-  const accessToken = data.session?.access_token ?? null
+  let accessToken = data.session?.access_token ?? null
+
+  if (!accessToken) {
+    const { data: refreshed } = await supabase.auth.refreshSession()
+    accessToken = refreshed.session?.access_token ?? null
+  }
 
   if (!accessToken) {
     return {}
