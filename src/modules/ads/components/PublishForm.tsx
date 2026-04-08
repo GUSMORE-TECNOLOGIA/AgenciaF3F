@@ -39,10 +39,6 @@ import type { LocationItem } from "@/modules/ads/components/LocationSelector";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/services/supabase";
 import { useLocation } from "react-router-dom";
-import { useAdsPublishFlow } from "@/modules/ads/hooks/useAdsPublishFlow";
-import { PublishFlowStepper } from "@/modules/ads/components/PublishFlow/PublishFlowStepper";
-import { PublishFlowTabs } from "@/modules/ads/components/PublishFlow/PublishFlowTabs";
-import { PublishFlowActionBar } from "@/modules/ads/components/PublishFlow/PublishFlowActionBar";
 
 interface MessageTemplate { id: string; name: string; greeting: string; ready_message: string }
 interface ErrorDetails { message?: string; error_user_title?: string; error_user_msg?: string; code?: number | null; error_subcode?: number | null; error_data?: any }
@@ -655,22 +651,6 @@ export default function PublishForm() {
     return !!(identityPageId && identityIgActorId && !isNaN(Number(identityIgActorId)));
   };
 
-  const hasCampaignContext =
-    (campaignStructure === "existing" && !!selectedCampaign) ||
-    (campaignStructure === "new" && !!campaignNameInput.trim() && creativesValid());
-
-  const hasFase3RequiredFields = !isFase3 || (!!selectedWhatsappId && (!!selectedTemplateId || (!!greetingText.trim() && !!readyMessage.trim())));
-
-  const flow = useAdsPublishFlow({
-    isFase3,
-    hasAccessToken: !!accessToken,
-    hasSelectedAccount: !!selectedAccount,
-    hasSelectedCampaignContext: hasCampaignContext,
-    hasAudience: !!selectedAudience,
-    hasBudget: Number(budget) > 0,
-    hasFase3RequiredFields,
-  });
-
   const handleValidate = async () => {
     const t0 = performance.now();
     addLog("⏱️ [validate] Início da validação completa");
@@ -1068,14 +1048,7 @@ export default function PublishForm() {
       {accessToken && (
         <div className={`grid gap-6 ${hasSummaryCard ? "xl:grid-cols-[minmax(0,1fr)_360px]" : ""}`}>
           <div className="space-y-6">
-            <PublishFlowStepper
-              steps={flow.steps}
-              activeStep={flow.activeStep}
-              enabledByStep={flow.enabledByStep}
-              onStepClick={flow.goToStep}
-            />
-
-            {flow.activeStep === "setup" && (
+            {(
               <>
                 <Card className="glass-card p-6 space-y-4">
                   <Label className="font-display font-semibold text-sm">Conta de Anúncios ({adAccounts.length})</Label>
@@ -1142,19 +1115,9 @@ export default function PublishForm() {
               </>
             )}
 
-            {flow.activeStep === "campaign" && (
+            {(
               <>
-                <PublishFlowTabs
-                  tabs={[
-                    { id: "campaign", label: "Estrutura" },
-                    { id: "naming", label: "Nomes" },
-                    { id: "creatives", label: "Criativos" },
-                  ]}
-                  activeTab={flow.campaignTab}
-                  onTabChange={flow.setCampaignTab}
-                />
-
-                {flow.campaignTab === "campaign" && (
+                {(
                   <>
                     <Card className="glass-card p-6 space-y-4">
                       <div className="flex items-center gap-2">
@@ -1235,7 +1198,7 @@ export default function PublishForm() {
                   </>
                 )}
 
-                {flow.campaignTab === "naming" && (
+                {(
                   <Card className="glass-card p-6 space-y-4">
                     <Label className="font-display font-semibold text-sm">Nomes</Label>
                     {campaignStructure === "new" && (
@@ -1266,7 +1229,7 @@ export default function PublishForm() {
                   </Card>
                 )}
 
-                {flow.campaignTab === "creatives" && (
+                {(
                   <Card className="glass-card p-6 space-y-4">
                     <div className="flex items-center justify-between">
                       <Label className="font-display font-semibold text-sm">
@@ -1352,19 +1315,9 @@ export default function PublishForm() {
               </>
             )}
 
-            {flow.activeStep === "audience" && (
+            {(
               <>
-                <PublishFlowTabs
-                  tabs={[
-                    { id: "audience", label: "Publico" },
-                    { id: "budget", label: "Orcamento" },
-                    { id: "schedule", label: "Agendamento" },
-                  ]}
-                  activeTab={flow.audienceTab}
-                  onTabChange={flow.setAudienceTab}
-                />
-
-                {flow.audienceTab === "audience" && (
+                {(
                   <Card className="glass-card p-6 space-y-4">
                     <Label className="font-display font-semibold text-sm">
                       Público {audiences.length > 0 && `(${audiences.length})`}
@@ -1391,7 +1344,7 @@ export default function PublishForm() {
                   </Card>
                 )}
 
-                {flow.audienceTab === "budget" && (
+                {(
                   <Card className="glass-card p-6 space-y-4">
                     <Label className="font-display font-semibold text-sm">{budgetLabel}</Label>
                     <Input
@@ -1414,7 +1367,7 @@ export default function PublishForm() {
                   </Card>
                 )}
 
-                {flow.audienceTab === "schedule" && (
+                {(
                   <Card className="glass-card p-6 space-y-4">
                     <div className="flex items-center gap-3">
                       <Checkbox id="schedule-toggle" checked={scheduleEnabled} onCheckedChange={(c) => setScheduleEnabled(!!c)} />
@@ -1453,7 +1406,7 @@ export default function PublishForm() {
               </>
             )}
 
-            {flow.activeStep === "fase3" && (
+            {(
               <>
                 {isFase3 ? (
                   <Card className="glass-card p-6 space-y-5 border-accent/30">
@@ -1516,7 +1469,7 @@ export default function PublishForm() {
               </>
             )}
 
-            {flow.activeStep === "review" && (
+            {(
               <>
                 <Card className="glass-card p-4 border-primary/20">
                   <p className="text-sm text-muted-foreground">
@@ -1655,13 +1608,6 @@ export default function PublishForm() {
               </>
             )}
 
-            <PublishFlowActionBar
-              canGoBack={flow.canGoBack}
-              canGoNext={flow.canGoNext}
-              onBack={flow.goBack}
-              onNext={flow.goNext}
-              isReviewStep={flow.activeStep === "review"}
-            />
           </div>
 
           {hasSummaryCard && <aside className="hidden xl:block">
