@@ -35,6 +35,15 @@ async function getAuthInvokeOptions() {
   }
 }
 
+async function getRequiredAuthInvokeOptions(step: FlowStep) {
+  const options = await getAuthInvokeOptions()
+  const hasAuthHeader = Boolean(options.headers?.Authorization)
+  if (!hasAuthHeader) {
+    throw new Error(formatStepError(step, 'Sessao expirada. Faca login novamente para continuar.'))
+  }
+  return options
+}
+
 async function diagnoseMetaStatus401() {
   const { data: userData, error: userError } = await supabase.auth.getUser()
   const userId = userData.user?.id ?? null
@@ -83,9 +92,22 @@ async function fallbackMetaStatusFromDb(): Promise<MetaStatusResponse> {
 function extractFunctionErrorMessage(error: unknown) {
   if (!error) return 'Erro desconhecido'
   if (typeof error === 'object' && error !== null) {
-    const err = error as { message?: string; context?: { error?: string; message?: string; code?: string } }
+    const err = error as {
+      message?: string
+      context?: { error?: string; message?: string; code?: string; status?: number; statusText?: string }
+    }
     if (typeof err.context?.message === 'string') return err.context.message
     if (typeof err.context?.error === 'string') return err.context.error
+    if (err.message === 'Edge Function returned a non-2xx status code') {
+      const status = err.context?.status
+      if (status === 401) return 'Sessao invalida/expirada ao chamar a Edge Function. Faca login novamente.'
+      if (status === 400) return 'Token Meta invalido ou expirado. Reconecte sua conta Meta.'
+      if (status === 403) return 'Permissao negada na Edge Function para esta operacao.'
+      if (status === 404) return 'Edge Function nao encontrada no ambiente atual.'
+      if (status === 429) return 'Meta/Supabase limitou requisicoes. Aguarde alguns segundos e tente novamente.'
+      if (status && status >= 500) return 'Falha interna da Edge Function. Tente novamente em instantes.'
+      if (status) return `Edge Function retornou status ${status}${err.context?.statusText ? ` (${err.context.statusText})` : ''}.`
+    }
     if (typeof err.message === 'string') return err.message
   }
   return 'Erro desconhecido'
@@ -190,7 +212,7 @@ export async function disconnectMeta() {
 }
 
 export async function fetchAdAccounts(accessToken: string): Promise<AdAccount[]> {
-  const authOptions = await getAuthInvokeOptions()
+  const authOptions = await getRequiredAuthInvokeOptions('setup')
   const { data, error } = await supabase.functions.invoke('meta-ad-accounts', {
     ...authOptions,
     body: { access_token: accessToken },
@@ -203,7 +225,7 @@ export async function fetchIgAccountsForAdAccount(
   accessToken: string,
   adAccountId: string,
 ): Promise<IgAccountMapping[]> {
-  const authOptions = await getAuthInvokeOptions()
+  const authOptions = await getRequiredAuthInvokeOptions('setup')
   const { data, error } = await supabase.functions.invoke('meta-ad-accounts', {
     ...authOptions,
     body: { access_token: accessToken, action: 'get_ig_accounts', ad_account_id: adAccountId },
@@ -213,7 +235,7 @@ export async function fetchIgAccountsForAdAccount(
 }
 
 export async function fetchAudiences(accessToken: string, adAccountId: string): Promise<Audience[]> {
-  const authOptions = await getAuthInvokeOptions()
+  const authOptions = await getRequiredAuthInvokeOptions('audience')
   const { data, error } = await supabase.functions.invoke('meta-audiences', {
     ...authOptions,
     body: { access_token: accessToken, ad_account_id: adAccountId },
@@ -223,7 +245,7 @@ export async function fetchAudiences(accessToken: string, adAccountId: string): 
 }
 
 export async function validatePublish(params: Record<string, unknown>): Promise<ValidationResponse> {
-  const authOptions = await getAuthInvokeOptions()
+  const authOptions = await getRequiredAuthInvokeOptions('review')
   const { data, error } = await supabase.functions.invoke('meta-publish-validate', {
     ...authOptions,
     body: params,
@@ -234,7 +256,7 @@ export async function validatePublish(params: Record<string, unknown>): Promise<
 }
 
 export async function validateCreative(params: Record<string, unknown>): Promise<ValidationResponse> {
-  const authOptions = await getAuthInvokeOptions()
+  const authOptions = await getRequiredAuthInvokeOptions('campaign')
   const { data, error } = await supabase.functions.invoke('meta-validate-creative', {
     ...authOptions,
     body: params,
@@ -245,7 +267,7 @@ export async function validateCreative(params: Record<string, unknown>): Promise
 }
 
 export async function fetchCampaigns(accessToken: string, adAccountId: string): Promise<Campaign[]> {
-  const authOptions = await getAuthInvokeOptions()
+  const authOptions = await getRequiredAuthInvokeOptions('campaign')
   const { data, error } = await supabase.functions.invoke('meta-campaigns', {
     ...authOptions,
     body: { access_token: accessToken, ad_account_id: adAccountId },
@@ -259,7 +281,7 @@ export async function fetchWhatsAppNumbers(
   adAccountId?: string,
   pageId?: string,
 ): Promise<WhatsAppNumber[]> {
-  const authOptions = await getAuthInvokeOptions()
+  const authOptions = await getRequiredAuthInvokeOptions('fase3')
   const { data, error } = await supabase.functions.invoke('meta-whatsapp-numbers', {
     ...authOptions,
     body: { access_token: accessToken, ad_account_id: adAccountId, page_id: pageId },
@@ -269,7 +291,7 @@ export async function fetchWhatsAppNumbers(
 }
 
 export async function searchLocations(accessToken: string, query: string): Promise<LocationResult[]> {
-  const authOptions = await getAuthInvokeOptions()
+  const authOptions = await getRequiredAuthInvokeOptions('fase3')
   const { data, error } = await supabase.functions.invoke('meta-location-search', {
     ...authOptions,
     body: { access_token: accessToken, query },
@@ -279,7 +301,7 @@ export async function searchLocations(accessToken: string, query: string): Promi
 }
 
 export async function publishAd(params: Record<string, unknown>): Promise<PublishResponse> {
-  const authOptions = await getAuthInvokeOptions()
+  const authOptions = await getRequiredAuthInvokeOptions('review')
   const { data, error } = await supabase.functions.invoke('meta-publish', {
     ...authOptions,
     body: params,
@@ -307,7 +329,7 @@ export async function publishAd(params: Record<string, unknown>): Promise<Publis
 export async function runFase3Diagnostic(
   params: Record<string, unknown>,
 ): Promise<DiagnosticResponse> {
-  const authOptions = await getAuthInvokeOptions()
+  const authOptions = await getRequiredAuthInvokeOptions('fase3')
   const { data, error } = await supabase.functions.invoke('meta-fase3-diagnostic', {
     ...authOptions,
     body: params,
@@ -321,7 +343,7 @@ export async function runCampaignDiagnostic(
   accessToken: string,
   adAccountId: string,
 ): Promise<DiagnosticResponse> {
-  const authOptions = await getAuthInvokeOptions()
+  const authOptions = await getRequiredAuthInvokeOptions('campaign')
   const { data, error } = await supabase.functions.invoke('meta-campaign-diagnostic', {
     ...authOptions,
     body: { access_token: accessToken, ad_account_id: adAccountId },
@@ -337,7 +359,7 @@ export async function runFase1Diagnostic(params: {
   bad_ad_id: string
   ad_account_id?: string
 }): Promise<DiagnosticResponse> {
-  const authOptions = await getAuthInvokeOptions()
+  const authOptions = await getRequiredAuthInvokeOptions('campaign')
   const { data, error } = await supabase.functions.invoke('meta-fase1-diagnostic', {
     ...authOptions,
     body: params,
@@ -352,7 +374,7 @@ export async function runAdsetDiff(params: {
   ad_account_id: string
   app_adset_payload?: Record<string, unknown>
 }): Promise<DiagnosticResponse> {
-  const authOptions = await getAuthInvokeOptions()
+  const authOptions = await getRequiredAuthInvokeOptions('campaign')
   const { data, error } = await supabase.functions.invoke('meta-adset-diff', {
     ...authOptions,
     body: params,
