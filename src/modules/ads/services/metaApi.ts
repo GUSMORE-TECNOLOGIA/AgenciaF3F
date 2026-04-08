@@ -397,6 +397,47 @@ function buildStepError(step: FlowStep, error: unknown, fallbackMessage: string)
   return new Error(formatStepError(step, message))
 }
 
+function validateCreativeDirectFallback(params: Record<string, unknown>): ValidationResponse {
+  const creativeLink = typeof params.creative_link === 'string' ? params.creative_link.trim() : ''
+  const creativeType = typeof params.creative_type === 'string' ? params.creative_type : ''
+
+  if (!creativeLink) {
+    return { ok: false, error: 'Link do criativo ausente.' }
+  }
+
+  let parsedUrl: URL | null = null
+  try {
+    parsedUrl = new URL(creativeLink)
+  } catch {
+    return { ok: false, error: 'Link invalido. Informe uma URL completa (https://...).', suggest_drive: true }
+  }
+
+  const host = parsedUrl.hostname.toLowerCase()
+  const path = parsedUrl.pathname.toLowerCase()
+
+  if (creativeType === 'instagram') {
+    const isInstagramHost = host.includes('instagram.com')
+    const hasSupportedPath =
+      path.includes('/reel/') || path.includes('/p/') || path.includes('/stories/') || path.includes('/tv/')
+    if (!isInstagramHost || !hasSupportedPath) {
+      return {
+        ok: false,
+        error: 'Para criativo Instagram, use link valido de post/reel/story/tv do Instagram.',
+        suggest_drive: true,
+      }
+    }
+  }
+
+  if (creativeType === 'drive') {
+    const isDriveHost = host.includes('drive.google.com') || host.includes('docs.google.com')
+    if (!isDriveHost) {
+      return { ok: false, error: 'Para criativo Drive, use link do Google Drive/Docs.' }
+    }
+  }
+
+  return { ok: true, source: 'direct_fallback' }
+}
+
 export function getMetaLoginUrl() {
   const redirectUri = getAdsMetaOAuthRedirectUri()
   const url = new URL(`${SUPABASE_URL}/functions/v1/meta-login`)
@@ -568,12 +609,31 @@ export async function validatePublish(params: Record<string, unknown>): Promise<
 
 export async function validateCreative(params: Record<string, unknown>): Promise<ValidationResponse> {
   const authOptions = await getRequiredAuthInvokeOptions('campaign')
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-validate-creative',hypothesisId:'H27',location:'metaApi.ts:validateCreative:invoke',message:'invoking meta-validate-creative',data:{hasAuthHeader:Boolean(authOptions.headers?.Authorization),creativeType:typeof params.creative_type==='string'?params.creative_type:'unknown'},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const { data, error } = await supabase.functions.invoke('meta-validate-creative', {
     ...authOptions,
     body: params,
   })
   if (error && data) return data
-  if (error) throw buildStepError('campaign', error, 'Falha na validacao do criativo.')
+  if (error) {
+    const details = extractFunctionErrorDebugData(error)
+    // #region agent log
+    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-validate-creative',hypothesisId:'H28',location:'metaApi.ts:validateCreative:error',message:'meta-validate-creative failed',data:{contextStatus:details.contextStatus,contextCode:details.contextCode,contextMessage:details.contextMessage,errorMessage:details.errorMessage},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    if (details.contextStatus === 401) {
+      const fallback = validateCreativeDirectFallback(params)
+      // #region agent log
+      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-validate-creative',hypothesisId:'H29',location:'metaApi.ts:validateCreative:fallbackDirect',message:'fallback direct validation used',data:{ok:fallback.ok,error:fallback.error ?? null,suggestDrive:Boolean(fallback.suggest_drive)},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      return fallback
+    }
+    throw buildStepError('campaign', error, 'Falha na validacao do criativo.')
+  }
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-validate-creative',hypothesisId:'H30',location:'metaApi.ts:validateCreative:success',message:'meta-validate-creative succeeded',data:{ok:Boolean((data as ValidationResponse | null)?.ok)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   return data as ValidationResponse
 }
 
