@@ -55,23 +55,40 @@ function extractSupabaseRef(url: string | null | undefined): string | null {
   }
 }
 
+async function fetchAdAccountsFromMetaDirect(accessToken: string): Promise<AdAccount[]> {
+  const allAccounts: AdAccount[] = []
+  let url: string | null = `https://graph.facebook.com/v22.0/me/adaccounts?fields=id,name&limit=50&access_token=${accessToken}`
+
+  while (url) {
+    const response: Response = await fetch(url)
+    const payload: Record<string, unknown> = await response.json()
+    if (!response.ok || payload?.error) {
+      const errorMessage =
+        typeof payload?.error === 'object' &&
+        payload.error !== null &&
+        'message' in payload.error &&
+        typeof (payload.error as { message?: unknown }).message === 'string'
+          ? (payload.error as { message: string }).message
+          : `Meta Graph error (${response.status})`
+      throw new Error(errorMessage)
+    }
+    const data = Array.isArray(payload.data) ? payload.data as Array<{ id: string; name?: string }> : []
+    for (const account of data) {
+      allAccounts.push({ id: account.id, name: account.name || account.id })
+    }
+    const paging = payload.paging as { next?: unknown } | undefined
+    url = typeof paging?.next === 'string' ? paging.next : null
+  }
+
+  return allAccounts
+}
+
 async function getAuthInvokeOptions() {
   const { data } = await supabase.auth.getSession()
   let accessToken = data.session?.access_token ?? null
   // #region agent log
   fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-auth',hypothesisId:'H1',location:'metaApi.ts:getAuthInvokeOptions:getSession',message:'session snapshot before refresh',data:{hasSessionToken:Boolean(accessToken)},timestamp:Date.now()})}).catch(()=>{});
   // #endregion
-
-  if (accessToken) {
-    const tokenUserCheck = await supabase.auth.getUser(accessToken)
-    const tokenValid = Boolean(tokenUserCheck.data.user) && !tokenUserCheck.error
-    // #region agent log
-    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-auth',hypothesisId:'H10',location:'metaApi.ts:getAuthInvokeOptions:tokenUserCheck',message:'validating token from getSession',data:{tokenValid,tokenUserError:tokenUserCheck.error?.message??null},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
-    if (!tokenValid) {
-      accessToken = null
-    }
-  }
 
   if (!accessToken) {
     const { data: refreshed } = await supabase.auth.refreshSession()
@@ -311,6 +328,18 @@ export async function fetchAdAccounts(accessToken: string): Promise<AdAccount[]>
       // #region agent log
       fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H8',location:'metaApi.ts:fetchAdAccounts:directProbe401',message:'direct fetch probe after invoke 401',data:{probeStatus,probeBodyPreview:probeBody.slice(0,240),hasAuthorizationOnProbe:Boolean(rawAuthHeader)},timestamp:Date.now()})}).catch(()=>{});
       // #endregion
+
+      try {
+        const fallbackAccounts = await fetchAdAccountsFromMetaDirect(accessToken)
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H11',location:'metaApi.ts:fetchAdAccounts:fallbackMetaDirect:success',message:'fallback via Meta Graph succeeded after edge 401',data:{fallbackAccountsCount:fallbackAccounts.length},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        return fallbackAccounts
+      } catch (fallbackError) {
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H11',location:'metaApi.ts:fetchAdAccounts:fallbackMetaDirect:error',message:'fallback via Meta Graph failed',data:{fallbackErrorMessage:fallbackError instanceof Error ? fallbackError.message : 'unknown_error'},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+      }
     }
     throw buildStepError('setup', firstTry.error, 'Nao foi possivel carregar contas de anuncios.')
   }
