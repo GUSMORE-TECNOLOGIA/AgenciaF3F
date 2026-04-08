@@ -186,6 +186,10 @@ async function fetchWhatsAppNumbersFromMetaDirect(
   const pages = Array.isArray(pagesPayload.data)
     ? (pagesPayload.data as Array<{ id: string; name?: string; whatsapp_business_account?: { id?: string } }>)
     : []
+  const pagesWithWaba = pages.filter((page) => Boolean(page.whatsapp_business_account?.id))
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H39',location:'metaApi.ts:fetchWhatsAppNumbersFromMetaDirect:pages',message:'direct pages loaded for whatsapp discovery',data:{pagesCount:pages.length,pagesWithWabaCount:pagesWithWaba.length,hasPageFilter:Boolean(pageId),pageIdSuffix:pageId ? pageId.slice(-8) : null},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const filteredPages = pageId ? pages.filter((page) => page.id === pageId) : pages
   const numbers: WhatsAppNumber[] = []
 
@@ -213,6 +217,9 @@ async function fetchWhatsAppNumbersFromMetaDirect(
     }
   }
 
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H40',location:'metaApi.ts:fetchWhatsAppNumbersFromMetaDirect:result',message:'direct whatsapp numbers result',data:{numbersCount:numbers.length,hasPageFilter:Boolean(pageId),filteredPagesCount:filteredPages.length},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   return numbers
 }
 
@@ -684,7 +691,14 @@ export async function fetchWhatsAppNumbers(
     // #endregion
     if (details.contextStatus === 401) {
       try {
-        const fallback = await fetchWhatsAppNumbersFromMetaDirect(accessToken, pageId)
+        let fallback = await fetchWhatsAppNumbersFromMetaDirect(accessToken, pageId)
+        if (fallback.length === 0 && pageId) {
+          const broadFallback = await fetchWhatsAppNumbersFromMetaDirect(accessToken)
+          // #region agent log
+          fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H41',location:'metaApi.ts:fetchWhatsAppNumbers:fallbackBroad',message:'broad whatsapp fallback attempted after empty page-scoped result',data:{pageScopedCount:fallback.length,broadCount:broadFallback.length,pageIdSuffix:pageId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          fallback = broadFallback
+        }
         // #region agent log
         fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H22',location:'metaApi.ts:fetchWhatsAppNumbers:fallbackDirect:success',message:'fallback direct graph for whatsapp numbers succeeded',data:{numbersCount:fallback.length,adAccountIdSuffix:adAccountId?.slice(-8) ?? null,hasPageId:Boolean(pageId)},timestamp:Date.now()})}).catch(()=>{});
         // #endregion
