@@ -118,6 +118,103 @@ async function fetchIgAccountsForAdAccountDirect(
   return mappedIgAccounts
 }
 
+function getMetaGraphErrorMessage(payload: Record<string, unknown>, status: number): string {
+  if (
+    typeof payload?.error === 'object' &&
+    payload.error !== null &&
+    'message' in payload.error &&
+    typeof (payload.error as { message?: unknown }).message === 'string'
+  ) {
+    return (payload.error as { message: string }).message
+  }
+  return `Meta Graph error (${status})`
+}
+
+async function fetchAudiencesFromMetaDirect(accessToken: string, adAccountId: string): Promise<Audience[]> {
+  const customUrl = `https://graph.facebook.com/v22.0/${adAccountId}/customaudiences?fields=id,name&limit=200&access_token=${accessToken}`
+  const savedUrl = `https://graph.facebook.com/v22.0/${adAccountId}/saved_audiences?fields=id,name,targeting&limit=200&access_token=${accessToken}`
+
+  const [customRes, savedRes] = await Promise.all([fetch(customUrl), fetch(savedUrl)])
+  const [customPayload, savedPayload] = await Promise.all([
+    customRes.json() as Promise<Record<string, unknown>>,
+    savedRes.json() as Promise<Record<string, unknown>>,
+  ])
+
+  if (!customRes.ok || customPayload?.error) {
+    throw new Error(getMetaGraphErrorMessage(customPayload, customRes.status))
+  }
+  if (!savedRes.ok || savedPayload?.error) {
+    throw new Error(getMetaGraphErrorMessage(savedPayload, savedRes.status))
+  }
+
+  const customItems = Array.isArray(customPayload.data)
+    ? (customPayload.data as Array<{ id: string; name?: string }>)
+    : []
+  const savedItems = Array.isArray(savedPayload.data)
+    ? (savedPayload.data as Array<{ id: string; name?: string; targeting?: Record<string, unknown> }>)
+    : []
+
+  const customAudiences: Audience[] = customItems.map((aud) => ({
+    id: aud.id,
+    name: aud.name || aud.id,
+    type: 'custom',
+    targeting_spec: null,
+  }))
+  const savedAudiences: Audience[] = savedItems.map((aud) => ({
+    id: aud.id,
+    name: aud.name || aud.id,
+    type: 'saved',
+    targeting_spec: aud.targeting ?? null,
+  }))
+
+  return [...customAudiences, ...savedAudiences]
+}
+
+async function fetchWhatsAppNumbersFromMetaDirect(
+  accessToken: string,
+  pageId?: string,
+): Promise<WhatsAppNumber[]> {
+  const pagesUrl = `https://graph.facebook.com/v22.0/me/accounts?fields=id,name,whatsapp_business_account{id}&limit=200&access_token=${accessToken}`
+  const pagesRes = await fetch(pagesUrl)
+  const pagesPayload: Record<string, unknown> = await pagesRes.json()
+
+  if (!pagesRes.ok || pagesPayload?.error) {
+    throw new Error(getMetaGraphErrorMessage(pagesPayload, pagesRes.status))
+  }
+
+  const pages = Array.isArray(pagesPayload.data)
+    ? (pagesPayload.data as Array<{ id: string; name?: string; whatsapp_business_account?: { id?: string } }>)
+    : []
+  const filteredPages = pageId ? pages.filter((page) => page.id === pageId) : pages
+  const numbers: WhatsAppNumber[] = []
+
+  for (const page of filteredPages) {
+    const wabaId = page.whatsapp_business_account?.id
+    if (!wabaId) continue
+    const phonesUrl = `https://graph.facebook.com/v22.0/${wabaId}/phone_numbers?fields=id,display_phone_number,verified_name&limit=200&access_token=${accessToken}`
+    const phonesRes = await fetch(phonesUrl)
+    const phonesPayload: Record<string, unknown> = await phonesRes.json()
+    if (!phonesRes.ok || phonesPayload?.error) {
+      throw new Error(getMetaGraphErrorMessage(phonesPayload, phonesRes.status))
+    }
+    const phones = Array.isArray(phonesPayload.data)
+      ? (phonesPayload.data as Array<{ id: string; display_phone_number?: string; verified_name?: string }>)
+      : []
+    for (const phone of phones) {
+      const phoneText = phone.display_phone_number || ''
+      numbers.push({
+        id: phone.id,
+        display: phone.verified_name ? `${phone.verified_name} (${phoneText})` : phoneText || phone.id,
+        phone: phoneText,
+        page_id: page.id,
+        page_name: page.name || page.id,
+      })
+    }
+  }
+
+  return numbers
+}
+
 async function getAuthInvokeOptions() {
   const { data } = await supabase.auth.getSession()
   let accessToken = data.session?.access_token ?? null
@@ -402,6 +499,19 @@ export async function fetchAudiences(accessToken: string, adAccountId: string): 
     // #region agent log
     fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-audience',hypothesisId:'H16',location:'metaApi.ts:fetchAudiences:error',message:'meta-audiences failed',data:{contextStatus:details.contextStatus,contextCode:details.contextCode,contextMessage:details.contextMessage,errorMessage:details.errorMessage,adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
     // #endregion
+    if (details.contextStatus === 401) {
+      try {
+        const fallback = await fetchAudiencesFromMetaDirect(accessToken, adAccountId)
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-audience',hypothesisId:'H21',location:'metaApi.ts:fetchAudiences:fallbackDirect:success',message:'fallback direct graph for audiences succeeded',data:{audiencesCount:fallback.length,adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        return fallback
+      } catch (fallbackError) {
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-audience',hypothesisId:'H21',location:'metaApi.ts:fetchAudiences:fallbackDirect:error',message:'fallback direct graph for audiences failed',data:{errorMessage:fallbackError instanceof Error ? fallbackError.message : 'unknown_error',adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+      }
+    }
     throw buildStepError('audience', error, 'Nao foi possivel carregar publicos.')
   }
   const audiences = (data?.audiences as Audience[]) || []
@@ -461,6 +571,19 @@ export async function fetchWhatsAppNumbers(
     // #region agent log
     fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H19',location:'metaApi.ts:fetchWhatsAppNumbers:error',message:'meta-whatsapp-numbers failed',data:{contextStatus:details.contextStatus,contextCode:details.contextCode,contextMessage:details.contextMessage,errorMessage:details.errorMessage,adAccountIdSuffix:adAccountId?.slice(-8) ?? null,hasPageId:Boolean(pageId)},timestamp:Date.now()})}).catch(()=>{});
     // #endregion
+    if (details.contextStatus === 401) {
+      try {
+        const fallback = await fetchWhatsAppNumbersFromMetaDirect(accessToken, pageId)
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H22',location:'metaApi.ts:fetchWhatsAppNumbers:fallbackDirect:success',message:'fallback direct graph for whatsapp numbers succeeded',data:{numbersCount:fallback.length,adAccountIdSuffix:adAccountId?.slice(-8) ?? null,hasPageId:Boolean(pageId)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        return fallback
+      } catch (fallbackError) {
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H22',location:'metaApi.ts:fetchWhatsAppNumbers:fallbackDirect:error',message:'fallback direct graph for whatsapp numbers failed',data:{errorMessage:fallbackError instanceof Error ? fallbackError.message : 'unknown_error',adAccountIdSuffix:adAccountId?.slice(-8) ?? null,hasPageId:Boolean(pageId)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+      }
+    }
     throw buildStepError('fase3', error, 'Nao foi possivel carregar numeros de WhatsApp.')
   }
   const numbers = (data?.numbers as WhatsAppNumber[]) || []

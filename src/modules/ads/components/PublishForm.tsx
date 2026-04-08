@@ -392,7 +392,7 @@ export default function PublishForm() {
   const loadFase3Resources = async (pageId: string) => {
     addLog(`📡 [pipeline] Carregando recursos FASE 3 (page=${pageId})...`);
     // Load WhatsApp numbers (templates are loaded globally on mount)
-    await loadWhatsappNumbers();
+    await loadWhatsappNumbers(pageId);
     addLog(`✅ [pipeline] Recursos FASE 3 carregados`);
   };
 
@@ -489,14 +489,14 @@ export default function PublishForm() {
     }
   };
 
-  const loadWhatsappNumbers = async () => {
+  const loadWhatsappNumbers = async (forcedPageId?: string) => {
     if (!accessToken) return;
     setLoadingWhatsappNumbers(true);
     setWhatsappNumbers([]);
     setSelectedWhatsappId("");
     try {
       const adAccId = selectedAccount;
-      const pageId = identityPageId;
+      const pageId = forcedPageId ?? identityPageId;
       addLog(`📡 Buscando números de WhatsApp (ad_account=${adAccId || "none"}, page_id=${pageId || "none"})...`);
       const nums = await fetchWhatsAppNumbers(accessToken, adAccId || undefined, pageId || undefined);
       setWhatsappNumbers(nums);
