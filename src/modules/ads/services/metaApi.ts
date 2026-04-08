@@ -18,6 +18,7 @@ import type {
 export type { LocationResult } from '@/modules/ads/types/meta-api'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 type FlowStep = 'setup' | 'campaign' | 'audience' | 'fase3' | 'review'
 
 function readJwtExpMillis(jwt: string | null | undefined): number | null {
@@ -27,6 +28,28 @@ function readJwtExpMillis(jwt: string | null | undefined): number | null {
     if (parts.length < 2) return null
     const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
     return typeof payload.exp === 'number' ? payload.exp * 1000 : null
+  } catch {
+    return null
+  }
+}
+
+function readJwtIssuer(jwt: string | null | undefined): string | null {
+  if (!jwt) return null
+  try {
+    const parts = jwt.split('.')
+    if (parts.length < 2) return null
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+    return typeof payload.iss === 'string' ? payload.iss : null
+  } catch {
+    return null
+  }
+}
+
+function extractSupabaseRef(url: string | null | undefined): string | null {
+  if (!url) return null
+  try {
+    const host = new URL(url).hostname
+    return host.split('.')[0] || null
   } catch {
     return null
   }
@@ -239,8 +262,12 @@ export async function fetchAdAccounts(accessToken: string): Promise<AdAccount[]>
   const rawAuthHeader = authOptions.headers?.Authorization ?? null
   const sessionJwt = rawAuthHeader?.startsWith('Bearer ') ? rawAuthHeader.slice(7) : null
   const jwtExpMs = readJwtExpMillis(sessionJwt)
+  const jwtIssuer = readJwtIssuer(sessionJwt)
+  const jwtIssuerRef = extractSupabaseRef(jwtIssuer)
+  const configRef = extractSupabaseRef(SUPABASE_URL)
+  const userProbe = await supabase.auth.getUser()
   // #region agent log
-  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H2',location:'metaApi.ts:fetchAdAccounts:invoke',message:'invoking meta-ad-accounts',data:{hasMetaAccessToken:Boolean(accessToken),hasAuthHeader:Boolean(authOptions.headers?.Authorization),jwtExpiresInMs:jwtExpMs?jwtExpMs-Date.now():null},timestamp:Date.now()})}).catch(()=>{});
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H2',location:'metaApi.ts:fetchAdAccounts:invoke',message:'invoking meta-ad-accounts',data:{hasMetaAccessToken:Boolean(accessToken),hasAuthHeader:Boolean(authOptions.headers?.Authorization),jwtExpiresInMs:jwtExpMs?jwtExpMs-Date.now():null,jwtIssuerRef,configRef,userProbeHasUser:Boolean(userProbe.data.user),userProbeError:userProbe.error?.message??null},timestamp:Date.now()})}).catch(()=>{});
   // #endregion
   const firstTry = await supabase.functions.invoke('meta-ad-accounts', {
     ...authOptions,
@@ -252,21 +279,26 @@ export async function fetchAdAccounts(accessToken: string): Promise<AdAccount[]>
     fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H3',location:'metaApi.ts:fetchAdAccounts:error',message:'meta-ad-accounts failed',data:{contextStatus:details.contextStatus,contextCode:details.contextCode,contextMessage:details.contextMessage,errorMessage:details.errorMessage},timestamp:Date.now()})}).catch(()=>{});
     // #endregion
     if (details.contextStatus === 401) {
-      // #region agent log
-      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H6',location:'metaApi.ts:fetchAdAccounts:retryWithoutCustomHeaders:start',message:'retrying invoke without custom auth headers',data:{previousStatus:details.contextStatus},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
-      const secondTry = await supabase.functions.invoke('meta-ad-accounts', {
-        body: { access_token: accessToken },
-      })
-      if (!secondTry.error) {
-        // #region agent log
-        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H6',location:'metaApi.ts:fetchAdAccounts:retryWithoutCustomHeaders:success',message:'retry succeeded without custom headers',data:{accountsCount:Array.isArray(secondTry.data?.accounts)?secondTry.data.accounts.length:0},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
-        return (secondTry.data?.accounts as AdAccount[]) || []
+      const probeHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+        apikey: SUPABASE_ANON_KEY,
       }
-      const retryDetails = extractFunctionErrorDebugData(secondTry.error)
+      if (rawAuthHeader) probeHeaders.Authorization = rawAuthHeader
+      let probeStatus: number | null = null
+      let probeBody = ''
+      try {
+        const probeRes = await fetch(`${SUPABASE_URL}/functions/v1/meta-ad-accounts`, {
+          method: 'POST',
+          headers: probeHeaders,
+          body: JSON.stringify({ access_token: accessToken }),
+        })
+        probeStatus = probeRes.status
+        probeBody = await probeRes.text()
+      } catch (probeError) {
+        probeBody = probeError instanceof Error ? probeError.message : 'probe_failed'
+      }
       // #region agent log
-      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H6',location:'metaApi.ts:fetchAdAccounts:retryWithoutCustomHeaders:error',message:'retry without custom headers failed',data:{contextStatus:retryDetails.contextStatus,errorMessage:retryDetails.errorMessage},timestamp:Date.now()})}).catch(()=>{});
+      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H8',location:'metaApi.ts:fetchAdAccounts:directProbe401',message:'direct fetch probe after invoke 401',data:{probeStatus,probeBodyPreview:probeBody.slice(0,240),hasAuthorizationOnProbe:Boolean(rawAuthHeader)},timestamp:Date.now()})}).catch(()=>{});
       // #endregion
     }
     throw buildStepError('setup', firstTry.error, 'Nao foi possivel carregar contas de anuncios.')
