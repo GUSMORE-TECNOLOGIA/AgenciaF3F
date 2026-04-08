@@ -390,12 +390,25 @@ export async function fetchIgAccountsForAdAccount(
 
 export async function fetchAudiences(accessToken: string, adAccountId: string): Promise<Audience[]> {
   const authOptions = await getRequiredAuthInvokeOptions('audience')
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-audience',hypothesisId:'H15',location:'metaApi.ts:fetchAudiences:invoke',message:'invoking meta-audiences',data:{hasMetaAccessToken:Boolean(accessToken),hasAuthHeader:Boolean(authOptions.headers?.Authorization),adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const { data, error } = await supabase.functions.invoke('meta-audiences', {
     ...authOptions,
     body: { access_token: accessToken, ad_account_id: adAccountId },
   })
-  if (error) throw buildStepError('audience', error, 'Nao foi possivel carregar publicos.')
-  return (data?.audiences as Audience[]) || []
+  if (error) {
+    const details = extractFunctionErrorDebugData(error)
+    // #region agent log
+    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-audience',hypothesisId:'H16',location:'metaApi.ts:fetchAudiences:error',message:'meta-audiences failed',data:{contextStatus:details.contextStatus,contextCode:details.contextCode,contextMessage:details.contextMessage,errorMessage:details.errorMessage,adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    throw buildStepError('audience', error, 'Nao foi possivel carregar publicos.')
+  }
+  const audiences = (data?.audiences as Audience[]) || []
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-audience',hypothesisId:'H17',location:'metaApi.ts:fetchAudiences:success',message:'meta-audiences succeeded',data:{audiencesCount:audiences.length,adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
+  return audiences
 }
 
 export async function validatePublish(params: Record<string, unknown>): Promise<ValidationResponse> {
@@ -436,12 +449,25 @@ export async function fetchWhatsAppNumbers(
   pageId?: string,
 ): Promise<WhatsAppNumber[]> {
   const authOptions = await getRequiredAuthInvokeOptions('fase3')
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H18',location:'metaApi.ts:fetchWhatsAppNumbers:invoke',message:'invoking meta-whatsapp-numbers',data:{hasMetaAccessToken:Boolean(accessToken),hasAuthHeader:Boolean(authOptions.headers?.Authorization),adAccountIdSuffix:adAccountId?.slice(-8) ?? null,hasPageId:Boolean(pageId)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const { data, error } = await supabase.functions.invoke('meta-whatsapp-numbers', {
     ...authOptions,
     body: { access_token: accessToken, ad_account_id: adAccountId, page_id: pageId },
   })
-  if (error) throw buildStepError('fase3', error, 'Nao foi possivel carregar numeros de WhatsApp.')
-  return (data?.numbers as WhatsAppNumber[]) || []
+  if (error) {
+    const details = extractFunctionErrorDebugData(error)
+    // #region agent log
+    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H19',location:'metaApi.ts:fetchWhatsAppNumbers:error',message:'meta-whatsapp-numbers failed',data:{contextStatus:details.contextStatus,contextCode:details.contextCode,contextMessage:details.contextMessage,errorMessage:details.errorMessage,adAccountIdSuffix:adAccountId?.slice(-8) ?? null,hasPageId:Boolean(pageId)},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    throw buildStepError('fase3', error, 'Nao foi possivel carregar numeros de WhatsApp.')
+  }
+  const numbers = (data?.numbers as WhatsAppNumber[]) || []
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-whatsapp',hypothesisId:'H20',location:'metaApi.ts:fetchWhatsAppNumbers:success',message:'meta-whatsapp-numbers succeeded',data:{numbersCount:numbers.length,adAccountIdSuffix:adAccountId?.slice(-8) ?? null,hasPageId:Boolean(pageId)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
+  return numbers
 }
 
 export async function searchLocations(accessToken: string, query: string): Promise<LocationResult[]> {
