@@ -194,6 +194,9 @@ export default function PublishForm() {
         setAccessToken(null);
         setMetaName("");
         sessionStorage.removeItem("meta_status_cache");
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-status',hypothesisId:'H5',location:'PublishForm.tsx:checkMetaStatus:noSession',message:'app session missing before setup status',data:{ignoreCache:Boolean(options?.ignoreCache),forceVerify:Boolean(options?.forceVerify)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
         addLog("⚠️ Sessão do app expirada. Faça login novamente para sincronizar com a Meta.");
         toast.error("Sessão expirada. Faça login novamente.");
         return;
@@ -207,6 +210,9 @@ export default function PublishForm() {
           const cacheAge = Date.now() - (parsed._cachedAt || 0);
           // Cache valid for 5 minutes
           if (cacheAge < 5 * 60 * 1000 && parsed.connected && parsed.access_token) {
+            // #region agent log
+            fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-status',hypothesisId:'H2',location:'PublishForm.tsx:checkMetaStatus:cacheHit',message:'meta status cache used',data:{cacheAgeMs:cacheAge,parsedConnected:Boolean(parsed.connected),hasParsedAccessToken:Boolean(parsed.access_token)},timestamp:Date.now()})}).catch(()=>{});
+            // #endregion
             setAccessToken(parsed.access_token);
             setMetaName(parsed.meta_name || "");
             addLog(`✅ Meta conectado (cache) como ${parsed.meta_name || "usuário"}`);
@@ -440,12 +446,18 @@ export default function PublishForm() {
       addLog("📡 Carregando todas as contas de anúncios...");
       const accounts = await fetchAdAccounts(accessToken);
       setAdAccounts(accounts);
+      // #region agent log
+      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H4',location:'PublishForm.tsx:loadAdAccounts:success',message:'ad accounts loaded into UI',data:{accountsCount:accounts.length},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       addLog(`✅ ${accounts.length} conta(s) encontrada(s)`);
       if (accounts.length === 0) {
         toast.warning("Nenhuma conta de anúncios retornada pela Meta para esta conexão.");
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erro";
+      // #region agent log
+      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H3',location:'PublishForm.tsx:loadAdAccounts:error',message:'ad account loading failed in UI',data:{errorMessage:message},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       addLog(`❌ Erro ao carregar contas: ${message}`);
       toast.error(message);
     }
