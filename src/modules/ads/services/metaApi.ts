@@ -62,6 +62,17 @@ async function getAuthInvokeOptions() {
   fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-auth',hypothesisId:'H1',location:'metaApi.ts:getAuthInvokeOptions:getSession',message:'session snapshot before refresh',data:{hasSessionToken:Boolean(accessToken)},timestamp:Date.now()})}).catch(()=>{});
   // #endregion
 
+  if (accessToken) {
+    const tokenUserCheck = await supabase.auth.getUser(accessToken)
+    const tokenValid = Boolean(tokenUserCheck.data.user) && !tokenUserCheck.error
+    // #region agent log
+    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-auth',hypothesisId:'H10',location:'metaApi.ts:getAuthInvokeOptions:tokenUserCheck',message:'validating token from getSession',data:{tokenValid,tokenUserError:tokenUserCheck.error?.message??null},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    if (!tokenValid) {
+      accessToken = null
+    }
+  }
+
   if (!accessToken) {
     const { data: refreshed } = await supabase.auth.refreshSession()
     accessToken = refreshed.session?.access_token ?? null
