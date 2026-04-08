@@ -316,22 +316,38 @@ export async function disconnectMeta() {
 
 export async function fetchAdAccounts(accessToken: string): Promise<AdAccount[]> {
   const authOptions = await getRequiredAuthInvokeOptions('setup')
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H11',location:'metaApi.ts:fetchAdAccounts:invoke',message:'invoking meta-ad-accounts for ad accounts list',data:{hasMetaAccessToken:Boolean(accessToken),hasAuthHeader:Boolean(authOptions.headers?.Authorization)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const firstTry = await supabase.functions.invoke('meta-ad-accounts', {
     ...authOptions,
     body: { access_token: accessToken },
   })
   if (firstTry.error) {
     const details = extractFunctionErrorDebugData(firstTry.error)
+    // #region agent log
+    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H12',location:'metaApi.ts:fetchAdAccounts:error',message:'meta-ad-accounts edge call failed',data:{contextStatus:details.contextStatus,contextCode:details.contextCode,errorMessage:details.errorMessage},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     if (details.contextStatus === 401) {
       try {
-        return await fetchAdAccountsFromMetaDirect(accessToken)
-      } catch {
-        // keep original edge error context if fallback also fails
+        const fallback = await fetchAdAccountsFromMetaDirect(accessToken)
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H13',location:'metaApi.ts:fetchAdAccounts:fallbackDirect:success',message:'fallback direct graph for ad accounts succeeded',data:{adAccountsCount:fallback.length},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        return fallback
+      } catch (fallbackError) {
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H13',location:'metaApi.ts:fetchAdAccounts:fallbackDirect:error',message:'fallback direct graph for ad accounts failed',data:{errorMessage:fallbackError instanceof Error ? fallbackError.message : 'unknown_error'},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
       }
     }
     throw buildStepError('setup', firstTry.error, 'Nao foi possivel carregar contas de anuncios.')
   }
-  return (firstTry.data?.accounts as AdAccount[]) || []
+  const accounts = (firstTry.data?.accounts as AdAccount[]) || []
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-setup-adaccounts',hypothesisId:'H14',location:'metaApi.ts:fetchAdAccounts:success',message:'meta-ad-accounts edge call succeeded',data:{adAccountsCount:accounts.length},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
+  return accounts
 }
 
 export async function fetchIgAccountsForAdAccount(
