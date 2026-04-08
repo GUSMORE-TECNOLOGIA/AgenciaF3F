@@ -1330,15 +1330,56 @@ Deno.serve(async (req) => {
           { "action.type": ["whatsapp"], page: [pageId] },
         ];
       }
-      logs.push({ step: `ad_${idx}`, status: "start", ts: ts(), detail: `name=${cr.name}, creative_id=${creativeData.id}` });
+      logs.push({
+        step: `ad_${idx}`,
+        status: "start",
+        ts: ts(),
+        detail: `name=${cr.name}, creative_id=${creativeData.id}, payload=${JSON.stringify(sanitizePayload(adPayload))}`,
+      });
 
       const adRes = await fetch(`https://graph.facebook.com/v22.0/${ad_account_id}/ads`, {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(adPayload),
       });
       const adData = await adRes.json();
       if (adData.error) {
-        const errDetail = `${adData.error.message} | code=${adData.error.code} | subcode=${adData.error.error_subcode}`;
-        logs.push({ step: `ad_${idx}`, status: "error", ts: ts(), detail: errDetail });
+        const errDetail = `${adData.error.message} | code=${adData.error.code} | subcode=${adData.error.error_subcode} | user_title=${adData.error.error_user_title || ""} | user_msg=${adData.error.error_user_msg || ""}`;
+        logs.push({
+          step: `ad_${idx}`,
+          status: "error",
+          ts: ts(),
+          detail: `${errDetail} | payload=${JSON.stringify(sanitizePayload(adPayload))} | raw=${JSON.stringify(adData.error)}`,
+        });
+
+        // Retry once with creative_id format when Meta rejects creative object id format.
+        if (adData.error?.code === 100 && adData.error?.error_subcode === 2446391) {
+          const retryPayload: Record<string, any> = {
+            ...adPayload,
+            creative: { creative_id: creativeData.id },
+          };
+          logs.push({
+            step: `ad_${idx}_retry`,
+            status: "start",
+            ts: ts(),
+            detail: `retrying with creative.creative_id format | payload=${JSON.stringify(sanitizePayload(retryPayload))}`,
+          });
+          const retryRes = await fetch(`https://graph.facebook.com/v22.0/${ad_account_id}/ads`, {
+            method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(retryPayload),
+          });
+          const retryData = await retryRes.json();
+          if (!retryData.error && retryData.id) {
+            adIds.push(retryData.id);
+            adsCreated++;
+            logs.push({ step: `ad_${idx}_retry`, status: "success", ts: ts(), detail: `id=${retryData.id}` });
+            return true;
+          }
+          logs.push({
+            step: `ad_${idx}_retry`,
+            status: "error",
+            ts: ts(),
+            detail: `retry failed | code=${retryData?.error?.code ?? "N/A"} | subcode=${retryData?.error?.error_subcode ?? "N/A"} | message=${retryData?.error?.message ?? "unknown"} | raw=${JSON.stringify(retryData?.error ?? retryData)}`,
+          });
+        }
+
         failures.push({ index: idx, name: cr.name, step: "ad", reason: errDetail });
         return false;
       }
