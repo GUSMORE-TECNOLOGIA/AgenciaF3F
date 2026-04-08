@@ -279,6 +279,22 @@ async function getRequiredAuthInvokeOptions(step: FlowStep) {
   return options
 }
 
+function decodeJwtExpiryMsFromAuthHeader(authHeader?: string): number | null {
+  if (!authHeader?.startsWith('Bearer ')) return null
+  const token = authHeader.slice('Bearer '.length).trim()
+  const parts = token.split('.')
+  if (parts.length < 2) return null
+  try {
+    const normalized = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=')
+    const payload = JSON.parse(atob(padded)) as { exp?: number }
+    if (typeof payload.exp !== 'number') return null
+    return payload.exp * 1000
+  } catch {
+    return null
+  }
+}
+
 async function diagnoseMetaStatus401() {
   const { data: userData, error: userError } = await supabase.auth.getUser()
   const userId = userData.user?.id ?? null
@@ -699,9 +715,14 @@ export async function searchLocations(accessToken: string, query: string): Promi
 }
 
 export async function publishAd(params: Record<string, unknown>): Promise<PublishResponse> {
-  const authOptions = await getRequiredAuthInvokeOptions('review')
+  const refreshAttempt = await supabase.auth.refreshSession()
   // #region agent log
-  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-publish',hypothesisId:'H34',location:'metaApi.ts:publishAd:invoke',message:'invoking meta-publish edge function',data:{hasAuthHeader:Boolean(authOptions.headers?.Authorization),hasAnonKey:Boolean(SUPABASE_ANON_KEY),hasAccessTokenInPayload:Boolean(typeof params.access_token==='string' && params.access_token.length>0)},timestamp:Date.now()})}).catch(()=>{});
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-publish',hypothesisId:'H37',location:'metaApi.ts:publishAd:preRefreshSession',message:'refreshSession attempted before publish',data:{hasSessionAfterRefresh:Boolean(refreshAttempt.data.session?.access_token),refreshError:refreshAttempt.error?.message ?? null},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
+  const authOptions = await getRequiredAuthInvokeOptions('review')
+  const jwtExpiryMs = decodeJwtExpiryMsFromAuthHeader(authOptions.headers?.Authorization)
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-publish',hypothesisId:'H34',location:'metaApi.ts:publishAd:invoke',message:'invoking meta-publish edge function',data:{hasAuthHeader:Boolean(authOptions.headers?.Authorization),hasAnonKey:Boolean(SUPABASE_ANON_KEY),hasAccessTokenInPayload:Boolean(typeof params.access_token==='string' && params.access_token.length>0),jwtExpiresInMs:jwtExpiryMs ? jwtExpiryMs - Date.now() : null},timestamp:Date.now()})}).catch(()=>{});
   // #endregion
   const { data, error } = await supabase.functions.invoke('meta-publish', {
     ...authOptions,
@@ -726,7 +747,7 @@ export async function publishAd(params: Record<string, unknown>): Promise<Publis
         })
         const directPayload = await directResponse.json().catch(() => ({}))
         // #region agent log
-        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-publish',hypothesisId:'H36',location:'metaApi.ts:publishAd:directFetchFallback',message:'direct fetch fallback executed for meta-publish',data:{httpStatus:directResponse.status,ok:directResponse.ok,hasPayload:Boolean(directPayload && typeof directPayload==='object')},timestamp:Date.now()})}).catch(()=>{});
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-publish',hypothesisId:'H36',location:'metaApi.ts:publishAd:directFetchFallback',message:'direct fetch fallback executed for meta-publish',data:{httpStatus:directResponse.status,ok:directResponse.ok,hasPayload:Boolean(directPayload && typeof directPayload==='object'),payloadStep:typeof directPayload?.step==='string'?directPayload.step:null,payloadMessage:typeof directPayload?.error_message==='string'?directPayload.error_message:null},timestamp:Date.now()})}).catch(()=>{});
         // #endregion
         if (directResponse.ok && directPayload && typeof directPayload === 'object') {
           return directPayload as PublishResponse
