@@ -18,6 +18,7 @@ import type {
 export type { LocationResult } from '@/modules/ads/types/meta-api'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 type FlowStep = 'setup' | 'campaign' | 'audience' | 'fase3' | 'review'
 
 async function fetchAdAccountsFromMetaDirect(accessToken: string): Promise<AdAccount[]> {
@@ -699,12 +700,43 @@ export async function searchLocations(accessToken: string, query: string): Promi
 
 export async function publishAd(params: Record<string, unknown>): Promise<PublishResponse> {
   const authOptions = await getRequiredAuthInvokeOptions('review')
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-publish',hypothesisId:'H34',location:'metaApi.ts:publishAd:invoke',message:'invoking meta-publish edge function',data:{hasAuthHeader:Boolean(authOptions.headers?.Authorization),hasAnonKey:Boolean(SUPABASE_ANON_KEY),hasAccessTokenInPayload:Boolean(typeof params.access_token==='string' && params.access_token.length>0)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const { data, error } = await supabase.functions.invoke('meta-publish', {
     ...authOptions,
     body: params,
   })
   if (error && data) return data as PublishResponse
   if (error) {
+    const details = extractFunctionErrorDebugData(error)
+    // #region agent log
+    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-publish',hypothesisId:'H35',location:'metaApi.ts:publishAd:error',message:'meta-publish edge call failed',data:{contextStatus:details.contextStatus,contextCode:details.contextCode,contextMessage:details.contextMessage,errorMessage:details.errorMessage},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    if (details.contextStatus === 401 && SUPABASE_URL && SUPABASE_ANON_KEY) {
+      try {
+        const directResponse = await fetch(`${SUPABASE_URL}/functions/v1/meta-publish`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: authOptions.headers?.Authorization ?? '',
+          },
+          body: JSON.stringify(params),
+        })
+        const directPayload = await directResponse.json().catch(() => ({}))
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-publish',hypothesisId:'H36',location:'metaApi.ts:publishAd:directFetchFallback',message:'direct fetch fallback executed for meta-publish',data:{httpStatus:directResponse.status,ok:directResponse.ok,hasPayload:Boolean(directPayload && typeof directPayload==='object')},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        if (directResponse.ok && directPayload && typeof directPayload === 'object') {
+          return directPayload as PublishResponse
+        }
+      } catch (directError) {
+        // #region agent log
+        fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-publish',hypothesisId:'H36',location:'metaApi.ts:publishAd:directFetchFallback:error',message:'direct fetch fallback threw error',data:{errorMessage:directError instanceof Error ? directError.message : 'unknown_error'},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+      }
+    }
     try {
       const parsed = typeof error === 'string' ? JSON.parse(error) : error
       if (parsed && typeof parsed === 'object' && ('error_message' in parsed || 'step' in parsed)) {
