@@ -269,11 +269,23 @@ export async function fetchIgAccountsForAdAccount(
   adAccountId: string,
 ): Promise<IgAccountMapping[]> {
   const authOptions = await getRequiredAuthInvokeOptions('setup')
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-identity-ig',hypothesisId:'H1',location:'metaApi.ts:fetchIgAccountsForAdAccount:invoke',message:'invoking get_ig_accounts',data:{hasMetaAccessToken:Boolean(accessToken),hasAuthHeader:Boolean(authOptions.headers?.Authorization),adAccountIdSuffix:adAccountId.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const { data, error } = await supabase.functions.invoke('meta-ad-accounts', {
     ...authOptions,
     body: { access_token: accessToken, action: 'get_ig_accounts', ad_account_id: adAccountId },
   })
-  if (error) throw buildStepError('setup', error, 'Nao foi possivel carregar identidade da conta.')
+  if (error) {
+    const details = extractFunctionErrorDebugData(error)
+    // #region agent log
+    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-identity-ig',hypothesisId:'H2',location:'metaApi.ts:fetchIgAccountsForAdAccount:error',message:'get_ig_accounts failed',data:{contextStatus:details.contextStatus,contextCode:details.contextCode,contextMessage:details.contextMessage,errorMessage:details.errorMessage},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    throw buildStepError('setup', error, 'Nao foi possivel carregar identidade da conta.')
+  }
+  // #region agent log
+  fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-identity-ig',hypothesisId:'H3',location:'metaApi.ts:fetchIgAccountsForAdAccount:success',message:'get_ig_accounts succeeded',data:{igAccountsCount:Array.isArray(data?.ig_accounts)?data.ig_accounts.length:0},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   return (data?.ig_accounts as IgAccountMapping[]) || []
 }
 

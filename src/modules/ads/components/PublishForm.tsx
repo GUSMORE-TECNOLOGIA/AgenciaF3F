@@ -268,6 +268,9 @@ export default function PublishForm() {
 
   const loadAccountContext = async () => {
     if (!accessToken || !selectedAccount) return;
+    // #region agent log
+    fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-account-context',hypothesisId:'H4',location:'PublishForm.tsx:loadAccountContext:start',message:'starting account context pipeline',data:{hasAccessToken:Boolean(accessToken),selectedAccountSuffix:selectedAccount.slice(-8),preset},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
 
     // ===== STEP 1: FULL RESET =====
     addLog("🔄 [pipeline] Reset completo do contexto da conta");
@@ -365,6 +368,9 @@ export default function PublishForm() {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Erro";
       addLog(`❌ [pipeline] Erro ao carregar identidade: ${msg}`);
+      // #region agent log
+      fetch('http://127.0.0.1:7576/ingest/113f4891-06e6-453c-a145-e7092df6beff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7d588f'},body:JSON.stringify({sessionId:'7d588f',runId:'run-account-context',hypothesisId:'H5',location:'PublishForm.tsx:loadAccountContext:error',message:'identity pipeline failed',data:{errorMessage:msg,selectedAccountSuffix:selectedAccount.slice(-8)},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       setIdentityError(msg);
       setIdentityLoaded(true);
     } finally {
